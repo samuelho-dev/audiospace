@@ -15,12 +15,6 @@ datasource db {
     relationMode = "prisma"
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
     id                String    @id @default(cuid())
@@ -83,18 +77,18 @@ model ProductSubcategory {
 model Product {
     id              Int                     @id @default(autoincrement())
     name            String
-    seller_id       String
+    sellerId        String
     images          ProductImage[]
     Subcategory     ProductSubcategory      @relation(fields: [subcategoryId], references: [id])
     subcategoryId   Int                     @unique
     description     String
     price           Int
-    download_url    String
+    downloadUrl     String
     isPromoted      Boolean
     isOnSale        Boolean
     discount_rate   Int
     battles         Battle[] 
-    created_at      DateTime        @default(now())
+    createdAt       DateTime        @default(now())
 }
 
 model ProductImage {
@@ -107,11 +101,21 @@ model ProductImage {
 model Battle {
     id              Int             @id @default(autoincrement())
     description     String
+    entries         BattleEntry[]
     prizes          Product[]
-    winner_id       String
-    created_at      DateTime        @default(now())
+    winnerId        String
+    createdAt       DateTime        @default(now())
     duration        Int
     isActive        BattleStatus    @default(ACTIVE)
+}
+
+model BattleEntry {
+    id          Int     @id @default(autoincrement())
+    userId      String
+    trackUrl    String
+    rating      Int     @default(0)
+    Battle      Battle  @relation(fields: [battleId], references: [id])
+    battleId    Int     @unique
 }
 
 enum BattleStatus {
