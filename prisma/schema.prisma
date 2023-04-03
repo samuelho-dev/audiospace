@@ -23,39 +23,39 @@ model Example {
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
+    id                String    @id @default(cuid())
+    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId            String    @unique
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
+    refresh_token     String?   @db.Text
+    access_token      String?   @db.Text
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? @db.Text
+    id_token          String?   @db.Text
     session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
+    id           String     @id @default(cuid())
+    sessionToken String     @unique
+    user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId       String     @unique
     expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+    id              String    @id @default(cuid())
+    name            String?
+    email           String?   @unique
+    emailVerified   DateTime?
+    image           String?
+    accounts        Account[]
+    sessions        Session[]
 }
 
 model VerificationToken {
@@ -64,4 +64,57 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model ProductCategory {
+    id              Int                 @id @default(autoincrement())
+    name            String
+    subcategories   ProductSubcategory[]
+}
+
+model ProductSubcategory {
+    id          Int                 @id @default(autoincrement())
+    name        String
+    category    ProductCategory     @relation(fields: [categoryId], references: [id])
+    categoryId  Int                 @unique
+    products    Product[]
+}
+
+model Product {
+    id              Int                     @id @default(autoincrement())
+    name            String
+    seller_id       String
+    images          ProductImage[]
+    Subcategory     ProductSubcategory      @relation(fields: [subcategoryId], references: [id])
+    subcategoryId   Int                     @unique
+    description     String
+    price           Int
+    download_url    String
+    isPromoted      Boolean
+    isOnSale        Boolean
+    discount_rate   Int
+    battles         Battle[] 
+}
+
+model ProductImage {
+    id         Int          @id @default(autoincrement())
+    imageUrl   String
+    product    Product      @relation(fields: [productId], references: [id])
+    productId  Int          @unique
+}
+
+model Battle {
+    id              Int             @id @default(autoincrement())
+    description     String
+    prizes          Product[]
+    winner_id       String
+    created_at      DateTime        @default(now())
+    duration        Int
+    isActive        BattleStatus    @default(ACTIVE)
+}
+
+enum BattleStatus {
+    ACTIVE
+    VOTING
+    ENDED
 }
