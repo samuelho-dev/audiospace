@@ -94,6 +94,7 @@ model Product {
     isOnSale        Boolean
     discount_rate   Int
     battles         Battle[] 
+    created_at      DateTime        @default(now())
 }
 
 model ProductImage {
@@ -115,6 +116,5 @@ model Battle {
 
 enum BattleStatus {
     ACTIVE
-    VOTING
     ENDED
 }
