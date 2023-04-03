@@ -1,5 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { api } from "~/utils/api";
 
@@ -12,14 +13,22 @@ function Navbar() {
   );
 
   return (
-    <div className="flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
-      <h1>audio.space</h1>
+    <nav className="flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
+      <Link href={"/"}>
+        <h1>audio.space</h1>
+      </Link>
       <div className="flex gap-8">
-        <h3>Plugins</h3>
-        <h3>Deals</h3>
-        <h3>Battles</h3>
+        <Link href={"/Plugins"}>
+          <h3>Plugins</h3>
+        </Link>
+        <Link href={"/Deals"}>
+          <h3>Deals</h3>
+        </Link>
+        <Link href={"/Battles"}>
+          <h3>Battles</h3>
+        </Link>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         <div className="flex items-center rounded-full">
           <p className="mr-[-10%] rounded-lg bg-white px-6 text-black">
             Username
@@ -41,7 +50,7 @@ function Navbar() {
           </h3>
         </button>
       </div>
-    </div>
+    </nav>
   );
 }
 

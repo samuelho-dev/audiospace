@@ -1,26 +1,26 @@
 import { type NextPage } from "next";
-import Head from "next/head";
-
-import Navbar from "~/components/Navbar";
-import Footer from "~/components/Footer";
 
 const Home: NextPage = () => {
   return (
-    <>
-      <Head>
-        <title>audiospace</title>
-        <meta name="description" content="where producers gear up" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <main
-        className="flex min-h-screen 
-        flex-col items-center justify-between bg-gradient-to-b from-[#191919] to-[#000000] py-4"
-      >
-        <Navbar />
-
-        <Footer />
-      </main>
-    </>
+    <div className="flex h-full w-full max-w-3xl flex-col lg:max-w-5xl">
+      <section>Featured Posts</section>
+      <div className="flex justify-between">
+        <div className="flex flex-col">
+          <section>
+            <h3>Best Sellers</h3>
+            <div>Something</div>
+          </section>
+          <section>
+            <h3>Popular This Week</h3>
+            <div>Something</div>
+          </section>
+        </div>
+        <section className="flex flex-col">
+          <h3>Featured Beats</h3>
+          <div>Something</div>
+        </section>
+      </div>
+    </div>
   );
 };
 
