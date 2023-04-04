@@ -70,9 +70,11 @@ model ProductSubcategory {
     id          Int                 @id @default(autoincrement())
     name        String
     category    ProductCategory     @relation(fields: [categoryId], references: [id])
-    categoryId  Int                 @unique
+    categoryId  Int                 
     products    Product[]
+    @@index([categoryId])
 }
+
 
 model Product {
     id              Int                     @id @default(autoincrement())
