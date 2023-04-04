@@ -2,16 +2,16 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import UserNav from "~/components/UserNav";
 import { api } from "~/utils/api";
 
 function Navbar() {
-  const { data: sessionData } = useSession();
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-    undefined, // no input
-    { enabled: sessionData?.user !== undefined }
-  );
-
+  const { data: session } = useSession();
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const { data: secretMessage } = api.example.getSecretMessage.useQuery(
+  //   undefined, // no input
+  //   { enabled: sessionData?.user !== undefined }
+  // );
   return (
     <nav className="flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
       <Link href={"/"}>
@@ -28,22 +28,17 @@ function Navbar() {
           <h3>Battles</h3>
         </Link>
       </div>
-      <div className="flex items-center">
-        <div className="flex items-center rounded-full">
-          <p className="mr-[-10%] rounded-lg bg-white px-6 text-black">
-            Username
-          </p>
-          <div className="h-12 w-12 rounded-full bg-pink-300">
-            <h1 className="flex h-full w-full items-center justify-center ">
-              😛
-            </h1>
-            {/* <Image
-              src=""
-              alt="pfp"
-              className="flex h-full w-full items-center justify-center "
-            /> */}
-          </div>
-        </div>
+      <div className="flex items-center gap-4">
+        {!session ? (
+          <button
+            onClick={() => void signIn()}
+            className="rounded-full bg-yellow-300 px-4 py-1 text-black"
+          >
+            Sign In
+          </button>
+        ) : (
+          <UserNav />
+        )}
         <button>
           <h3 className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
             🛒
