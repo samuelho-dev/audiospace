@@ -49,11 +49,13 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     EmailProvider({
-      server: env.EMAIL_SERVER_HOST,
-      from: env.EMAIL_SERVER_USER,
-      maxAge: 24 * 60 * 60, // How long email links are valid for (default 24h)
+      server: env.EMAIL_SERVER,
+      from: env.EMAIL_FROM,
     }),
   ],
+  pages: {
+    signIn: "/auth/signin",
+  },
 };
 
 /**
