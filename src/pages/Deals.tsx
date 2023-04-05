@@ -1,7 +1,7 @@
 import React from "react";
 
-function Deals() {
-  return <div>Deals</div>;
+function deals() {
+  return <div>deals</div>;
 }
 
-export default Deals;
+export default deals;

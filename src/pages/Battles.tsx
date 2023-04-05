@@ -1,7 +1,7 @@
 import React from "react";
 
-function Battles() {
-  return <div>Battles</div>;
+function battles() {
+  return <div>battles</div>;
 }
 
-export default Battles;
+export default battles;
