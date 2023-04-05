@@ -1,26 +1,60 @@
+import { ProductCategory } from "@prisma/client";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import UserNav from "~/components/UserNav";
 import { api } from "~/utils/api";
 
+function PluginDropdown({ categories }) {
+  return (
+    <div className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90">
+      <div className="flex w-full flex-col items-center justify-between">
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            className="grid w-full max-w-3xl grid-cols-[1fr_4fr] justify-between py-4"
+          >
+            <div className="">
+              <h4 className="whitespace-nowrap text-white">
+                {category.name}s ➡️
+              </h4>
+            </div>
+            <div className="grid grid-cols-4 border-l-2 border-white pl-2">
+              {category.subcategories.map((subcategory) => (
+                <div key={subcategory.id} className="hover:bg-slate-300 ">
+                  <p className="whitespace-pre-wrap text-white hover:text-black">
+                    {subcategory.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Navbar() {
   const { data: session } = useSession();
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
-  // const { data: secretMessage } = api.example.getSecretMessage.useQuery(
-  //   undefined, // no input
-  //   { enabled: sessionData?.user !== undefined }
-  // );
+  const categoriesQuery = api.onload.getCategories.useQuery();
+  const categories = categoriesQuery.data;
+  const [pluginDropdownActive, setPluginDropdownActive] = useState(false);
+  const handlePluginDropdown = () =>
+    setPluginDropdownActive(!pluginDropdownActive);
+
+  console.log("category", categories);
   return (
-    <nav className="flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
-      <Link href={"/"}>
+    <nav className="top flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
+      <Link href={"/"} className="z-20">
         <h1>audio.space</h1>
       </Link>
-      <div className="flex gap-8">
-        <Link href={"/Plugins"}>
+      <div className="flex items-center justify-evenly">
+        <Link href={"/Plugins"} onMouseOver={handlePluginDropdown}>
           <h3>Plugins</h3>
         </Link>
+        <div></div>
         <Link href={"/Deals"}>
           <h3>Deals</h3>
         </Link>
@@ -28,6 +62,7 @@ function Navbar() {
           <h3>Battles</h3>
         </Link>
       </div>
+      {pluginDropdownActive && <PluginDropdown categories={categories} />}
       <div className="flex items-center gap-4">
         {!session ? (
           <button
@@ -37,9 +72,9 @@ function Navbar() {
             Sign In
           </button>
         ) : (
-          <UserNav />
+          <UserNav pluginDropdownActive={pluginDropdownActive} />
         )}
-        <button>
+        <button className="z-20">
           <h3 className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
             🛒
           </h3>
