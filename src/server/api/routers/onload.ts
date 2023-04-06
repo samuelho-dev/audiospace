@@ -34,7 +34,7 @@ export const onloadRouter = createTRPCRouter({
   getCategories: publicProcedure
     .output(z.array(CategorySchema))
     .query(async ({ ctx }) => {
-      const data = await prisma.productCategory.findMany({
+      const data = await ctx.prisma.productCategory.findMany({
         include: {
           subcategories: true,
         },
