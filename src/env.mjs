@@ -22,6 +22,9 @@ const server = z.object({
 
   EMAIL_SERVER: z.string(),
   EMAIL_FROM: z.string(),
+  CLOUDINARY_NAME: z.string(),
+  CLOUDINARY_API_KEY: z.string(),
+  CLOUDINARY_API_SECRET: z.string(),
 });
 
 /**
@@ -45,6 +48,9 @@ const processEnv = {
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   EMAIL_SERVER: process.env.EMAIL_SERVER,
   EMAIL_FROM: process.env.EMAIL_FROM,
+  CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   // process.env.NEXTAUTH_URLnv.NEXT_PUBLIC_CLIENTVAR,
 };
 
