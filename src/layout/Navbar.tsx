@@ -44,14 +44,13 @@ function Navbar() {
   const handlePluginDropdown = () =>
     setPluginDropdownActive(!pluginDropdownActive);
 
-  console.log("category", categories);
   return (
     <nav className="top flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
       <Link href={"/"} className="z-20">
         <h1>audio.space</h1>
       </Link>
       <div className="flex items-center justify-evenly">
-        <Link href={"/Plugins"} onMouseOver={handlePluginDropdown}>
+        <Link href={"/plugins"} onMouseOver={handlePluginDropdown}>
           <h3>Plugins</h3>
         </Link>
         <div></div>
