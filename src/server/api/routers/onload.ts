@@ -20,10 +20,6 @@ const CategorySchema = z.object({
   subcategories: z.array(SubcategorySchema),
 });
 
-type CategoryWithSubcategories = ProductCategory & {
-  subcategories: ProductSubcategory[];
-};
-
 export const onloadRouter = createTRPCRouter({
   // hello: publicProcedure
   //   .input(z.object({ text: z.string() }))
