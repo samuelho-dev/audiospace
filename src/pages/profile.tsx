@@ -3,15 +3,19 @@ import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import Submissions from "./profile/submissions";
-import PurchaseHistory from "./profile/purchase-history";
-import Settings from "./profile/settings";
-import BasicInfo from "./profile/basic-info";
-import Wishlist from "./profile/wishlist";
+import Submissions from "~/components/profile/submissions";
+import PurchaseHistory from "~/components/profile/purchase-history";
+import Settings from "~/components/profile/settings";
+import BasicInfo from "~/components/profile/basic-info";
+import Wishlist from "~/components/profile/wishlist";
 
 interface ProfileRouteProps {
-  route: string;
+  route?: string;
   session: Session;
+}
+
+function getRoute(section: string | string[] | undefined): string {
+  return typeof section === "string" ? section : "";
 }
 
 function ProfileRoute({ route, session }: ProfileRouteProps) {
@@ -19,13 +23,13 @@ function ProfileRoute({ route, session }: ProfileRouteProps) {
     case "basic-info":
       return <BasicInfo session={session} />;
     case "wishlist":
-      return <Wishlist session={session} />;
+      return <Wishlist />;
     case "purchase-history":
-      return <PurchaseHistory session={session} />;
+      return <PurchaseHistory />;
     case "submissions":
-      return <Submissions session={session} />;
+      return <Submissions />;
     case "settings":
-      return <Settings session={session} />;
+      return <Settings />;
 
     default:
       return <BasicInfo session={session} />;
@@ -86,7 +90,7 @@ function Profile() {
           </div>
         </div>
         <div className="w-3/5">
-          <ProfileRoute route={section} session={session} />
+          <ProfileRoute route={getRoute(section)} session={session} />
         </div>
       </div>
     );
