@@ -1,6 +1,6 @@
 import React from "react";
 
-function subcategorypage({ subcategory }) {
+function subcategorypage() {
   return <div>subcategorypage</div>;
 }
 
