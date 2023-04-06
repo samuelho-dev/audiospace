@@ -1,6 +1,6 @@
 import React from "react";
 
-function Wishlist({ session }) {
+function Wishlist() {
   return <div>Wishlist</div>;
 }
 

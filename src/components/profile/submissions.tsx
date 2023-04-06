@@ -1,6 +1,6 @@
 import React from "react";
 
-function Submissions({ session }) {
+function Submissions() {
   return <div>submissions</div>;
 }
 

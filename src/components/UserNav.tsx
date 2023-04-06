@@ -43,7 +43,12 @@ function UserNav({ pluginDropdownActive }: UserNavProps) {
       </div>
       {dropdownActive && !pluginDropdownActive && (
         <ul className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2">
-          <Link href={"/profile"}>
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "basic-info" },
+            }}
+          >
             <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
               Profile
             </li>

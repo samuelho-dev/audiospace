@@ -1,6 +1,6 @@
 import React from "react";
 
-function categorypage({ category }) {
+function categorypage() {
   return <div>categorypage</div>;
 }
 
