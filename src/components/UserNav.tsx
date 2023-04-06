@@ -1,4 +1,4 @@
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -8,6 +8,7 @@ interface UserNavProps {
 }
 
 function UserNav({ pluginDropdownActive }: UserNavProps) {
+  const { data: session } = useSession();
   const [dropdownActive, setDropdownActive] = useState(false);
 
   const handleDropdown = () => {
@@ -19,11 +20,11 @@ function UserNav({ pluginDropdownActive }: UserNavProps) {
     <div className="flex flex-col">
       <div className="z-20 flex items-center" onClick={handleDropdown}>
         <h5
-          className={`mr-[-10%]  bg-white px-6 text-black ${
+          className={`mr-[-10%] h-6 w-40 overflow-clip bg-white px-6 text-center text-sm text-black ${
             dropdownActive ? "rounded-t-lg" : "rounded-lg"
           }`}
         >
-          Username
+          {session?.user.name}
         </h5>
         <div
           className="h-12 w-12 rounded-full bg-pink-300"
@@ -41,24 +42,34 @@ function UserNav({ pluginDropdownActive }: UserNavProps) {
         </div>
       </div>
       {dropdownActive && !pluginDropdownActive && (
-        <ul className="absolute z-10 flex w-36 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2">
+        <ul className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2">
           <Link href={"/profile"}>
-            <li className="w-full pl-6 text-sm text-gray-700 hover:bg-slate-300">
+            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
               Profile
             </li>
           </Link>
-          <Link href={"/profile/submissions"}>
-            <li className="w-full pl-6 text-sm text-gray-700 hover:bg-slate-300">
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "submissions" },
+            }}
+          >
+            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
               Submissions
             </li>
           </Link>
-          <Link href={"/profile/wishlist"}>
-            <li className="w-full pl-6 text-sm text-gray-700 hover:bg-slate-300">
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "wishlist" },
+            }}
+          >
+            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
               Wishlist
             </li>
           </Link>
           <li
-            className="w-full cursor-pointer pl-6 text-sm text-gray-700 hover:bg-slate-300"
+            className="w-full cursor-pointer pl-8 text-sm text-gray-700 hover:bg-slate-300"
             onClick={() => void signOut()}
           >
             Log Out
