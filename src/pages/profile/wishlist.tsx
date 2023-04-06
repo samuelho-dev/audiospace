@@ -1,7 +1,7 @@
 import React from "react";
 
-function wishlist() {
-  return <div>wishlist</div>;
+function Wishlist({ session }) {
+  return <div>Wishlist</div>;
 }
 
-export default wishlist;
+export default Wishlist;

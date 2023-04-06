@@ -1,7 +1,7 @@
 import React from "react";
 
-function submissions() {
+function Submissions({ session }) {
   return <div>submissions</div>;
 }
 
-export default submissions;
+export default Submissions;
