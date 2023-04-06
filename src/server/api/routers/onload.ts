@@ -20,20 +20,20 @@ const CategorySchema = z.object({
   subcategories: z.array(SubcategorySchema),
 });
 
+// hello: publicProcedure
+//   .input(z.object({ text: z.string() }))
+//   .query(({ input }) => {
+//     return {
+//       greeting: `Hello ${input.text}`,
+//     };
+//   }),
+// getCategories: publicProcedure.query(({ ctx }) => {
+//   return prisma.productCategory.findMany();
+// }),
 export const onloadRouter = createTRPCRouter({
-  // hello: publicProcedure
-  //   .input(z.object({ text: z.string() }))
-  //   .query(({ input }) => {
-  //     return {
-  //       greeting: `Hello ${input.text}`,
-  //     };
-  //   }),
-  // getCategories: publicProcedure.query(({ ctx }) => {
-  //   return prisma.productCategory.findMany();
-  // }),
   getCategories: publicProcedure
-    .output(z.promise(z.array(CategorySchema)))
-    .query(async ({ ctx }): Promise<any> => {
+    .output(z.array(CategorySchema))
+    .query(async ({ ctx }) => {
       const data = await ctx.prisma.productCategory.findMany({
         include: {
           subcategories: true,
