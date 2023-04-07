@@ -22,6 +22,7 @@ interface Category {
 interface PluginDropdownProps {
   categories: Category[];
 }
+
 function PluginDropdown({ categories }: PluginDropdownProps) {
   return (
     <div className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90">
@@ -71,10 +72,10 @@ function Navbar() {
           <h3>Plugins</h3>
         </Link>
         <div></div>
-        <Link href={"/Deals"}>
+        <Link href={"/deals"}>
           <h3>Deals</h3>
         </Link>
-        <Link href={"/Battles"}>
+        <Link href={"/battles"}>
           <h3>Battles</h3>
         </Link>
       </div>
