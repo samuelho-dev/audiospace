@@ -40,9 +40,11 @@ function PluginDropdown({ categories }: PluginDropdownProps) {
             <div className="grid grid-cols-4 border-l-2 border-white pl-2">
               {category.subcategories.map((subcategory) => (
                 <div key={subcategory.id} className="hover:bg-slate-300 ">
-                  <p className="whitespace-pre-wrap text-white hover:text-black">
-                    {subcategory.name}
-                  </p>
+                  <Link href={`/plugins/${category.name}/${subcategory.name}`}>
+                    <p className="whitespace-pre-wrap text-white hover:text-black">
+                      {subcategory.name}
+                    </p>
+                  </Link>
                 </div>
               ))}
             </div>

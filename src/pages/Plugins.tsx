@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 import ProductCard from "~/components/ProductCard";
 import { api } from "~/utils/api";
@@ -23,7 +24,9 @@ function Sidebar({ categories }: PluginSidebarProps) {
     <div className="flex w-1/6 flex-col items-center">
       {categories.map((category) => (
         <div key={category.id} className="flex w-full flex-col">
-          <h4 className="whitespace-nowrap pb-2 pt-4">{category.name}s ⬇️</h4>
+          <Link href={`/plugins/${category.name}`}>
+            <h4 className="whitespace-nowrap pb-2 pt-4">{category.name}s ⬇️</h4>
+          </Link>
           <div className="ml-2 flex flex-col gap-0.5">
             {category.subcategories.map((subcategory) => (
               <p
