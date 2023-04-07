@@ -8,8 +8,8 @@ interface BasicInfoProps {
 
 function BasicInfo({ session }: BasicInfoProps) {
   const [form, setForm] = useState({
-    email: "",
-    name: "",
+    email: session.user.email,
+    name: session.user.name || "",
   });
 
   const [profileImage, setProfileImage] = useState<string | null>(null);
