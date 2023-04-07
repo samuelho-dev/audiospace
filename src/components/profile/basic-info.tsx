@@ -8,7 +8,7 @@ interface BasicInfoProps {
 
 function BasicInfo({ session }: BasicInfoProps) {
   const [form, setForm] = useState({
-    email: session.user.email,
+    email: session.user.email ?? "",
     name: session.user.name || "",
   });
 
