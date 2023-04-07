@@ -86,7 +86,7 @@ model Product {
     price           Int
     preview_url     String?
     downloadUrl     String
-    isPromoted      ProductPromoteStatus
+    isPromoted      ProductPromoteStatus    @default(NONE)
     isOnSale        Boolean                 @default(false)
     discount_rate   Int                     @default(0)
     battles         Battle[]
