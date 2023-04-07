@@ -48,6 +48,7 @@ model User {
     email           String    @unique
     emailVerified   DateTime?
     image           String?
+    wishlist        Product[]
     accounts        Account[]
     sessions        Session[]
 }
@@ -67,30 +68,36 @@ model ProductCategory {
 }
 
 model ProductSubcategory {
-    id          Int                 @id @default(autoincrement())
-    name        String
-    category    ProductCategory     @relation(fields: [categoryId], references: [id])
-    categoryId  Int                 
-    products    Product[]
+    id              Int                 @id @default(autoincrement())
+    name            String
+    category        ProductCategory     @relation(fields: [categoryId], references: [id])
+    categoryId      Int
+    products        Product[]
     @@index([categoryId])
 }
-
 
 model Product {
     id              Int                     @id @default(autoincrement())
     name            String
     sellerId        String
     images          ProductImage[]
-    Subcategory     ProductSubcategory      @relation(fields: [subcategoryId], references: [id])
-    subcategoryId   Int                     @unique
+    Subcategory     ProductSubcategory[]
     description     String
     price           Int
+    preview_url     String?
     downloadUrl     String
-    isPromoted      Boolean
-    isOnSale        Boolean
-    discount_rate   Int
-    battles         Battle[] 
-    createdAt       DateTime        @default(now())
+    isPromoted      ProductPromoteStatus
+    isOnSale        Boolean                 @default(false)
+    discount_rate   Int                     @default(0)
+    battles         Battle[]
+    wishlist_users  User[] 
+    createdAt       DateTime                @default(now())
+}
+
+enum ProductPromoteStatus {
+    FEATURED
+    NEW
+    NONE
 }
 
 model ProductImage {
