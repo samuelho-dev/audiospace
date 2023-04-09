@@ -1,6 +1,7 @@
 import { type NextPage } from "next";
 import BeatDisplay from "~/components/BeatDisplay";
 import ProductCard from "~/components/ProductCard";
+import ProductSideScrollBtn from "~/components/buttons/ProductSideScrollBtn";
 
 const Home: NextPage = () => {
   return (
@@ -11,10 +12,13 @@ const Home: NextPage = () => {
         </div>
       </section>
       <div className="flex justify-between">
-        <div className="flex w-3/5 flex-col">
+        <div className="flex w-8/12 flex-col">
           <section>
-            <h3 className="py-4">Best Sellers</h3>
-            <div className="flex gap-4 overflow-x-clip">
+            <div className="flex w-full items-center justify-between">
+              <h3 className="py-4">Best Sellers</h3>
+              <ProductSideScrollBtn />
+            </div>
+            <div className="flex gap-2 overflow-x-clip lg:gap-4">
               <ProductCard />
               <ProductCard />
               <ProductCard />
@@ -22,8 +26,11 @@ const Home: NextPage = () => {
             </div>
           </section>
           <section>
-            <h3 className="py-4">Popular This Week</h3>
-            <div className="flex gap-4 overflow-x-clip">
+            <div className="flex w-full items-center justify-between">
+              <h3 className="py-4">Popular This Week</h3>
+              <ProductSideScrollBtn />
+            </div>
+            <div className="flex gap-2 overflow-x-clip lg:gap-4">
               <ProductCard />
               <ProductCard />
               <ProductCard />
@@ -31,9 +38,9 @@ const Home: NextPage = () => {
             </div>
           </section>
         </div>
-        <section className="flex w-2/5 flex-col items-center">
+        <section className="flex w-4/12 flex-col items-center px-2">
           <h3 className="py-4">Beat Battle Winners</h3>
-          <div className="flex w-full flex-col gap-4 px-6">
+          <div className="flex w-full flex-col gap-4 px-2 lg:px-4">
             <BeatDisplay />
             <BeatDisplay />
             <BeatDisplay />

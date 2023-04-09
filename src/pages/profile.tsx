@@ -1,5 +1,4 @@
 import type { Session } from "next-auth";
-
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -19,6 +18,7 @@ function getRoute(section: string | string[] | undefined): string {
 }
 
 function ProfileRoute({ route, session }: ProfileRouteProps) {
+  console.log(route, "route");
   switch (route) {
     case "basic-info":
       return <BasicInfo session={session} />;
@@ -47,7 +47,9 @@ function Profile() {
       .catch((err) => console.error(err));
   };
 
-  if (status === "unauthenticated") return "/auth/sigin";
+  if (status === "unauthenticated") {
+    void router.push("/auth/signin");
+  }
 
   if (status === "authenticated") {
     return (
