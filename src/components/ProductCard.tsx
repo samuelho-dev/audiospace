@@ -11,7 +11,6 @@ interface ProductCardProps {
 function ProductCard({ product }: ProductCardProps) {
   const [heartHover, setHeartHover] = useState(false);
 
-  console.log(product);
   return (
     <div className="cardShadow w-40 rounded-md bg-zinc-900 p-4 hover:bg-zinc-800">
       <div className="relative h-fit w-full justify-center">
