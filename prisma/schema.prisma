@@ -2,132 +2,186 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
-    relationMode = "prisma"
+  provider     = "mysql"
+  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
 model Account {
-    id                String    @id @default(cuid())
-    user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId            String    @unique
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?   @db.Text
-    access_token      String?   @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?   @db.Text
-    session_state     String?
+  id                String  @id @default(cuid())
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String  @unique
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String     @id @default(cuid())
-    sessionToken String     @unique
-    user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId       String     @unique
-    expires      DateTime
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String   @unique
+  expires      DateTime
 }
 
 model User {
-    id              String    @id @default(cuid())
-    name            String?
-    email           String    @unique
-    emailVerified   DateTime?
-    image           String?
-    wishlist        Product[]
-    accounts        Account[]
-    sessions        Session[]
+  id               String        @id @default(cuid())
+  stripeCustomerId String?       @unique
+  name             String?
+  email            String        @unique
+  emailVerified    DateTime?
+  image            String?
+  wishlist         Product[]
+  accounts         Account[]
+  sessions         Session[]
+  transactions     Transaction[]
+}
+
+model Seller {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model ProductCategory {
-    id              Int                 @id @default(autoincrement())
-    name            String
-    subcategories   ProductSubcategory[]
+  id            Int                  @id @default(autoincrement())
+  name          String
+  subcategories ProductSubcategory[]
+  products      Product[]
 }
 
 model ProductSubcategory {
-    id              Int                 @id @default(autoincrement())
-    name            String
-    category        ProductCategory     @relation(fields: [categoryId], references: [id])
-    categoryId      Int
-    products        Product[]
-    @@index([categoryId])
+  id         Int             @id @default(autoincrement())
+  name       String
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  products   Product[]
+
+  @@index([categoryId])
 }
 
 model Product {
-    id              Int                     @id @default(autoincrement())
-    name            String
-    sellerId        String
-    images          ProductImage[]
-    Subcategory     ProductSubcategory[]
-    description     String
-    price           Int
-    preview_url     String?
-    downloadUrl     String
-    isPromoted      ProductPromoteStatus    @default(NONE)
-    isOnSale        Boolean                 @default(false)
-    discount_rate   Int                     @default(0)
-    battles         Battle[]
-    wishlist_users  User[] 
-    createdAt       DateTime                @default(now())
+  id              Int                  @id @default(autoincrement())
+  seller          Seller               @relation(fields: [sellerId], references: [id])
+  sellerId        Int
+  name            String
+  images          ProductImage[]
+  category        ProductCategory      @relation(fields: [categoryId], references: [id])
+  categoryId      Int
+  subcategory     ProductSubcategory[]
+  description     String               @db.Text
+  price           Int
+  preview_url     String?
+  downloadUrl     String
+  isPromoted      ProductPromoteStatus @default(NONE)
+  isOnSale        Boolean              @default(false)
+  discount_rate   Int                  @default(0)
+  battles         Battle[]
+  wishlist_users  User[]
+  createdAt       DateTime             @default(now())
+  stripeProductId String?              @unique
+  stripePriceId   String?              @unique
+  transactions    Transaction[]
+  TransactionItem TransactionItem[]
+
+  @@index([sellerId])
+  @@index([categoryId])
 }
 
+
 enum ProductPromoteStatus {
-    FEATURED
-    NEW
-    NONE
+  FEATURED
+  NEW
+  NONE
 }
 
 model ProductImage {
-    id         Int          @id @default(autoincrement())
-    imageUrl   String
-    product    Product      @relation(fields: [productId], references: [id])
-    productId  Int          @unique
+  id        Int     @id @default(autoincrement())
+  imageUrl  String
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@index([productId])
 }
 
 model Battle {
-    id              Int             @id @default(autoincrement())
-    description     String
-    entries         BattleEntry[]
-    prizes          Product[]
-    winnerId        String
-    createdAt       DateTime        @default(now())
-    duration        Int
-    isActive        BattleStatus    @default(ACTIVE)
+  id          Int           @id @default(autoincrement())
+  description String
+  entries     BattleEntry[]
+  prizes      Product[]
+  winnerId    String
+  createdAt   DateTime      @default(now())
+  duration    Int
+  isActive    BattleStatus  @default(ACTIVE)
 }
 
 model BattleEntry {
-    id          Int     @id @default(autoincrement())
-    userId      String
-    trackUrl    String
-    rating      Int     @default(0)
-    Battle      Battle  @relation(fields: [battleId], references: [id])
-    battleId    Int     @unique
+  id       Int    @id @default(autoincrement())
+  userId   String
+  trackUrl String
+  rating   Int    @default(0)
+  Battle   Battle @relation(fields: [battleId], references: [id])
+  battleId Int
+
+  @@index([battleId])
 }
 
 enum BattleStatus {
-    ACTIVE
-    ENDED
+  ACTIVE
+  ENDED
+}
+
+model Transaction {
+  id               Int               @id @default(autoincrement())
+  stripeChargeId   String?           @unique
+  stripeReceiptUrl String?
+  user             User              @relation(fields: [userId], references: [id])
+  userId           String
+  items            TransactionItem[]
+  balance          Int
+  createdAt        DateTime          @default(now())
+  Product          Product?          @relation(fields: [productId], references: [id])
+  productId        Int?
+
+  @@index([userId])
+  @@index([productId])
+}
+
+model TransactionItem {
+  id            Int         @id @default(autoincrement())
+  product       Product     @relation(fields: [productId], references: [id])
+  productId     Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
+  quantity      Int
+  price         Float
+
+  @@index([transactionId])
+  @@index([productId])
 }
