@@ -71,11 +71,13 @@ function Navbar() {
       <Link href={"/"} className="z-20">
         <h1>audio.space</h1>
       </Link>
-      <div className="flex items-center justify-evenly">
+      <div className="flex items-center justify-center gap-6">
         <Link href={"/plugins"} onMouseOver={handlePluginDropdown}>
           <h3>Plugins</h3>
         </Link>
-        <div></div>
+        <Link href={"/kits"}>
+          <h3>Kits</h3>
+        </Link>
         <Link href={"/deals"}>
           <h3>Deals</h3>
         </Link>
