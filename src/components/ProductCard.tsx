@@ -12,7 +12,7 @@ function ProductCard({ product }: ProductCardProps) {
   const [heartHover, setHeartHover] = useState(false);
 
   return (
-    <div className="cardShadow w-40 rounded-md bg-zinc-900 p-4 hover:bg-zinc-800">
+    <div className="cardShadow w-40 rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
       <div className="relative h-fit w-full justify-center">
         <Image
           src="https://res.cloudinary.com/ddhal4lbv/image/upload/v1680578842/audiospace/RC-20-Retro-Color-UI-Alpha_ue0qpp.png"
