@@ -9,9 +9,11 @@ export const SubcategorySchema = z.object({
   id: z.number(),
   name: z.string(),
   categoryId: z.number(),
-  _count: z.object({
-    products: z.number(),
-  }),
+  _count: z
+    .object({
+      products: z.number(),
+    })
+    .nullable(),
 });
 
 export const CategorySchema = z.object({
