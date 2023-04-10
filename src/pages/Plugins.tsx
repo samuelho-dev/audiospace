@@ -7,6 +7,7 @@ import Sidebar from "~/components/plugin/Sidebar";
 import { BiSearchAlt } from "react-icons/bi";
 import FilterBtn from "~/components/buttons/FilterBtn";
 import { useRouterFilter } from "~/utils/useRouterFilter";
+import FilterProductView from "~/components/plugin/FilterProductView";
 
 interface FilterProps {
   categories: CategorySchema[];
@@ -18,16 +19,13 @@ interface ProfileRouteProps {
 }
 
 function Filters({ categories, handleRoute }: FilterProps) {
-  const handleCategoryClick = (categoryName: string) => {
-    handleRoute(categoryName);
-  };
-
-  const handleSubcategoryClick = (
+  const handleFilterClick = (
     categoryName: string,
-    subcategoryName: string
+    subcategoryName?: string
   ) => {
     handleRoute(categoryName, subcategoryName);
   };
+
   return (
     <div className="flex w-full flex-col justify-center gap-4 rounded-lg p-4 outline outline-1 outline-zinc-700">
       <div className="flex gap-2">
@@ -35,7 +33,7 @@ function Filters({ categories, handleRoute }: FilterProps) {
         <div className="flex gap-3">
           {categories.map((category) => (
             <FilterBtn key={category.id}>
-              <p onClick={() => handleCategoryClick(category.name)}>
+              <p onClick={() => handleFilterClick(category.name)}>
                 {category.name}
               </p>
             </FilterBtn>
@@ -52,7 +50,7 @@ function Filters({ categories, handleRoute }: FilterProps) {
                   <div
                     className="flex gap-2"
                     onClick={() =>
-                      handleSubcategoryClick(category.name, subcategory.name)
+                      handleFilterClick(category.name, subcategory.name)
                     }
                   >
                     <p className="text-xs">{subcategory.name}</p>
@@ -69,24 +67,15 @@ function Filters({ categories, handleRoute }: FilterProps) {
     </div>
   );
 }
-function FilterProductView() {
-  return <div>Filter</div>;
-}
 
 function Plugins() {
   const router = useRouter();
   const { category, tag } = router.query;
   const { handleRoute } = useRouterFilter();
-  console.log(category, tag);
   const categoriesQuery = api.onload.getCategories.useQuery();
-  const productsQuery = api.products.getFilteredProducts.useQuery({
-    categories: Array.isArray(category) ? category : [],
-    subcategories: Array.isArray(tag) ? tag : [],
-  });
-  console.log(productsQuery);
 
   return (
-    <div className="flex min-h-screen w-full max-w-3xl gap-8 lg:max-w-5xl">
+    <div className="flex w-full max-w-3xl gap-8 lg:max-w-5xl">
       {categoriesQuery.data && (
         <Sidebar categories={categoriesQuery.data} handleRoute={handleRoute} />
       )}
@@ -96,7 +85,7 @@ function Plugins() {
             type="text"
             className="h-6 w-1/2 rounded-lg bg-zinc-200 p-2 text-black"
           ></input>
-          <div className="[ml]-10">
+          <div>
             <BiSearchAlt size={25} />
           </div>
         </div>
