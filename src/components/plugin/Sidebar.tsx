@@ -5,42 +5,30 @@ import { type CategorySchema } from "~/types/schema";
 
 interface PluginSidebarProps {
   categories: CategorySchema[];
+  handleRoute: Function;
 }
 
-function Sidebar({ categories }: PluginSidebarProps) {
-  const router = useRouter();
-
-  const PluginsNavigation = (section: string) => {
-    router
-      .push(`/plugins?category=${section}`, undefined, { shallow: true })
-      .catch((err) => console.error(err));
-  };
-
+function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
   return (
-    <div className="flex w-1/6 flex-col items-center py-12">
+    <div className="my-4 flex flex-col items-center border-r border-zinc-800 py-8 pr-2">
       {categories.map((category) => (
         <div key={category.id} className="flex w-full flex-col">
           <h4
             className="cursor-pointer whitespace-nowrap pb-2 pt-4"
-            onClick={() => PluginsNavigation(`${category.name.toLowerCase()}`)}
+            onClick={() => handleRoute(category.name)}
           >
             {category.name} ⬇️
           </h4>
 
           <div className="ml-2 flex flex-col gap-0.5">
             {category.subcategories.map((subcategory) => (
-              <Link
+              <p
                 key={subcategory.id}
-                href={`/plugins/${category.name
-                  .toLowerCase()
-                  .replace(" ", "-")}/${subcategory.name
-                  .toLowerCase()
-                  .replace(" ", "-")}`}
+                className="px-2 text-sm hover:bg-zinc-700"
+                onClick={() => handleRoute(category.name, subcategory.name)}
               >
-                <p className="px-2 text-sm hover:bg-gray-800">
-                  {subcategory.name}
-                </p>
-              </Link>
+                {subcategory.name}
+              </p>
             ))}
           </div>
         </div>
