@@ -42,17 +42,27 @@ model Session {
   expires      DateTime
 }
 
+model EmailVerification {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  token       String   @unique
+  expires     DateTime
+}
+
 model User {
   id               String        @id @default(cuid())
   stripeCustomerId String?       @unique
   name             String?
   email            String        @unique
-  emailVerified    DateTime?
+  emailVerified    EmailVerification?
+  password         String
   image            String?
   wishlist         Product[]
   accounts         Account[]
   sessions         Session[]
   transactions     Transaction[]
+  verifiedAt       DateTime?
 }
 
 model Seller {
