@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import Main from "~/components/plugin/main";
+import Main from "~/components/plugin/Main";
 import { useRouter } from "next/router";
 import { type CategorySchema } from "~/types/schema";
 import Sidebar from "~/components/plugin/Sidebar";
@@ -11,7 +11,7 @@ import FilterProductView from "~/components/plugin/FilterProductView";
 
 interface FilterProps {
   categories: CategorySchema[];
-  handleRoute: Function;
+  handleRoute: (category: string, subcategory?: string) => void;
 }
 
 interface ProfileRouteProps {
@@ -43,25 +43,27 @@ function Filters({ categories, handleRoute }: FilterProps) {
       <div className="flex flex-col gap-2">
         <h5>Tags</h5>
         <div className="flex flex-wrap gap-3">
-          {categories.map((category) => (
-            <>
-              {category.subcategories.map((subcategory) => (
-                <FilterBtn key={subcategory.id}>
-                  <div
-                    className="flex gap-2"
-                    onClick={() =>
-                      handleFilterClick(category.name, subcategory.name)
-                    }
-                  >
-                    <p className="text-xs">{subcategory.name}</p>
-                    <p className="text-xs text-zinc-400">
-                      {subcategory._count.products}
-                    </p>
-                  </div>
-                </FilterBtn>
-              ))}
-            </>
-          ))}
+          {categories &&
+            categories.map((category) => (
+              <>
+                {category.subcategories &&
+                  category.subcategories.map((subcategory) => (
+                    <FilterBtn key={subcategory.id}>
+                      <div
+                        className="flex gap-2"
+                        onClick={() =>
+                          handleFilterClick(category.name, subcategory.name)
+                        }
+                      >
+                        <p className="text-xs">{subcategory.name}</p>
+                        <p className="text-xs text-zinc-400">
+                          {subcategory._count && subcategory._count.products}
+                        </p>
+                      </div>
+                    </FilterBtn>
+                  ))}
+              </>
+            ))}
         </div>
       </div>
     </div>
