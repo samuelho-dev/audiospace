@@ -1,12 +1,13 @@
 import { type GetServerSidePropsContext } from "next";
+
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import bcrypt from "bcrypt";
 import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
-
-import EmailProvider from "next-auth/providers/email";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -20,6 +21,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -40,22 +42,55 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        session.user.name = user.name;
+        session.user = user;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
+    signIn({ account, user }) {
+      console.log(user, "signin callback");
+      return true;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    EmailProvider({
-      server: env.EMAIL_SERVER,
-      from: env.EMAIL_FROM,
+    // AppleProvider({
+    //   clientId: process.env.APPLE_ID,
+    //   clientSecret: process.env.APPLE_SECRET,
+    // }),
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    // }),
+    CredentialsProvider({
+      name: "Sign In with..",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials, req) {
+        const user = await prisma.user.findFirstOrThrow({
+          where: {
+            email: credentials?.email,
+          },
+        });
+        if (user && credentials) {
+          const check = await bcrypt.compare(
+            credentials?.password,
+            user.password
+          );
+          if (check) {
+            return user;
+          } else {
+            throw new Error("Password does not match");
+          }
+        }
+
+        // Return null if user data could not be retrieved
+        return null;
+      },
     }),
   ],
-  pages: {
-    signIn: "/auth/signin",
-  },
 };
 
 /**
