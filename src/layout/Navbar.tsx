@@ -1,10 +1,11 @@
 import { ProductCategory } from "@prisma/client";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { z } from "zod";
 import UserNav from "~/components/UserNav";
+import AuthModal from "~/components/auth/AuthModal";
 import { api } from "~/utils/api";
 
 interface Subcategory {
@@ -61,10 +62,21 @@ function Navbar() {
   const { data: session } = useSession();
 
   const categoriesQuery = api.onload.getCategories.useQuery();
+  const [csrfToken, setCsrfToken] = useState<string | undefined>(undefined);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  const [pluginDropdownActive, setPluginDropdownActive] = useState(false);
-  const handlePluginDropdown = () =>
-    setPluginDropdownActive(!pluginDropdownActive);
+  useEffect(() => {
+    const fetchCsrfToken = async () => {
+      const token = await getCsrfToken();
+      setCsrfToken(token);
+    };
+
+    void fetchCsrfToken();
+  }, []);
+
+  const handleDropdown = (dropdownName: string | null) => {
+    setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
+  };
 
   return (
     <nav className="top flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
@@ -72,7 +84,10 @@ function Navbar() {
         <h1>audio.space</h1>
       </Link>
       <div className="flex items-center justify-center gap-6">
-        <Link href={"/plugins"} onMouseOver={handlePluginDropdown}>
+        <Link
+          href={"/plugins"}
+          onMouseOver={() => handleDropdown("PluginDropdown")}
+        >
           <h3>Plugins</h3>
         </Link>
         <Link href={"/kits"}>
@@ -85,25 +100,31 @@ function Navbar() {
           <h3>Battles</h3>
         </Link>
       </div>
-      {pluginDropdownActive && categoriesQuery.data && (
+      {activeDropdown === "PluginDropdown" && categoriesQuery.data && (
         <PluginDropdown categories={categoriesQuery.data} />
       )}
       <div className="flex items-center gap-4">
         {!session ? (
           <button
-            onClick={() => void signIn()}
+            onClick={() => handleDropdown("AuthModal")}
             className="rounded-full bg-yellow-300 px-4 py-1 text-black"
           >
             Sign In
           </button>
         ) : (
-          <UserNav pluginDropdownActive={pluginDropdownActive} />
+          <UserNav
+            handleDropdown={handleDropdown}
+            activeDropdown={activeDropdown}
+          />
         )}
         <button className="z-20">
           <h3 className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
             🛒
           </h3>
         </button>
+        {activeDropdown === "AuthModal" && csrfToken && (
+          <AuthModal csrfToken={csrfToken} handleDropdown={handleDropdown} />
+        )}
       </div>
     </nav>
   );
