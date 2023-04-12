@@ -49,6 +49,7 @@ export const productRouter = createTRPCRouter({
           id: true,
           seller: true,
           subcategory: true,
+          category: true,
           name: true,
           images: true,
           price: true,

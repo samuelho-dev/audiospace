@@ -19,10 +19,10 @@ const Home: NextPage = () => {
               <ProductSideScrollBtn />
             </div>
             <div className="flex gap-2 overflow-x-clip lg:gap-4">
+              {/* <ProductCard />
               <ProductCard />
               <ProductCard />
-              <ProductCard />
-              <ProductCard />
+              <ProductCard /> */}
             </div>
           </section>
           <section>
@@ -31,10 +31,10 @@ const Home: NextPage = () => {
               <ProductSideScrollBtn />
             </div>
             <div className="flex gap-2 overflow-x-clip lg:gap-4">
+              {/* <ProductCard />
               <ProductCard />
               <ProductCard />
-              <ProductCard />
-              <ProductCard />
+              <ProductCard /> */}
             </div>
           </section>
         </div>

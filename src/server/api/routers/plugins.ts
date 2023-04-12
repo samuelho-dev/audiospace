@@ -11,7 +11,7 @@ export const onloadRouter = createTRPCRouter({
     // .output(z.array(ProductSchema))
     .query(async ({ ctx }) => {
       const data = await ctx.prisma.product.findMany({
-        select: {
+        where: {
           category: {
             name: "Effect",
           },
