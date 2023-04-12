@@ -5,7 +5,7 @@ import { type CategorySchema } from "~/types/schema";
 
 interface PluginSidebarProps {
   categories: CategorySchema[];
-  handleRoute: Function;
+  handleRoute: (category: string, subcategory?: string) => void;
 }
 
 function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
@@ -21,15 +21,16 @@ function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
           </h4>
 
           <div className="ml-2 flex flex-col gap-0.5">
-            {category.subcategories.map((subcategory) => (
-              <p
-                key={subcategory.id}
-                className="px-2 text-sm hover:bg-zinc-700"
-                onClick={() => handleRoute(category.name, subcategory.name)}
-              >
-                {subcategory.name}
-              </p>
-            ))}
+            {category.subcategories &&
+              category.subcategories.map((subcategory) => (
+                <p
+                  key={subcategory.id}
+                  className="px-2 text-sm hover:bg-zinc-700"
+                  onClick={() => handleRoute(category.name, subcategory.name)}
+                >
+                  {subcategory.name}
+                </p>
+              ))}
           </div>
         </div>
       ))}

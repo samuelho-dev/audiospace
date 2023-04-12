@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
-function FilterBtn({ children }) {
+interface FilterBtnProps {
+  children: React.ReactNode;
+}
+
+function FilterBtn({ children }: FilterBtnProps) {
   const [clicked, setClicked] = useState(false);
 
   const handleClick = () => {

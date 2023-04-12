@@ -4,24 +4,23 @@ import Link from "next/link";
 import React, { useState } from "react";
 
 interface UserNavProps {
-  pluginDropdownActive: boolean;
+  handleDropdown: (dropdownName: string | null) => void;
+  activeDropdown: string | null;
 }
 
-function UserNav({ pluginDropdownActive }: UserNavProps) {
+function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   const { data: session } = useSession();
-  const [dropdownActive, setDropdownActive] = useState(false);
-
-  const handleDropdown = () => {
-    if (pluginDropdownActive) return;
-    setDropdownActive(!dropdownActive);
-  };
+  console.log(session, "usernav component");
 
   return (
     <div className="flex flex-col">
-      <div className="z-20 flex items-center" onClick={handleDropdown}>
+      <div
+        className="z-20 flex items-center"
+        onClick={() => handleDropdown("ProfileDropdown")}
+      >
         <h5
           className={`mr-[-10%] h-6 w-40 overflow-clip bg-white px-6 text-center text-sm text-black ${
-            dropdownActive ? "rounded-t-lg" : "rounded-lg"
+            activeDropdown === "ProfileDropdown" ? "rounded-t-lg" : "rounded-lg"
           }`}
         >
           {session?.user.name}
@@ -41,7 +40,7 @@ function UserNav({ pluginDropdownActive }: UserNavProps) {
           /> */}
         </div>
       </div>
-      {dropdownActive && !pluginDropdownActive && (
+      {activeDropdown === "ProfileDropdown" && (
         <ul className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2">
           <Link
             href={{
