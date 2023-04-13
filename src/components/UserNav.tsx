@@ -10,9 +10,9 @@ interface UserNavProps {
 
 function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   const { data: session } = useSession();
-  console.log(session, "USERNAV");
+
   return (
-    <div className="flex flex-col">
+    <div className="flex cursor-pointer flex-col">
       <div
         className="z-20 flex items-center"
         onClick={() => handleDropdown("ProfileDropdown")}
