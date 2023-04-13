@@ -62,17 +62,7 @@ function Navbar() {
   const { data: session } = useSession();
 
   const categoriesQuery = api.onload.getCategories.useQuery();
-  const [csrfToken, setCsrfToken] = useState<string | undefined>(undefined);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCsrfToken = async () => {
-      const token = await getCsrfToken();
-      setCsrfToken(token);
-    };
-
-    void fetchCsrfToken();
-  }, []);
 
   const handleDropdown = (dropdownName: string | null) => {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
@@ -122,8 +112,8 @@ function Navbar() {
             🛒
           </h3>
         </button>
-        {activeDropdown === "AuthModal" && csrfToken && (
-          <AuthModal csrfToken={csrfToken} handleDropdown={handleDropdown} />
+        {activeDropdown === "AuthModal" && (
+          <AuthModal handleDropdown={handleDropdown} />
         )}
       </div>
     </nav>
