@@ -1,5 +1,4 @@
 import { createTransport } from "nodemailer";
-import { JWT } from "next-auth/jwt";
 import { z } from "zod";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
@@ -9,19 +8,34 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { api } from "~/utils/api";
+import { getCsrfToken } from "next-auth/react";
 
 export const authRouter = createTRPCRouter({
+  csrfToken: publicProcedure.query(async () => {
+    const csrfToken = await getCsrfToken();
+    return csrfToken;
+  }),
   signUp: publicProcedure
     .input(
       z.object({
-        user: z.object({ email: z.string(), password: z.string() }),
+        user: z.object({
+          email: z.string(),
+          username: z.string(),
+          password: z.string(),
+        }),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userCheck = await ctx.prisma.user.findFirst({
         where: {
-          email: input.user.email,
+          OR: [
+            {
+              email: input.user.email,
+            },
+            {
+              username: input.user.username,
+            },
+          ],
         },
       });
 
@@ -36,23 +50,19 @@ export const authRouter = createTRPCRouter({
 
         const user = await ctx.prisma.user.create({
           data: {
+            username: input.user.username,
             email: input.user.email,
             password: password,
+            emailVerified: {
+              create: {
+                token: token,
+                expires: expires,
+              },
+            },
           },
         });
 
-        const emailVerification = await ctx.prisma.emailVerification.create({
-          data: {
-            userId: user.id,
-            token: token,
-            expires: expires,
-          },
-          select: {
-            token: true,
-          },
-        });
-
-        const data = { email: user.email, token: emailVerification.token };
+        const data = { email: user.email, token, username: user.username };
         return data;
       }
     }),
@@ -61,8 +71,8 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const email = process.env.GMAIL_USER;
       const pass = process.env.GMAIL_PASS;
-      const verificationLink = ``;
-      // https://${process.env.NEXT_PUBLIC_VERCEL_URL}/verify-email?token=${token}
+      const verificationLink = `https://localhost:3000/verify-request?token=${token}`;
+
       const transporter = createTransport({
         service: "gmail",
         auth: {

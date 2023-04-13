@@ -39,53 +39,62 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session({ session, user }) {
+    jwt({ token, account, profile, user }) {
+      if (account) {
+        token.accessToken = account.access_token;
+        token.id = user.id;
+        token.name = user.username;
+      }
+      console.log({ token }, "JWT callback");
+      return token;
+    },
+    session({ session, user, token }) {
+      console.log(session, "session callback");
       if (session.user) {
-        session.user = user;
+        session.user.id = token.sub;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
     },
-    signIn({ account, user }) {
-      console.log(user, "signin callback");
+    signIn({ user, account, profile, email, credentials }) {
+      console.log({ user, credentials }, "signin callback");
       return true;
     },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    // AppleProvider({
-    //   clientId: process.env.APPLE_ID,
-    //   clientSecret: process.env.APPLE_SECRET,
-    // }),
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_CLIENT_ID,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    // }),
     CredentialsProvider({
       name: "Sign In with..",
       credentials: {
         email: { label: "Email", type: "email" },
+        username: { label: "username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
         const user = await prisma.user.findFirstOrThrow({
           where: {
-            email: credentials?.email,
+            OR: [
+              { email: credentials?.email },
+              { username: credentials?.username },
+            ],
           },
         });
         if (user && credentials) {
           const check = await bcrypt.compare(
             credentials?.password,
-            user.password
+            user.password as string
           );
           if (check) {
+            console.log(credentials, "CREDEENNT");
             return user;
           } else {
             throw new Error("Password does not match");
           }
         }
-
         // Return null if user data could not be retrieved
         return null;
       },
