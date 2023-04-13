@@ -53,10 +53,10 @@ model EmailVerification {
 model User {
   id               String        @id @default(cuid())
   stripeCustomerId String?       @unique
-  name             String?
+  username         String        @unique 
   email            String        @unique
-  emailVerified    EmailVerification?
   password         String
+  emailVerified    EmailVerification?
   image            String?
   wishlist         Product[]
   accounts         Account[]
