@@ -35,7 +35,7 @@ function PluginDropdown({ categories }: PluginDropdownProps) {
           >
             <div className="">
               <h4 className="whitespace-nowrap text-white">
-                {category.name}s ➡️
+                {category.name} ➡️
               </h4>
             </div>
             <div className="grid grid-cols-4 border-l-2 border-white pl-2">
@@ -61,7 +61,7 @@ function PluginDropdown({ categories }: PluginDropdownProps) {
 function Navbar() {
   const { data: session } = useSession();
 
-  const categoriesQuery = api.onload.getCategories.useQuery();
+  const categoriesQuery = api.onload.getPluginCategories.useQuery();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const handleDropdown = (dropdownName: string | null) => {
@@ -73,27 +73,27 @@ function Navbar() {
       <Link href={"/"} className="z-20">
         <h1>audio.space</h1>
       </Link>
-      <div className="flex items-center justify-center gap-6">
+      <div className="flex items-center justify-center gap-4">
         <Link
           href={"/plugins"}
           onMouseOver={() => handleDropdown("PluginDropdown")}
         >
-          <h3>Plugins</h3>
+          <h4>Plugins</h4>
         </Link>
         <Link href={"/kits"}>
-          <h3>Kits</h3>
+          <h4>Kits</h4>
         </Link>
         <Link href={"/deals"}>
-          <h3>Deals</h3>
+          <h4>Deals</h4>
         </Link>
         <Link href={"/battles"}>
-          <h3>Battles</h3>
+          <h4>Battles</h4>
         </Link>
       </div>
       {activeDropdown === "PluginDropdown" && categoriesQuery.data && (
         <PluginDropdown categories={categoriesQuery.data} />
       )}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center">
         {!session ? (
           <button
             onClick={() => handleDropdown("AuthModal")}

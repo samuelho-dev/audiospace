@@ -6,7 +6,8 @@ import { type Session } from "next-auth";
 import { type ProductSchema } from "~/types/schema";
 
 function Main({}) {
-  const featuredProductsQuery = api.onload.getFeaturedProducts.useQuery();
+  const featuredInstrumentsQuery = api.plugins.getPopularInstruments.useQuery();
+  const featuredEffectsQuery = api.plugins.getPopularEffects.useQuery();
 
   return (
     <div className="w-full px-2">
@@ -14,11 +15,10 @@ function Main({}) {
         <h3>Instruments ⬇️</h3>
         <div className="flex items-center justify-between">
           <h4>Popular Instruments</h4>
-          <ProductSideScrollBtn />
         </div>
         <div className="flex gap-4 overflow-x-clip px-4 py-2">
-          {featuredProductsQuery.data &&
-            featuredProductsQuery.data.map((product) => (
+          {featuredInstrumentsQuery.data &&
+            featuredInstrumentsQuery.data.map((product) => (
               <ProductCard product={product} key={product.id} />
             ))}
         </div>
@@ -27,11 +27,10 @@ function Main({}) {
         <h3>Effects ⬇️</h3>
         <div className="flex items-center justify-between">
           <h4>Popular Effects</h4>
-          <ProductSideScrollBtn />
         </div>
         <div className="flex gap-4 overflow-x-clip px-4 py-2">
-          {featuredProductsQuery.data &&
-            featuredProductsQuery.data.map((product) => (
+          {featuredEffectsQuery.data &&
+            featuredEffectsQuery.data.map((product) => (
               <ProductCard product={product} key={product.id} />
             ))}
         </div>
