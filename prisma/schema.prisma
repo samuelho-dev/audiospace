@@ -81,7 +81,7 @@ model VerificationToken {
 
 model ProductCategory {
   id            Int                  @id @default(autoincrement())
-  name          String
+  name          String               @unique
   subcategories ProductSubcategory[]
   products      Product[]
 }
