@@ -7,6 +7,7 @@ import PurchaseHistory from "~/components/profile/purchase-history";
 import Settings from "~/components/profile/settings";
 import BasicInfo from "~/components/profile/basic-info";
 import Wishlist from "~/components/profile/wishlist";
+import AdminPanel from "~/components/profile/admin-panel";
 
 interface ProfileRouteProps {
   route?: string;
@@ -30,6 +31,8 @@ function ProfileRoute({ route, session }: ProfileRouteProps) {
       return <Submissions />;
     case "settings":
       return <Settings />;
+    case "admin-panel":
+      return <AdminPanel />;
 
     default:
       return <BasicInfo session={session} />;
@@ -53,7 +56,7 @@ function Profile() {
 
   if (status === "authenticated") {
     return (
-      <div className="flex h-80 w-full max-w-2xl items-center justify-between lg:max-w-3xl">
+      <div className="flex w-full max-w-3xl items-center justify-between gap-8">
         <div className="h-full w-1/5">
           <div>
             <h3>PROFILE ⬇️</h3>
@@ -88,10 +91,18 @@ function Profile() {
               >
                 Settings
               </h5>
+              {session.user.role === "ADMIN" && (
+                <h5
+                  className="cursor-pointer bg-zinc-700 hover:bg-gray-900"
+                  onClick={() => profileNavigation("admin-panel")}
+                >
+                  Admin Panel
+                </h5>
+              )}
             </div>
           </div>
         </div>
-        <div className="w-3/5">
+        <div className="w-4/5">
           <ProfileRoute route={getRoute(section)} session={session} />
         </div>
       </div>
