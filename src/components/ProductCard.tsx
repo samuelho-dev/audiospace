@@ -1,4 +1,6 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { BsHeart, BsHeartHalf, BsHeartFill } from "react-icons/bs";
 import { VscAdd } from "react-icons/vsc";
@@ -9,8 +11,9 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
+  const { asPath, query } = useRouter();
   const [heartHover, setHeartHover] = useState(false);
-
+  console.log(asPath, query);
   return (
     <div className="cardShadow w-40 rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
       <div className="relative h-fit w-full justify-center">
