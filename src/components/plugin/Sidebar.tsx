@@ -10,7 +10,7 @@ interface PluginSidebarProps {
 
 function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
   return (
-    <div className="my-4 flex flex-col items-center border-r border-zinc-800 py-8 pr-2">
+    <div className="flex flex-col border-r border-zinc-800 pr-2">
       {categories.map((category) => (
         <div key={category.id} className="flex w-full flex-col">
           <h4

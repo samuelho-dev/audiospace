@@ -20,7 +20,7 @@ function FilterProductView() {
   } else if (Array.isArray(tag)) {
     checkedTags = tag.map((el) => capitalizeFirstLetters(el));
   }
-  const productsQuery = api.products.getFilteredProducts.useQuery({
+  const productsQuery = api.plugins.getFilteredPluginProducts.useQuery({
     categories: Array.isArray(category) ? category : [],
     subcategories: checkedTags,
   });
