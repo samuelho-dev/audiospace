@@ -4,6 +4,7 @@ import { authRouter } from "~/server/api/routers/auth";
 import { userProfileRouter } from "./routers/userprofile";
 import { pluginProductRouter } from "./routers/pluginProduct";
 import { kitProductRouter } from "./routers/kitProduct";
+import { adminRouter } from "./routers/admin";
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   userprofile: userProfileRouter,
   onload: onloadRouter,
   auth: authRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API
