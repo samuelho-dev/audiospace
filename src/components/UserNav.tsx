@@ -10,7 +10,6 @@ interface UserNavProps {
 
 function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   const { data: session } = useSession();
-
   return (
     <div className="flex cursor-pointer flex-col">
       <div
@@ -71,6 +70,18 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               Wishlist
             </li>
           </Link>
+          {session?.user.role === "ADMIN" && (
+            <Link
+              href={{
+                pathname: "/profile",
+                query: { section: "admin-panel" },
+              }}
+            >
+              <li className="w-full cursor-pointer bg-zinc-500 pl-8 text-sm text-red-300 hover:bg-slate-300">
+                ADMIN PANEL
+              </li>
+            </Link>
+          )}
           <li
             className="w-full cursor-pointer pl-8 text-sm text-gray-700 hover:bg-slate-300"
             onClick={() => void signOut()}
