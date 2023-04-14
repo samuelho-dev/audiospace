@@ -34,7 +34,6 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
           })
           .then(() =>
             signIn("credentials", {
-              redirect: false,
               email,
               password,
             })
@@ -47,7 +46,6 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
         // });
       } else {
         await signIn("credentials", {
-          email,
           username,
           password,
         });
