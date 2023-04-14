@@ -1,4 +1,4 @@
-import { type GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext } from "next";
 
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -17,20 +17,20 @@ import { prisma } from "~/server/db";
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-
       // ...other properties
-      // role: UserRole;
+      role: string;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    role: string;
+  }
 }
 
 /**
@@ -43,26 +43,27 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    signIn({ user, account, profile, email, credentials }) {
+      // console.log({ user, credentials }, "signin callback");
+      return true;
+    },
     jwt({ token, account, profile, user }) {
-      if (account) {
-        token.accessToken = account.access_token;
+      if (user) {
+        token.accessToken = account?.access_token;
         token.id = user.id;
         token.name = user.username;
+        token.email = user.email;
+        token.role = user.role;
       }
-      console.log({ token }, "JWT callback");
+      // console.log({ token }, "JWT callback");
       return token;
     },
     session({ session, user, token }) {
-      console.log(session, "session callback");
+      // console.log({ session, user }, "session callback");
       if (session.user) {
-        session.user.id = token.sub;
-        // session.user.role = user.role; <-- put other properties on the session here
+        session.user.role = token.role;
       }
       return session;
-    },
-    signIn({ user, account, profile, email, credentials }) {
-      console.log({ user, credentials }, "signin callback");
-      return true;
     },
   },
   adapter: PrismaAdapter(prisma),
@@ -82,14 +83,21 @@ export const authOptions: NextAuthOptions = {
               { username: credentials?.username },
             ],
           },
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            password: true,
+            role: true,
+          },
         });
+
         if (user && credentials) {
           const check = await bcrypt.compare(
             credentials?.password,
-            user.password as string
+            user.password
           );
           if (check) {
-            console.log(credentials, "CREDEENNT");
             return user;
           } else {
             throw new Error("Password does not match");
