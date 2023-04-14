@@ -2,7 +2,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { onloadRouter } from "~/server/api/routers/onload";
 import { authRouter } from "~/server/api/routers/auth";
 import { userProfileRouter } from "./routers/userprofile";
-import { productRouter } from "./routers/products";
+import { pluginProductRouter } from "./routers/pluginProduct";
 
 /**
  * This is the primary router for your server.
@@ -10,7 +10,7 @@ import { productRouter } from "./routers/products";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  products: productRouter,
+  plugins: pluginProductRouter,
   userprofile: userProfileRouter,
   onload: onloadRouter,
   auth: authRouter,
