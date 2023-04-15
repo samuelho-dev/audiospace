@@ -25,6 +25,8 @@ const server = z.object({
   CLOUDINARY_NAME: z.string(),
   CLOUDINARY_API_KEY: z.string(),
   CLOUDINARY_API_SECRET: z.string(),
+  BACKBLAZE_KEYID: z.string(),
+  BACKBLAZE_APPLICATION_KEY: z.string(),
 });
 
 /**
@@ -51,6 +53,8 @@ const processEnv = {
   CLOUDINARY_NAME: process.env.CLOUDINARY_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+  BACKBLAZE_KEYID: process.env.BACKBLAZE_KEYID,
+  BACKBLAZE_APPLICATION_KEY: process.env.BACKBLAZE_APPLICATION_KEY,
   // process.env.NEXTAUTH_URLnv.NEXT_PUBLIC_CLIENTVAR,
 };
 
