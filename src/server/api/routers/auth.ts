@@ -69,32 +69,30 @@ export const authRouter = createTRPCRouter({
   sendVerificationEmail: publicProcedure
     .input(z.object({ email: z.string(), token: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const email = process.env.GMAIL_USER;
-      const pass = process.env.GMAIL_PASS;
-      const verificationLink = `https://localhost:3000/verify-request?token=${token}`;
-
-      const transporter = createTransport({
-        service: "gmail",
-        auth: {
-          user: email,
-          pass,
-        },
-      });
-      const mailOptions = {
-        from: email,
-        to: input.email,
-      };
-
-      try {
-        await transporter.sendMail({
-          ...mailOptions,
-          subject: `Audiospace : Confirm your email`,
-          text: `Please click the following link to verify your email: ${verificationLink}`,
-          html: `<p>Please click the following link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`,
-        });
-      } catch (error) {
-        console.error(error);
-        throw new Error("Error sending email. Please try again.");
-      }
+      // const email = process.env.GMAIL_USER;
+      // const pass = process.env.GMAIL_PASS;
+      // const verificationLink = `https://localhost:3000/verify-request?token=${token}`;
+      // const transporter = createTransport({
+      //   service: "gmail",
+      //   auth: {
+      //     user: email,
+      //     pass,
+      //   },
+      // });
+      // const mailOptions = {
+      //   from: email,
+      //   to: input.email,
+      // };
+      // try {
+      //   await transporter.sendMail({
+      //     ...mailOptions,
+      //     subject: `Audiospace : Confirm your email`,
+      //     text: `Please click the following link to verify your email: ${verificationLink}`,
+      //     html: `<p>Please click the following link to verify your email: <a href="${verificationLink}">${verificationLink}</a></p>`,
+      //   });
+      // } catch (error) {
+      //   console.error(error);
+      //   throw new Error("Error sending email. Please try again.");
+      // }
     }),
 });
