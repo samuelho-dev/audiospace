@@ -114,7 +114,7 @@ model Product {
   description     String               @db.Text
   price           Int
   preview_url     String?
-  downloadUrl     String
+  download_url    String
   isPromoted      ProductPromoteStatus @default(NONE)
   isOnSale        Boolean              @default(false)
   discount_rate   Int                  @default(0)
