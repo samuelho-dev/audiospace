@@ -3,12 +3,12 @@ import { BiSearchAlt } from "react-icons/bi";
 import ProductCard from "~/components/ProductCard";
 import FilterModule from "~/components/kits/FilterModule";
 import { api } from "~/utils/api";
-import { useRouterFilter } from "~/utils/useRouterFilter";
+import { UseRouterFilter } from "~/utils/useRouterFilter";
 
 function kits() {
   const categoryQuery = api.onload.getKitCategories.useQuery();
   const kitProductsQuery = api.kits.getPopularKits.useQuery();
-  const { handleRoute } = useRouterFilter();
+  const { handleRoute } = UseRouterFilter();
   console.log(categoryQuery.data);
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">

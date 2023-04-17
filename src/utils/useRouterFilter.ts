@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 
-export const useRouterFilter = () => {
+export const UseRouterFilter = () => {
   const { pathname, query, push } = useRouter();
 
   const toggleParam = (paramName: string, value: string) => {

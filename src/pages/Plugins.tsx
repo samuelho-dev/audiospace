@@ -6,7 +6,7 @@ import { type CategorySchema } from "~/types/schema";
 import Sidebar from "~/components/plugin/Sidebar";
 import { BiSearchAlt } from "react-icons/bi";
 import FilterBtn from "~/components/buttons/FilterBtn";
-import { useRouterFilter } from "~/utils/useRouterFilter";
+import { UseRouterFilter } from "~/utils/useRouterFilter";
 import FilterProductView from "~/components/plugin/FilterProductView";
 import FilterModule from "~/components/plugin/FilterModule";
 
@@ -17,7 +17,7 @@ interface ProfileRouteProps {
 function Plugins() {
   const router = useRouter();
   const { category, tag } = router.query;
-  const { handleRoute } = useRouterFilter();
+  const { handleRoute } = UseRouterFilter();
   const categoriesQuery = api.onload.getPluginCategories.useQuery();
 
   return (

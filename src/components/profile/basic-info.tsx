@@ -85,7 +85,7 @@ function BasicInfo({ session }: BasicInfoProps) {
         name="profileImg"
         type="file"
         multiple={false}
-        onChange={handleFileInput}
+        onChange={(e) => void handleFileInput(e)}
         accept="image/*"
         className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none"
       />
