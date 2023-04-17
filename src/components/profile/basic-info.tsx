@@ -1,6 +1,7 @@
 import type { Session } from "next-auth";
 import React, { useState } from "react";
 import { api } from "~/utils/api";
+import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
 interface BasicInfoProps {
   session: Session;
@@ -20,18 +21,12 @@ function BasicInfo({ session }: BasicInfoProps) {
     setForm({ ...form, [name]: value });
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files) {
-      console.log(files[0], "files");
       const file = files[0] as File;
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64Image = reader.result as string;
-        setProfileImage(base64Image);
-      };
-      reader.readAsDataURL(file);
+      const base64 = await readFileasBase64(file);
+      setProfileImage(base64);
     }
   };
 
