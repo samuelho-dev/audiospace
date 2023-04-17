@@ -1,4 +1,4 @@
-import { getCsrfToken, signIn, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
@@ -7,9 +7,6 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ handleDropdown }: AuthModalProps) {
-  const { data: session, status } = useSession();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [formSubmitType, setFormSubmitType] = useState(false);
   const handleFormType = () => setFormSubmitType(!formSubmitType);
   const signUpMutation = api.auth.signUp.useMutation();

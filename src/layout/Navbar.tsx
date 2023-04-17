@@ -1,9 +1,7 @@
-import { ProductCategory } from "@prisma/client";
-import { getCsrfToken, signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { SetStateAction, useEffect, useState } from "react";
-import { z } from "zod";
+import React, { useState } from "react";
 import UserNav from "~/components/UserNav";
 import AuthModal from "~/components/auth/AuthModal";
 import { api } from "~/utils/api";

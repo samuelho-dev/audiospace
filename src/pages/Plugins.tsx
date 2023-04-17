@@ -2,17 +2,11 @@ import React, { useState } from "react";
 import { api } from "~/utils/api";
 import Main from "~/components/plugin/Main";
 import { useRouter } from "next/router";
-import { type CategorySchema } from "~/types/schema";
 import Sidebar from "~/components/plugin/Sidebar";
 import { BiSearchAlt } from "react-icons/bi";
-import FilterBtn from "~/components/buttons/FilterBtn";
 import { UseRouterFilter } from "~/utils/useRouterFilter";
 import FilterProductView from "~/components/plugin/FilterProductView";
 import FilterModule from "~/components/plugin/FilterModule";
-
-interface ProfileRouteProps {
-  route?: string;
-}
 
 function Plugins() {
   const router = useRouter();

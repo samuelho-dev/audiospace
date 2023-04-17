@@ -1,6 +1,5 @@
 import { type NextPage } from "next";
 import BeatDisplay from "~/components/BeatDisplay";
-import ProductCard from "~/components/ProductCard";
 import ProductSideScrollBtn from "~/components/buttons/ProductSideScrollBtn";
 
 const Home: NextPage = () => {

@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import ProductSideScrollBtn from "../buttons/ProductSideScrollBtn";
 import ProductCard from "../ProductCard";
-import { type Session } from "next-auth";
-import { type ProductSchema } from "~/types/schema";
 
 function Main({}) {
   const featuredInstrumentsQuery = api.plugins.getPopularInstruments.useQuery();
