@@ -222,7 +222,7 @@ async function seedSellersAndProducts() {
             description: productData.description,
             price: productData.price,
             preview_url: productData.preview_url,
-            downloadUrl: productData.downloadUrl,
+            download_url: productData.downloadUrl,
             sellerId: seller.id,
             subcategory: {
               connect: subcategoryIds.map((id) => ({ id })),
