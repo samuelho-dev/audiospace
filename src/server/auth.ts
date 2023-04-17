@@ -1,5 +1,4 @@
-import { GetServerSidePropsContext } from "next";
-
+import { type GetServerSidePropsContext } from "next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
@@ -7,9 +6,10 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  type User,
 } from "next-auth";
-import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import { env } from "../env.mjs";
+import { prisma } from "./db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -19,16 +19,18 @@ import { prisma } from "~/server/db";
  */
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      role: string;
-    } & DefaultSession["user"];
-  }
-
   interface User {
-    // ...other properties
+    id: string;
+    username: string;
+    role: string;
+  }
+  interface Session extends DefaultSession {
+    user: User & DefaultSession["user"];
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
     role: string;
   }
 }
@@ -39,9 +41,6 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
     signIn({ user, account, profile, email, credentials }) {
       // console.log({ user, credentials }, "signin callback");
@@ -61,7 +60,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user, token }) {
       // console.log({ session, user }, "session callback");
       if (session.user) {
-        session.user.role = token.role;
+        (session.user as User & DefaultSession["user"]).role = token.role;
       }
       return session;
     },
