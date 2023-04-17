@@ -5,8 +5,6 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { ProductCategory, ProductSubcategory } from "@prisma/client";
-import { prisma } from "~/server/db";
 import cloudinary from "~/utils/cloudinary";
 
 const sessionSchema = z.object({
@@ -43,6 +41,7 @@ export const userProfileRouter = createTRPCRouter({
             image: data.public_id,
           },
         });
+        await ctx.prisma.$disconnect();
         return load;
       } catch (error) {
         console.error(error, input);
