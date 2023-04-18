@@ -1,4 +1,4 @@
-import { signIn, useSession } from "next-auth/react";
+import { type SignInResponse, signIn, useSession } from "next-auth/react";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
@@ -7,6 +7,7 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ handleDropdown }: AuthModalProps) {
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [formSubmitType, setFormSubmitType] = useState(false);
   const handleFormType = () => setFormSubmitType(!formSubmitType);
   const signUpMutation = api.auth.signUp.useMutation();
@@ -18,37 +19,66 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
     const username = (form.username as HTMLInputElement).value;
     const password = (form.password as HTMLInputElement).value;
 
-    try {
-      if (formSubmitType) {
-        const email = (form.email as HTMLInputElement).value;
-        await signUpMutation
-          .mutateAsync({
-            user: {
-              username,
-              email,
-              password,
-            },
+    if (formSubmitType) {
+      const email = (form.email as HTMLInputElement).value;
+      await signUpMutation
+        .mutateAsync({
+          user: {
+            username,
+            email,
+            password,
+          },
+        })
+        .then(() =>
+          signIn("credentials", {
+            email,
+            password,
+            redirect: false,
           })
-          .then(() =>
-            signIn("credentials", {
-              email,
-              password,
-            })
-          )
-          .then(() => handleDropdown(null));
-
-        // await verificationEmailMutation.mutateAsync({
-        //   email: user?.email as string,
-        //   token: user?.token as string,
-        // });
-      } else {
-        await signIn("credentials", {
-          username,
-          password,
+        )
+        .then((response: SignInResponse | undefined) => {
+          console.log(response);
+          if (!response) {
+            setErrorState("An error occurred during sign in.");
+            return;
+          }
+          const { ok, error } = response;
+          if (!ok && error) {
+            setErrorState("Failed Sign in");
+          }
+        })
+        .then(() => handleDropdown(null))
+        .catch((err: string) => {
+          setErrorState(err);
+          console.error(err);
         });
-      }
-    } catch (err) {
-      console.error(err);
+
+      // await verificationEmailMutation.mutateAsync({
+      //   email: user?.email as string,
+      //   token: user?.token as string,
+      // });
+    } else {
+      await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
+      })
+        .then((response: SignInResponse | undefined) => {
+          console.log(response);
+          if (!response) {
+            setErrorState("An error occurred during sign in.");
+            return;
+          }
+          const { ok, error } = response;
+          // console.log(ok, error);
+          if (!ok && error) {
+            setErrorState("Failed Sign in");
+          }
+        })
+        .catch((err: string) => {
+          setErrorState(err);
+          console.error(err);
+        });
     }
   };
 
@@ -64,6 +94,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
       >
         <h1>audio.space</h1>
         <h3>{formSubmitType ? "Create an Account" : "Sign In"}</h3>
+        {errorState && <p>{errorState}</p>}
         <div className="flex flex-col gap-8 py-10">
           {formSubmitType && (
             <label className="flex flex-row justify-between gap-10">

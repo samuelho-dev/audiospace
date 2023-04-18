@@ -75,34 +75,39 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const user = await prisma.user.findFirstOrThrow({
-          where: {
-            OR: [
-              { email: credentials?.email },
-              { username: credentials?.username },
-            ],
-          },
-          select: {
-            id: true,
-            username: true,
-            email: true,
-            password: true,
-            role: true,
-          },
-        });
+        if (credentials) {
+          try {
+            const user = await prisma.user.findFirstOrThrow({
+              where: {
+                OR: [
+                  { email: credentials?.email },
+                  { username: credentials?.username },
+                ],
+              },
+              select: {
+                id: true,
+                username: true,
+                email: true,
+                password: true,
+                role: true,
+              },
+            });
 
-        if (user && credentials) {
-          const check = await bcrypt.compare(
-            credentials?.password,
-            user.password
-          );
-          if (check) {
-            return user;
-          } else {
-            throw new Error("Password does not match");
+            if (!user) throw new Error("User does not exist");
+
+            const passwordMatch = await bcrypt.compare(
+              credentials.password,
+              user.password
+            );
+            if (passwordMatch) {
+              return user;
+            } else {
+              throw new Error("Incorrect password");
+            }
+          } catch (err) {
+            throw err;
           }
         }
-        // Return null if user data could not be retrieved
         return null;
       },
     }),
