@@ -25,8 +25,6 @@ function FilterProductView() {
     subcategories: checkedTags,
   });
 
-  console.log(checkedTags, tag, "checked tags");
-
   return (
     <div className="w-full px-2">
       <div className="grid grid-cols-3 items-center justify-center gap-y-8 lg:grid-cols-4">

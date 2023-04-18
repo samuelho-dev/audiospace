@@ -8,12 +8,12 @@ import {
 export const onloadRouter = createTRPCRouter({
   getAllSellers: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.seller.findMany({});
-    console.log(data);
+    // console.log(data);
     return data;
   }),
   getAllCategories: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.productCategory.findMany({});
-    console.log(data);
+    // console.log(data);
     return data;
   }),
   getSelectedSubcategories: publicProcedure
@@ -67,7 +67,7 @@ export const onloadRouter = createTRPCRouter({
         },
       },
     });
-    console.log(data);
+    // console.log(data);
     return data;
   }),
 });

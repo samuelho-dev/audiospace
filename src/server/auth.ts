@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     signIn({ user, account, profile, email, credentials }) {
-      console.log({ user, credentials }, "signin callback");
+      // console.log({ user, credentials }, "signin callback");
       return true;
     },
     jwt({ token, account, profile, user }) {
@@ -57,11 +57,11 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.role = user.role;
       }
-      console.log({ token }, "JWT callback");
+      // console.log({ token }, "JWT callback");
       return token;
     },
     session({ session, user, token }) {
-      console.log({ session, user }, "session callback");
+      // console.log({ session, user }, "session callback");
       if (session.user) {
         (session.user as User & DefaultSession["user"]).role = token.role;
       }

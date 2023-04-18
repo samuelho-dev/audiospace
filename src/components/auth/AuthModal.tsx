@@ -37,7 +37,6 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
             password,
             redirect: false,
           }).then((response: SignInResponse | undefined) => {
-            console.log(response);
             if (!response) {
               setErrorState("An error occurred during sign in.");
               return;
@@ -73,7 +72,6 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
             return;
           }
           const { ok, error } = response;
-          // console.log(ok, error);
           if (!ok && error) {
             setErrorState("Failed Sign in");
           }

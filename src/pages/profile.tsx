@@ -19,7 +19,6 @@ function getRoute(section: string | string[] | undefined): string {
 }
 
 function ProfileRoute({ route, session }: ProfileRouteProps) {
-  console.log(route, "route");
   switch (route) {
     case "basic-info":
       return <BasicInfo session={session} />;

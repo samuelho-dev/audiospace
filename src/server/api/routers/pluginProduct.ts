@@ -105,7 +105,7 @@ export const pluginProductRouter = createTRPCRouter({
           wishlist_users: true,
         },
       });
-      console.log(data);
+      // console.log(data);
       return data;
     }),
   getPopularEffects: publicProcedure
@@ -136,7 +136,7 @@ export const pluginProductRouter = createTRPCRouter({
           wishlist_users: true,
         },
       });
-      console.log(data);
+      // console.log(data);
       return data;
     }),
 });

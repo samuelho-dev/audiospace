@@ -37,10 +37,8 @@ function BasicInfo({ session }: BasicInfoProps) {
     e.preventDefault();
     try {
       formupdate.mutate(form);
-      console.log(form, "image");
 
       if (profileImage) {
-        console.log(profileImage, "image");
         profileimageupdate.mutate({ image: profileImage });
       }
       setUpdated(true);

@@ -24,7 +24,6 @@ export const adminRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       try {
-        console.log("passed uploads");
         const uploadPreviewTrack = await uploadB2(
           input.previewTrack,
           "AudiospacePlugins"

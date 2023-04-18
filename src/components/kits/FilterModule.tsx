@@ -12,7 +12,6 @@ export default function FilterModule({ categories, handleRoute }: FilterProps) {
   ) => {
     handleRoute(categoryName, subcategoryName);
   };
-  console.log(categories);
   return (
     <div className="flex w-full flex-col justify-center gap-4 rounded-lg p-4 outline outline-1 outline-zinc-700">
       <h5>Tags</h5>
