@@ -1,4 +1,5 @@
 import { type SignInResponse, signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
@@ -11,6 +12,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
   const [formSubmitType, setFormSubmitType] = useState(false);
   const handleFormType = () => setFormSubmitType(!formSubmitType);
   const signUpMutation = api.auth.signUp.useMutation();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,22 +36,23 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
             email,
             password,
             redirect: false,
+          }).then((response: SignInResponse | undefined) => {
+            console.log(response);
+            if (!response) {
+              setErrorState("An error occurred during sign in.");
+              return;
+            }
+            const { ok, error } = response;
+            if (!ok && error) {
+              setErrorState("Failed Sign in");
+            }
           })
         )
-        .then((response: SignInResponse | undefined) => {
-          console.log(response);
-          if (!response) {
-            setErrorState("An error occurred during sign in.");
-            return;
-          }
-          const { ok, error } = response;
-          if (!ok && error) {
-            setErrorState("Failed Sign in");
-          }
+        .then(() => {
+          handleDropdown(null);
+          router.reload();
         })
-        .then(() => handleDropdown(null))
         .catch((err: string) => {
-          setErrorState(err);
           console.error(err);
         });
 
@@ -75,8 +78,8 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
             setErrorState("Failed Sign in");
           }
         })
+        .then(() => handleDropdown(null))
         .catch((err: string) => {
-          setErrorState(err);
           console.error(err);
         });
     }
@@ -94,7 +97,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
       >
         <h1>audio.space</h1>
         <h3>{formSubmitType ? "Create an Account" : "Sign In"}</h3>
-        {errorState && <p>{errorState}</p>}
+
         <div className="flex flex-col gap-8 py-10">
           {formSubmitType && (
             <label className="flex flex-row justify-between gap-10">
@@ -129,6 +132,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
           </label>
         </div>
         <div className="flex flex-col items-center gap-2">
+          {errorState && <p className="text-xs text-red-400">{errorState}</p>}
           <button
             type="button"
             onClick={handleFormType}

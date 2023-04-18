@@ -41,9 +41,12 @@ declare module "next-auth/jwt" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
     signIn({ user, account, profile, email, credentials }) {
-      // console.log({ user, credentials }, "signin callback");
+      console.log({ user, credentials }, "signin callback");
       return true;
     },
     jwt({ token, account, profile, user }) {
@@ -54,11 +57,11 @@ export const authOptions: NextAuthOptions = {
         token.email = user.email;
         token.role = user.role;
       }
-      // console.log({ token }, "JWT callback");
+      console.log({ token }, "JWT callback");
       return token;
     },
     session({ session, user, token }) {
-      // console.log({ session, user }, "session callback");
+      console.log({ session, user }, "session callback");
       if (session.user) {
         (session.user as User & DefaultSession["user"]).role = token.role;
       }
@@ -93,16 +96,14 @@ export const authOptions: NextAuthOptions = {
               },
             });
 
-            if (!user) throw new Error("User does not exist");
-
-            const passwordMatch = await bcrypt.compare(
-              credentials.password,
-              user.password
-            );
-            if (passwordMatch) {
-              return user;
-            } else {
-              throw new Error("Incorrect password");
+            if (user) {
+              const passwordMatch = await bcrypt.compare(
+                credentials.password,
+                user.password
+              );
+              if (passwordMatch) {
+                return user;
+              }
             }
           } catch (err) {
             throw err;
