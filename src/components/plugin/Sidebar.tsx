@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import React from "react";
 import { type CategorySchema } from "~/types/schema";
 
@@ -7,6 +8,8 @@ interface PluginSidebarProps {
 }
 
 function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
+  const router = useRouter();
+  const { category, tag } = router.query;
   return (
     <div className="flex flex-col border-r border-zinc-800 pr-2">
       {categories.map((category) => (
@@ -23,7 +26,7 @@ function Sidebar({ categories, handleRoute }: PluginSidebarProps) {
               category.subcategories.map((subcategory) => (
                 <p
                   key={subcategory.id}
-                  className="px-2 text-sm hover:bg-zinc-700"
+                  className={`cursor-pointer px-2 text-sm hover:bg-zinc-700`}
                   onClick={() => handleRoute(category.name, subcategory.name)}
                 >
                   {subcategory.name}
