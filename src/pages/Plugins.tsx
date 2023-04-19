@@ -18,23 +18,22 @@ function Plugins() {
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
       <Searchbar />
-      <div className="flex w-full gap-4">
-        {categoriesQuery.data && (
+      {categoriesQuery.data && (
+        <div className="flex w-full gap-4">
           <Sidebar
             categories={categoriesQuery.data}
             handleRoute={handleRoute}
           />
-        )}
-        <div>
-          {categoriesQuery.data && (
+          <div>
             <FilterModule
               categories={categoriesQuery.data}
               handleRoute={handleRoute}
             />
-          )}
-          {category || tag ? <FilterProductView /> : <Main />}
+
+            {category || tag ? <FilterProductView /> : <Main />}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
