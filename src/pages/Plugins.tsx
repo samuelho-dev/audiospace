@@ -3,10 +3,11 @@ import { api } from "~/utils/api";
 import Main from "~/components/plugin/Main";
 import { useRouter } from "next/router";
 import Sidebar from "~/components/plugin/Sidebar";
-import { BiSearchAlt } from "react-icons/bi";
+
 import { UseRouterFilter } from "~/utils/useRouterFilter";
-import FilterProductView from "~/components/plugin/FilterProductView";
+import FilterProductView from "~/components/products/FilterProductView";
 import FilterModule from "~/components/plugin/FilterModule";
+import Searchbar from "~/components/products/Searchbar";
 
 function Plugins() {
   const router = useRouter();
@@ -16,15 +17,7 @@ function Plugins() {
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
-      <div className="flex w-full justify-center gap-2 pt-10">
-        <input
-          type="text"
-          className="h-6 w-1/2 rounded-lg bg-zinc-200 p-2 text-black"
-        ></input>
-        <div>
-          <BiSearchAlt size={25} />
-        </div>
-      </div>
+      <Searchbar />
       <div className="flex w-full gap-4">
         {categoriesQuery.data && (
           <Sidebar
@@ -41,7 +34,6 @@ function Plugins() {
           )}
           {category || tag ? <FilterProductView /> : <Main />}
         </div>
-        {/* <PluginRoute route={getRoute(section)} /> */}
       </div>
     </div>
   );
