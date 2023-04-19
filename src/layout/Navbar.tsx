@@ -52,7 +52,6 @@ function PluginDropdown({
                     href={{
                       pathname: route,
                       query: {
-                        category: category.name.toLowerCase(),
                         tag: subcategory.name.toLowerCase().replace(" ", "-"),
                       },
                     }}
