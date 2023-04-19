@@ -45,32 +45,41 @@ export default function FilterModule({ categories, handleRoute }: FilterProps) {
             categories.map((category) => (
               <>
                 {category.subcategories &&
-                  category.subcategories.map((subcategory) => (
-                    <FilterBtn
-                      key={subcategory.id}
-                      active={
-                        tag ===
-                          subcategory.name.toLowerCase().replace(" ", "-") ||
-                        tag?.includes(
-                          subcategory.name.toLowerCase().replace(" ", "-")
-                        )
-                          ? true
-                          : false
-                      }
-                    >
-                      <div
-                        className="flex gap-2"
-                        onClick={() =>
-                          handleFilterClick(category.name, subcategory.name)
+                  category.subcategories.map((subcategory) => {
+                    if (
+                      !subcategory._count ||
+                      subcategory._count.products === 0
+                    ) {
+                      return null;
+                    }
+
+                    return (
+                      <FilterBtn
+                        key={subcategory.id}
+                        active={
+                          tag ===
+                            subcategory.name.toLowerCase().replace(" ", "-") ||
+                          tag?.includes(
+                            subcategory.name.toLowerCase().replace(" ", "-")
+                          )
+                            ? true
+                            : false
                         }
                       >
-                        <p className="text-xs">{subcategory.name}</p>
-                        <p className="text-xs text-zinc-400">
-                          {subcategory._count && subcategory._count.products}
-                        </p>
-                      </div>
-                    </FilterBtn>
-                  ))}
+                        <div
+                          className="flex gap-2"
+                          onClick={() =>
+                            handleFilterClick(category.name, subcategory.name)
+                          }
+                        >
+                          <p className="text-xs">{subcategory.name}</p>
+                          <p className="text-xs text-zinc-400">
+                            {subcategory._count && subcategory._count.products}
+                          </p>
+                        </div>
+                      </FilterBtn>
+                    );
+                  })}
               </>
             ))}
         </div>
