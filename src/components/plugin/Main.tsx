@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
-import ProductCard from "../ProductCard";
+import ProductCard from "../products/ProductCard";
 
 function Main({}) {
   const featuredInstrumentsQuery = api.plugins.getPopularInstruments.useQuery();
