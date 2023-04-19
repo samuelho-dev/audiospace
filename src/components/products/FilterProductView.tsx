@@ -1,12 +1,11 @@
 import { useRouter } from "next/router";
 import React from "react";
 import { api } from "~/utils/api";
-import ProductCard from "../ProductCard";
+import ProductCard from "./ProductCard";
 
 function FilterProductView() {
   const router = useRouter();
   const { category, tag } = router.query;
-
   const capitalizeFirstLetters = (str: string) => {
     return str
       .split("-")
@@ -20,7 +19,8 @@ function FilterProductView() {
   } else if (Array.isArray(tag)) {
     checkedTags = tag.map((el) => capitalizeFirstLetters(el));
   }
-  const productsQuery = api.plugins.getFilteredPluginProducts.useQuery({
+
+  const productsQuery = api.products.getFilteredProducts.useQuery({
     categories: Array.isArray(category) ? category : [],
     subcategories: checkedTags,
   });

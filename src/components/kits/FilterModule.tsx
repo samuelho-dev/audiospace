@@ -1,11 +1,14 @@
 import { type CategorySchema } from "~/types/schema";
 import FilterBtn from "../buttons/FilterBtn";
+import { useRouter } from "next/router";
 
 interface FilterProps {
   categories: CategorySchema[];
   handleRoute: (category: string, subcategory?: string) => void;
 }
 export default function FilterModule({ categories, handleRoute }: FilterProps) {
+  const router = useRouter();
+  const { category, tag } = router.query;
   const handleFilterClick = (
     categoryName: string,
     subcategoryName?: string
@@ -21,7 +24,18 @@ export default function FilterModule({ categories, handleRoute }: FilterProps) {
             <>
               {category.subcategories &&
                 category.subcategories.map((subcategory) => (
-                  <FilterBtn key={subcategory.id}>
+                  <FilterBtn
+                    key={subcategory.id}
+                    active={
+                      tag ===
+                        subcategory.name.toLowerCase().replace(" ", "-") ||
+                      tag?.includes(
+                        subcategory.name.toLowerCase().replace(" ", "-")
+                      )
+                        ? true
+                        : false
+                    }
+                  >
                     <div
                       className="flex gap-2"
                       onClick={() =>
