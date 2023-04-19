@@ -39,7 +39,10 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
         </div>
       </div>
       {activeDropdown === "ProfileDropdown" && (
-        <ul className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2">
+        <ul
+          onMouseLeave={() => handleDropdown(null)}
+          className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2"
+        >
           <Link
             href={{
               pathname: "/profile",

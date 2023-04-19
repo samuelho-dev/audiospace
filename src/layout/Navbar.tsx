@@ -20,11 +20,20 @@ interface Category {
 
 interface PluginDropdownProps {
   categories: Category[];
+  handleDropdown: (dropdownName: string | null) => void;
+  route: string;
 }
 
-function PluginDropdown({ categories }: PluginDropdownProps) {
+function PluginDropdown({
+  categories,
+  handleDropdown,
+  route,
+}: PluginDropdownProps) {
   return (
-    <div className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90">
+    <div
+      onMouseLeave={() => handleDropdown(null)}
+      className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90"
+    >
       <div className="flex w-full flex-col items-center justify-between">
         {categories.map((category) => (
           <div
@@ -40,7 +49,13 @@ function PluginDropdown({ categories }: PluginDropdownProps) {
               {category.subcategories.map((subcategory) => (
                 <div key={subcategory.id} className="hover:bg-slate-300 ">
                   <Link
-                    href={`/plugins/${category.name.toLowerCase()}/${subcategory.name.toLowerCase()}`}
+                    href={{
+                      pathname: route,
+                      query: {
+                        category: category.name.toLowerCase(),
+                        tag: subcategory.name.toLowerCase().replace(" ", "-"),
+                      },
+                    }}
                   >
                     <p className="whitespace-pre-wrap text-white hover:text-black">
                       {subcategory.name}
@@ -59,7 +74,8 @@ function PluginDropdown({ categories }: PluginDropdownProps) {
 function Navbar() {
   const { data: session } = useSession();
 
-  const categoriesQuery = api.onload.getPluginCategories.useQuery();
+  const pluginCategoriesQuery = api.onload.getPluginCategories.useQuery();
+  const kitCategoriesQuery = api.onload.getKitCategories.useQuery();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const handleDropdown = (dropdownName: string | null) => {
@@ -78,7 +94,7 @@ function Navbar() {
         >
           <h4>Plugins</h4>
         </Link>
-        <Link href={"/kits"}>
+        <Link href={"/kits"} onMouseOver={() => handleDropdown("KitDropdown")}>
           <h4>Kits</h4>
         </Link>
         <Link href={"/deals"}>
@@ -88,8 +104,19 @@ function Navbar() {
           <h4>Battles</h4>
         </Link>
       </div>
-      {activeDropdown === "PluginDropdown" && categoriesQuery.data && (
-        <PluginDropdown categories={categoriesQuery.data} />
+      {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
+        <PluginDropdown
+          route={"/plugins"}
+          handleDropdown={handleDropdown}
+          categories={pluginCategoriesQuery.data}
+        />
+      )}
+      {activeDropdown === "KitDropdown" && kitCategoriesQuery.data && (
+        <PluginDropdown
+          route={"/kits"}
+          handleDropdown={handleDropdown}
+          categories={kitCategoriesQuery.data}
+        />
       )}
       <div className="flex items-center">
         {!session ? (
