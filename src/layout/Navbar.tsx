@@ -32,7 +32,7 @@ function PluginDropdown({
   return (
     <div
       onMouseLeave={() => handleDropdown(null)}
-      className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90"
+      className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg border-b border-zinc-600 bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90"
     >
       <div className="flex w-full flex-col items-center justify-between">
         {categories.map((category) => (

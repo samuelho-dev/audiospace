@@ -18,9 +18,9 @@ function ProductCard({ product }: ProductCardProps) {
   const { handleRoute } = UseRouterFilter();
 
   return (
-    <div className="cardShadow h-60 w-40 rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
+    <div className="cardShadow my-4 flex h-60 w-40 flex-col justify-between rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
       <div
-        className="relative h-fit w-full justify-center"
+        className="relative h-28 w-32 justify-center"
         onMouseOver={() => setPreviewHover(true)}
         onMouseOut={() => setPreviewHover(false)}
       >
@@ -31,7 +31,7 @@ function ProductCard({ product }: ProductCardProps) {
         )}
         <Image
           src="https://res.cloudinary.com/ddhal4lbv/image/upload/v1680578842/audiospace/RC-20-Retro-Color-UI-Alpha_ue0qpp.png"
-          className="w-full rounded-lg object-scale-down"
+          className="rounded-lg object-scale-down"
           alt="productimg"
           width={300}
           height={300}
@@ -39,7 +39,7 @@ function ProductCard({ product }: ProductCardProps) {
         />
       </div>
 
-      <h5 className="overflow-x-clip whitespace-nowrap py-2 hover:cursor-pointer">
+      <h5 className="scrollbar-hide overflow-x-scroll whitespace-nowrap py-2 hover:cursor-pointer">
         {product?.name}
       </h5>
       <p className="text-sm text-gray-300 hover:cursor-pointer hover:underline hover:underline-offset-2">
@@ -48,7 +48,7 @@ function ProductCard({ product }: ProductCardProps) {
       <div className="flex flex-wrap gap-1">
         {product?.subcategory.map((subcategory, i) => (
           <p
-            className=" whitespace-nowrap text-xs font-light text-gray-400 hover:cursor-pointer hover:underline hover:underline-offset-2"
+            className="whitespace-nowrap text-xs font-light tracking-tight text-gray-400 hover:cursor-pointer hover:underline hover:underline-offset-2"
             key={subcategory.id}
             onClick={() => handleRoute(product.category.name, subcategory.name)}
           >
