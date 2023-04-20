@@ -26,7 +26,7 @@ function ProductCard({ product }: ProductCardProps) {
       >
         {previewHover && (
           <div className="absolute z-50 flex h-full w-full items-center justify-center rounded-lg bg-zinc-600 bg-opacity-50 hover:cursor-pointer">
-            <RiPlayMiniLine size={30} className="fill-zinc-400" />
+            <RiPlayMiniLine size={30} className="fill-zinc-300" />
           </div>
         )}
         <Image
