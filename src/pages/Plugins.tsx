@@ -1,6 +1,6 @@
 import React from "react";
-import { api } from "~/utils/api";
 import MarketLayout from "~/layout/MarketLayout";
+import { api } from "~/utils/api";
 
 function Plugins() {
   const categoryQuery = api.onload.getPluginCategories.useQuery();
