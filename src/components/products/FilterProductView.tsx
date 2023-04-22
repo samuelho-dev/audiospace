@@ -27,7 +27,7 @@ function FilterProductView() {
 
   return (
     <div className="w-full px-2 py-4">
-      <div className="grid grid-cols-3 items-center justify-center gap-y-8 lg:grid-cols-5">
+      <div className="grid grid-cols-3 items-center justify-center lg:grid-cols-4">
         {productsQuery?.data &&
           productsQuery.data.map((product) => (
             <ProductCard product={product} key={product.id} />
