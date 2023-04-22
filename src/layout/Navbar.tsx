@@ -96,9 +96,6 @@ function Navbar() {
         <Link href={"/kits"} onMouseOver={() => handleDropdown("KitDropdown")}>
           <h4>Kits</h4>
         </Link>
-        <Link href={"/deals"}>
-          <h4>Deals</h4>
-        </Link>
         <Link href={"/battles"}>
           <h4>Battles</h4>
         </Link>
@@ -117,7 +114,7 @@ function Navbar() {
           categories={kitCategoriesQuery.data}
         />
       )}
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         {!session ? (
           <button
             onClick={() => handleDropdown("AuthModal")}
