@@ -64,16 +64,20 @@ model User {
   sessions         Session[]
   transactions     Transaction[]
   verifiedAt       DateTime?
+  seller           Seller?
+  sellerId         Int?
 }
 
 enum Role {
   ADMIN
   USER
+  SELLER
 }
 
 model Seller {
   id       Int       @id @default(autoincrement())
-  name     String
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String    @unique
   products Product[]
 }
 
