@@ -197,46 +197,46 @@ async function seedCategoriesAndSubcategories() {
     }
   }
 }
-async function seedSellersAndProducts() {
-  for (const sellerData of sellersData) {
-    const seller = await prisma.seller.create({
-      data: { name: sellerData.name },
-    });
+// async function seedSellersAndProducts() {
+//   for (const sellerData of sellersData) {
+//     const seller = await prisma.seller.create({
+//       data: { name: sellerData.name },
+//     });
 
-    for (const productData of sellerData.products) {
-      const subcategories = await prisma.productSubcategory.findMany({
-        where: { name: { in: productData.subcategoryNames } },
-      });
+//     for (const productData of sellerData.products) {
+//       const subcategories = await prisma.productSubcategory.findMany({
+//         where: { name: { in: productData.subcategoryNames } },
+//       });
 
-      const subcategoryIds = subcategories.map((subcategory) => subcategory.id);
+//       const subcategoryIds = subcategories.map((subcategory) => subcategory.id);
 
-      const productCategory = await prisma.productCategory.findUnique({
-        where: { name: productData.categoryName },
-      });
+//       const productCategory = await prisma.productCategory.findUnique({
+//         where: { name: productData.categoryName },
+//       });
 
-      if (productCategory) {
-        await prisma.product.create({
-          data: {
-            name: productData.name,
-            categoryId: productCategory.id,
-            description: productData.description,
-            price: productData.price,
-            preview_url: productData.preview_url,
-            download_url: productData.downloadUrl,
-            sellerId: seller.id,
-            subcategory: {
-              connect: subcategoryIds.map((id) => ({ id })),
-            },
-          },
-        });
-      }
-    }
-  }
-}
+//       if (productCategory) {
+//         await prisma.product.create({
+//           data: {
+//             name: productData.name,
+//             categoryId: productCategory.id,
+//             description: productData.description,
+//             price: productData.price,
+//             preview_url: productData.preview_url,
+//             download_url: productData.downloadUrl,
+//             sellerId: seller.id,
+//             subcategory: {
+//               connect: subcategoryIds.map((id) => ({ id })),
+//             },
+//           },
+//         });
+//       }
+//     }
+//   }
+// }
 
 async function main() {
   await seedCategoriesAndSubcategories();
-  await seedSellersAndProducts();
+  // await seedSellersAndProducts();
   await prisma.$disconnect();
 }
 

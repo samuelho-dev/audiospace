@@ -73,6 +73,18 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               Wishlist
             </li>
           </Link>
+          {session?.user.role !== "SELLER" && (
+            <Link
+              href={{
+                pathname: "/profile",
+                query: { section: "wishlist" },
+              }}
+            >
+              <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
+                Seller Signup
+              </li>
+            </Link>
+          )}
           {session?.user.role === "ADMIN" && (
             <Link
               href={{
