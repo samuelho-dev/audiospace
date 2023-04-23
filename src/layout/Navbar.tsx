@@ -96,8 +96,8 @@ function Navbar() {
         <Link href={"/kits"} onMouseOver={() => handleDropdown("KitDropdown")}>
           <h4>Kits</h4>
         </Link>
-        <Link href={"/battles"}>
-          <h4>Battles</h4>
+        <Link href={"/community"}>
+          <h4>Community</h4>
         </Link>
       </div>
       {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (

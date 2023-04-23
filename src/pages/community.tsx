@@ -6,7 +6,7 @@ function Community() {
       <h1>{`Love that you're here...`}</h1>
       <div>
         <h3>Live Events</h3>
-        <div>
+        <div className="border border-blue-100">
           <h5>Event Name</h5>
           <p>Location</p>
           <p>Date</p>

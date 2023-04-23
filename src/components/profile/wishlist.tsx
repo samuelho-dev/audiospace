@@ -12,8 +12,8 @@ function Wishlist() {
         <div>
           <h5>Item 1</h5>
           <p>Rating</p>
-          <p>Price</p>
           <p>Description...</p>
+          <p>Price</p>
         </div>
         <div>
           <div>Add to Cart</div>
