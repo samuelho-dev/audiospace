@@ -7,60 +7,6 @@ import {
 } from "~/server/api/trpc";
 
 export const pluginProductRouter = createTRPCRouter({
-  getFilteredPluginProducts: publicProcedure
-    .input(
-      z
-        .object({
-          categories: z.array(z.string()).optional(),
-          subcategories: z.array(z.string()).optional(),
-        })
-        .nullish()
-    )
-    .query(async ({ ctx, input }) => {
-      const where: {
-        category?: { name: { in: string[] } };
-        subcategory?: { some: { name: { in: string[] } } };
-      } = {};
-
-      if (
-        typeof input?.categories?.length === "number" &&
-        input?.categories?.length > 0
-      ) {
-        where.category = { name: { in: input.categories } };
-      }
-      if (
-        typeof input?.subcategories?.length === "number" &&
-        input?.subcategories?.length > 0
-      ) {
-        where.subcategory = { some: { name: { in: input.subcategories } } };
-      }
-
-      const data = await ctx.prisma.product.findMany({
-        where: where,
-        select: {
-          id: true,
-          seller: {
-            select: {
-              user: {
-                select: {
-                  username: true,
-                },
-              },
-            },
-          },
-          subcategory: true,
-          category: true,
-          name: true,
-          images: true,
-          price: true,
-          preview_url: true,
-          discount_rate: true,
-          wishlist_users: true,
-        },
-      });
-      // console.log(data);
-      return data;
-    }),
   getFeaturedPluginProducts: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.product.findMany({
       where: {

@@ -60,6 +60,10 @@ export const userProfileRouter = createTRPCRouter({
       });
       return data;
     }),
+
+  // updatePassword: protectedProcedur.mutation(({ctx, input}) => {
+
+  // }),
   getWishlist: protectedProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.user.findFirstOrThrow({
       where: {

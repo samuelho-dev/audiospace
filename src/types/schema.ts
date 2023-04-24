@@ -28,7 +28,7 @@ export const CategorySchema = z.object({
 });
 
 export const ProductSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   seller: SellerSchema,
   description: z.string().optional(),
   name: z.string(),

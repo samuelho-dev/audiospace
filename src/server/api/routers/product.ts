@@ -5,14 +5,15 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { CategorySchema, SubcategorySchema } from "~/types/schema";
 
 export const productRouter = createTRPCRouter({
   getFilteredProducts: publicProcedure
     .input(
       z
         .object({
-          categories: z.array(z.string()).optional(),
-          subcategories: z.array(z.string()).optional(),
+          categories: CategorySchema.optional(),
+          subcategories: SubcategorySchema.optional(),
         })
         .nullish()
     )
@@ -170,6 +171,16 @@ export const productRouter = createTRPCRouter({
         },
       });
       // console.log(data);
+      return data;
+    }),
+  getProductInfo: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.product.findFirstOrThrow({
+        where: {
+          id: input.id,
+        },
+      });
       return data;
     }),
 });
