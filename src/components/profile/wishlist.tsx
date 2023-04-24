@@ -1,24 +1,60 @@
+import Image from "next/image";
+import { useRouter } from "next/router";
 import React from "react";
 import { api } from "~/utils/api";
 
 function Wishlist() {
-  const featuredInstrumentsQuery = api.plugins.getPopularInstruments.useQuery();
+  const router = useRouter();
+  const featuredInstrumentsQuery =
+    api.userprofile.getWishlistProducts.useQuery();
+  console.log(featuredInstrumentsQuery.data);
 
-  if (featuredInstrumentsQuery.data) return null;
+  const wishlistRemoveMutation =
+    api.userprofile.deleteProductFromWishlist.useMutation();
+
+  const handleWishlistRemove = async (id: number) => {
+    await wishlistRemoveMutation.mutateAsync({
+      id,
+    });
+    router.reload();
+  };
   return (
     <div>
       <h3>Wishlist</h3>
-      <div className="flex items-start justify-between rounded-lg border border-zinc-500 p-4">
-        <div>
-          <h5>Item 1</h5>
-          <p>Rating</p>
-          <p>Description...</p>
-          <p>Price</p>
-        </div>
-        <div>
-          <div>Add to Cart</div>
-          <div>Remove from list</div>
-        </div>
+      <div className="flex flex-col items-start gap-4">
+        {featuredInstrumentsQuery.data &&
+          featuredInstrumentsQuery.data.wishlist.map((product) => (
+            <div
+              key={product.id}
+              className="flex w-full justify-between rounded-lg border border-zinc-500 p-2"
+            >
+              <div className="flex gap-4">
+                <Image
+                  src="https://res.cloudinary.com/ddhal4lbv/image/upload/v1680578842/audiospace/RC-20-Retro-Color-UI-Alpha_ue0qpp.png"
+                  className="rounded-lg object-scale-down"
+                  alt="productimg"
+                  width={75}
+                  height={75}
+                  loading="lazy"
+                />
+                <h5>
+                  {product.name} by {product.seller.user.username}
+                </h5>
+                <p>${product.price}</p>
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <button className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400">
+                  Add to Cart
+                </button>
+                <button
+                  onClick={() => void handleWishlistRemove(product.id)}
+                  className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400"
+                >
+                  Remove from list
+                </button>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
