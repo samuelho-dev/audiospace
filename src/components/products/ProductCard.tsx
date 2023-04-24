@@ -8,6 +8,7 @@ import { type ProductSchema } from "~/types/schema";
 import { RiPlayMiniLine } from "react-icons/ri";
 import { UseRouterFilter } from "~/utils/useRouterFilter";
 import { api } from "~/utils/api";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: ProductSchema;
@@ -65,12 +66,24 @@ function ProductCard({ product }: ProductCardProps) {
           loading="lazy"
         />
       </div>
-      <h5 className="scrollbar-hide overflow-x-scroll whitespace-nowrap py-2 hover:cursor-pointer">
-        {product?.name}
-      </h5>
-      <p className="text-sm text-gray-300 hover:cursor-pointer hover:underline hover:underline-offset-2">
-        {product?.seller.user.username}
-      </p>
+      <Link
+        href={{
+          pathname: `/product/${product.id}`,
+        }}
+      >
+        <h5 className="scrollbar-hide overflow-x-scroll whitespace-nowrap py-2 hover:cursor-pointer hover:underline hover:underline-offset-4">
+          {product?.name}
+        </h5>
+      </Link>
+      <Link
+        href={{
+          pathname: `/creator/${product?.seller.user.username}`,
+        }}
+      >
+        <p className="text-sm text-gray-300 hover:cursor-pointer hover:underline hover:underline-offset-2">
+          {product?.seller.user.username}
+        </p>
+      </Link>
       <div className="scrollbar-hide flex gap-1 overflow-scroll whitespace-nowrap">
         {product?.subcategory.map((subcategory, i) => (
           <p

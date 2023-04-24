@@ -12,8 +12,8 @@ export const productRouter = createTRPCRouter({
     .input(
       z
         .object({
-          categories: CategorySchema.optional(),
-          subcategories: SubcategorySchema.optional(),
+          categories: z.array(z.string()).optional(),
+          subcategories: z.array(z.string()).optional(),
         })
         .nullish()
     )
