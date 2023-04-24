@@ -59,7 +59,8 @@ model User {
   password         String
   emailVerified    EmailVerification?
   image            String?
-  wishlist         Product[]
+  wishlist         Product[]          @relation("Wishlist")
+  cart             Product[]          @relation("Cart")
   accounts         Account[]
   sessions         Session[]
   transactions     Transaction[]
@@ -123,7 +124,8 @@ model Product {
   isOnSale        Boolean              @default(false)
   discount_rate   Int                  @default(0)
   battles         Battle[]
-  wishlist_users  User[]
+  wishlist_users  User[]               @relation("Wishlist")
+  cart_users      User[]               @relation("Cart")
   createdAt       DateTime             @default(now())
   stripeProductId String?              @unique
   stripePriceId   String?              @unique
