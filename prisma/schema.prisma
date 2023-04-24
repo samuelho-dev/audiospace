@@ -108,7 +108,7 @@ model ProductSubcategory {
 }
 
 model Product {
-  id              Int                  @id @default(autoincrement())
+  id               String             @id @default(cuid())
   seller          Seller               @relation(fields: [sellerId], references: [id])
   sellerId        Int
   name            String
@@ -118,6 +118,7 @@ model Product {
   subcategory     ProductSubcategory[]
   description     String               @db.Text
   price           Int
+  rating          Int  @default(0)
   preview_url     String?
   download_url    String
   isPromoted      ProductPromoteStatus @default(NONE)
@@ -146,7 +147,7 @@ model ProductImage {
   id        Int     @id @default(autoincrement())
   imageUrl  String
   product   Product @relation(fields: [productId], references: [id])
-  productId Int
+  productId String
 
   @@index([productId])
 }
@@ -187,8 +188,8 @@ model Transaction {
   items            TransactionItem[]
   balance          Int
   createdAt        DateTime          @default(now())
-  Product          Product?          @relation(fields: [productId], references: [id])
-  productId        Int?
+  Product          Product          @relation(fields: [productId], references: [id])
+  productId        String
 
   @@index([userId])
   @@index([productId])
@@ -197,7 +198,7 @@ model Transaction {
 model TransactionItem {
   id            Int         @id @default(autoincrement())
   product       Product     @relation(fields: [productId], references: [id])
-  productId     Int
+  productId     String
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId Int
   quantity      Int

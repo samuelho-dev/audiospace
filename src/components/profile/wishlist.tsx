@@ -43,12 +43,12 @@ function Wishlist() {
                 <p>${product.price}</p>
               </div>
               <div className="flex flex-col items-end gap-2">
-                <button className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400">
+                <button className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400 hover:bg-zinc-500">
                   Add to Cart
                 </button>
                 <button
                   onClick={() => void handleWishlistRemove(product.id)}
-                  className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400"
+                  className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400 hover:bg-zinc-500"
                 >
                   Remove from list
                 </button>
