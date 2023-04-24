@@ -20,7 +20,7 @@ function AdminPanel() {
     categoryId,
   });
   const sellers = api.onload.getAllSellers.useQuery();
-  const sellerMutation = api.admin.createSeller.useMutation();
+  // const sellerMutation = api.admin.createSeller.useMutation();
   const productMutation = api.admin.uploadProduct.useMutation();
 
   const [form, setForm] = useState({
@@ -39,15 +39,15 @@ function AdminPanel() {
     setSellerCreationActive(!sellerCreationActive);
   };
   const handleSellerCreation = async () => {
-    try {
-      await sellerMutation
-        .mutateAsync({
-          name: newSellerName,
-        })
-        .then(() => router.reload());
-    } catch (err) {
-      console.error("Seller creation error:", err);
-    }
+    // try {
+    //   await sellerMutation
+    //     .mutateAsync({
+    //       name: newSellerName,
+    //     })
+    //     .then(() => router.reload());
+    // } catch (err) {
+    //   console.error("Seller creation error:", err);
+    // }
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {

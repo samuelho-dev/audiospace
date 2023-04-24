@@ -61,15 +61,13 @@ export const adminRouter = createTRPCRouter({
         console.error("Product upload failed", err);
       }
     }),
-  createSeller: protectedProcedure
-    .input(z.object({ name: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const data = await ctx.prisma.seller.create({
-        data: {
-          name: input.name,
-        },
-      });
+  // createSeller: protectedProcedure
+  //   .input(z.object({ name: z.string() }))
+  //   .mutation(async ({ ctx, input }) => {
+  //     const data = await ctx.prisma.seller.create({
+  //       data : {}
+  //     });
 
-      return data;
-    }),
+  //     return data;
+  //   }),
 });
