@@ -39,7 +39,15 @@ export const pluginProductRouter = createTRPCRouter({
         where: where,
         select: {
           id: true,
-          seller: true,
+          seller: {
+            select: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
           subcategory: true,
           category: true,
           name: true,
@@ -63,7 +71,15 @@ export const pluginProductRouter = createTRPCRouter({
       },
       select: {
         id: true,
-        seller: true,
+        seller: {
+          select: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
         name: true,
         images: true,
         category: true,
@@ -94,7 +110,15 @@ export const pluginProductRouter = createTRPCRouter({
         },
         select: {
           id: true,
-          seller: true,
+          seller: {
+            select: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
           name: true,
           images: true,
           category: true,
@@ -125,7 +149,15 @@ export const pluginProductRouter = createTRPCRouter({
         },
         select: {
           id: true,
-          seller: true,
+          seller: {
+            select: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
           name: true,
           images: true,
           category: true,

@@ -5,6 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ProductSchema } from "~/types/schema";
 import cloudinary from "~/utils/cloudinary";
 import uploadCloudinary from "~/utils/uploadCloudinary";
 
@@ -19,28 +20,24 @@ export const userProfileRouter = createTRPCRouter({
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      try {
-        const parsedSession = sessionSchema.parse(ctx.session);
+      const parsedSession = sessionSchema.parse(ctx.session);
 
-        if (parsedSession.user.image) {
-          await cloudinary.uploader.destroy(parsedSession.user.image);
-        }
-
-        const data = await uploadCloudinary([input.image], "audiospace/user");
-
-        const load = ctx.prisma.user.update({
-          where: {
-            email: parsedSession.user.email,
-          },
-          data: {
-            image: data[0]?.imageUrl,
-          },
-        });
-        await ctx.prisma.$disconnect();
-        return load;
-      } catch (error) {
-        console.error(error, input);
+      if (parsedSession.user.image) {
+        await cloudinary.uploader.destroy(parsedSession.user.image);
       }
+
+      const data = await uploadCloudinary([input.image], "audiospace/user");
+
+      const load = ctx.prisma.user.update({
+        where: {
+          email: parsedSession.user.email,
+        },
+        data: {
+          image: data[0]?.imageUrl,
+        },
+      });
+
+      return load;
     }),
   updateProfile: protectedProcedure
     .input(
@@ -60,6 +57,111 @@ export const userProfileRouter = createTRPCRouter({
           email: input.email,
         },
         data: updateData,
+      });
+      return data;
+    }),
+  getWishlist: protectedProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.user.findFirstOrThrow({
+      where: {
+        id: ctx.session.user.id,
+      },
+      select: {
+        wishlist: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    const result = data.wishlist.map((el) => el.id);
+    // console.log(ctx.session.user, "getwishlist");
+    return result;
+  }),
+  getCart: protectedProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.user.findFirstOrThrow({
+      where: {
+        id: ctx.session.user.id,
+      },
+      select: {
+        wishlist: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+    const result = data.wishlist.map((el) => el.id);
+    // console.log(ctx.session.user, "getwishlist");
+    return result;
+  }),
+  getWishlistProducts: protectedProcedure
+    .output(z.object({ wishlist: z.array(ProductSchema) }))
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.user.findFirstOrThrow({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          wishlist: {
+            select: {
+              id: true,
+              seller: {
+                select: {
+                  user: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                },
+              },
+              description: true,
+              category: true,
+              subcategory: true,
+              name: true,
+              images: true,
+              price: true,
+              preview_url: true,
+              discount_rate: true,
+            },
+          },
+        },
+      });
+
+      console.log(data, "getwishlist");
+      return data;
+    }),
+  addProductToWishlist: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(({ ctx, input }) => {
+      console.log(ctx.session, "wishlist session");
+      const data = ctx.prisma.user.update({
+        data: {
+          wishlist: {
+            connect: {
+              id: input.id,
+            },
+          },
+        },
+        where: {
+          id: ctx.session.user.id,
+        },
+      });
+      return data;
+    }),
+  deleteProductFromWishlist: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(({ ctx, input }) => {
+      const data = ctx.prisma.user.update({
+        data: {
+          wishlist: {
+            disconnect: {
+              id: input.id,
+            },
+          },
+        },
+        where: {
+          id: ctx.session.user.id,
+        },
       });
       return data;
     }),

@@ -6,11 +6,26 @@ import {
 } from "~/server/api/trpc";
 
 export const onloadRouter = createTRPCRouter({
-  getAllSellers: publicProcedure.query(async ({ ctx }) => {
-    const data = await ctx.prisma.seller.findMany({});
-    // console.log(data);
-    return data;
-  }),
+  getAllSellers: publicProcedure
+    .output(
+      z.array(
+        z.object({ id: z.number(), user: z.object({ username: z.string() }) })
+      )
+    )
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.seller.findMany({
+        select: {
+          id: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+        },
+      });
+      // console.log(data);
+      return data;
+    }),
   getAllCategories: publicProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.productCategory.findMany({});
     // console.log(data);
