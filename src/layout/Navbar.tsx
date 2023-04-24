@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import UserNav from "~/components/UserNav";
+import UserNav from "~/components/profile/UserNav";
 import AuthModal from "~/components/auth/AuthModal";
 import { api } from "~/utils/api";
 
