@@ -51,48 +51,89 @@ function BasicInfo({ session }: BasicInfoProps) {
   return (
     <form onSubmit={handleSubmit}>
       <h3>Basic Info</h3>
-      <label className="flex flex-row justify-between gap-2 py-2">
-        <p className="text-sm">Email Address: </p>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={form.email}
-          placeholder={session.user.email || ""}
-          onChange={handleForm}
-          className="rounded-lg px-2 text-center text-black"
-        />
-      </label>
-      <label className="flex flex-row justify-between gap-2 py-8">
-        <p className="text-sm">Display Name:</p>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={form.name}
-          placeholder={session.user.name || ""}
-          onChange={handleForm}
-          className="rounded-lg px-2 text-center text-black"
-        />
-      </label>
-      <label className="mb-2 block text-sm font-medium text-white">
-        Upload Profile Picture
-      </label>
-      <input
-        id="profileImg"
-        name="profileImg"
-        type="file"
-        multiple={false}
-        onChange={(e) => void handleFileInput(e)}
-        accept="image/*"
-        className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none"
-      />
-      <button
-        type="submit"
-        className="mt-4 rounded-2xl bg-white px-4 py-1 text-black"
-      >
-        Update {updated && "DONE"}
-      </button>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row justify-between gap-2">
+          <label htmlFor="email" className="text-sm">
+            Email Address:
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={form.email}
+            placeholder={session.user.email || ""}
+            onChange={handleForm}
+            className="rounded-lg px-2 text-center text-black"
+          />
+        </div>
+        <div className="flex flex-row justify-between gap-2">
+          <label htmlFor="name" className="text-sm">
+            Display Name:
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={form.name}
+            placeholder={session.user.name || ""}
+            onChange={handleForm}
+            className="rounded-lg px-2 text-center text-black"
+          />
+        </div>
+        <div className="flex flex-col">
+          <label
+            htmlFor="profileImg"
+            className="mb-2 block text-sm font-medium text-white"
+          >
+            Upload Profile Picture
+          </label>
+          <input
+            id="profileImg"
+            name="profileImg"
+            type="file"
+            multiple={false}
+            onChange={(e) => void handleFileInput(e)}
+            accept="image/*"
+            className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none "
+          />
+        </div>
+        <button
+          type="submit"
+          className="mt-4 w-fit rounded-2xl bg-white px-4 py-1 text-black"
+        >
+          Update {updated && "DONE"}
+        </button>
+      </div>
+      <div className="flex flex-col gap-2 py-4">
+        <h5 className="underline">Change Password</h5>
+        <div className="flex flex-row justify-between gap-2">
+          <label htmlFor="name" className="text-sm">
+            Old Password:
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Old password"
+            className="rounded-lg px-2 text-center text-black"
+          />
+        </div>
+        <div className="flex flex-row justify-between gap-2">
+          <label htmlFor="name" className="text-sm">
+            New Password:
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="New password"
+            className="rounded-lg px-2 text-center text-black"
+          />
+        </div>
+        <button className="w-fit rounded-md p-1 text-xs outline outline-1 outline-zinc-400 hover:bg-zinc-500">
+          Update Password
+        </button>
+      </div>
     </form>
   );
 }
