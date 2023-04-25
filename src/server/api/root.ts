@@ -6,6 +6,7 @@ import { pluginProductRouter } from "./routers/pluginProduct";
 import { kitProductRouter } from "./routers/kitProduct";
 import { adminRouter } from "./routers/admin";
 import { productRouter } from "./routers/product";
+import { battleRouter } from "./routers/battle";
 
 /**
  * This is the primary router for your server.
@@ -13,6 +14,7 @@ import { productRouter } from "./routers/product";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  battles: battleRouter,
   plugins: pluginProductRouter,
   kits: kitProductRouter,
   products: productRouter,
