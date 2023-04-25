@@ -158,6 +158,7 @@ model Battle {
   description String
   entries     BattleEntry[]
   winnerId    String?
+  sample      String?
   createdAt   DateTime      @default(now())
   isActive    BattleStatus  @default(ACTIVE)
 }
