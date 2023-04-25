@@ -60,9 +60,9 @@ export const BattleEntrySchema = z.object({
   battleId: z.number(),
   id: z.number(),
   rating: z.number(),
-  trackUrl: z.string(),
-  user: z.object({ username: z.string() }),
+  trackUrl: z.string().url(),
   userId: z.string(),
+  user: z.object({ username: z.string() }),
 });
 
 export const BattleSchema = z.object({
@@ -72,7 +72,6 @@ export const BattleSchema = z.object({
   winnerId: z.string().nullable(),
   sample: z.string().nullable(),
   isActive: z.enum(["ACTIVE", "ENDED", "VOTING"]),
-  entries: z.array(BattleEntrySchema),
 });
 
 export type SellerSchema = z.infer<typeof SellerSchema>;

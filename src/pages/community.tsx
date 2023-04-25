@@ -5,19 +5,21 @@ import { api } from "~/utils/api";
 
 function Community() {
   const [submitActive, setSubmitActive] = useState(false);
+  const [submitUrl, setSubmitUrl] = useState("");
   const battleQuery = api.battles.fetchCurrentBattle.useQuery();
-  console.log(battleQuery.data);
 
-  // const submitTrack = async (url: string) => {
-  //   await api.battles.submitBattleEntry.useQuery({
-  //     trackUrl: url,
-  //     battleId: battleQuery.data,
-  //   });
-  // };
+  const battleEntriesQuery = api.battles.fetchCurrentEntries.useQuery();
   if (!battleQuery.data) {
     return null;
   }
-  console.log(battleQuery.error);
+
+  const submitTrack = () => {
+    api.battles.submitBattleEntry.useQuery({
+      trackUrl: submitUrl,
+      battleId: battleQuery.data.id,
+    });
+  };
+  console.log(battleEntriesQuery.data);
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
@@ -57,10 +59,14 @@ function Community() {
             <div className="flex gap-2">
               <input
                 type="text"
+                onChange={(e) => setSubmitUrl(e.target.value)}
                 placeholder="Enter your soundcloud url"
                 className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
               />
-              <button className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600">
+              <button
+                onClick={() => void submitTrack()}
+                className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
+              >
                 Submit
               </button>
             </div>
@@ -80,13 +86,9 @@ function Community() {
           <h5 className="text-xs">Vote</h5>
         </div>
         <div>
-          {battleQuery.data.entries &&
-            battleQuery.data.entries.map((entry) => (
-              <BattleEntry
-                key={entry.id}
-                entry={entry}
-                // error={battleQuery.error}
-              />
+          {battleEntriesQuery.data &&
+            battleEntriesQuery.data.map((entry) => (
+              <BattleEntry key={entry.id} entry={entry} />
             ))}
         </div>
         <div>
