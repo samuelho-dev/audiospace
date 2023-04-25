@@ -56,8 +56,29 @@ export const UserSchema = z.object({
   verifiedAt: z.string().nullable(),
 });
 
+export const BattleEntrySchema = z.object({
+  battleId: z.number(),
+  id: z.number(),
+  rating: z.number(),
+  trackUrl: z.string(),
+  user: z.object({ username: z.string() }),
+  userId: z.string(),
+});
+
+export const BattleSchema = z.object({
+  id: z.number(),
+  description: z.string(),
+  createdAt: z.date(),
+  winnerId: z.string().nullable(),
+  sample: z.string().nullable(),
+  isActive: z.enum(["ACTIVE", "ENDED", "VOTING"]),
+  entries: z.array(BattleEntrySchema),
+});
+
 export type SellerSchema = z.infer<typeof SellerSchema>;
 export type SubcategorySchema = z.infer<typeof SubcategorySchema>;
 export type CategorySchema = z.infer<typeof CategorySchema>;
 export type ProductSchema = z.infer<typeof ProductSchema>;
 export type UserSchema = z.infer<typeof UserSchema>;
+export type BattleEntrySchema = z.infer<typeof BattleEntrySchema>;
+export type BattleSchema = z.infer<typeof BattleSchema>;

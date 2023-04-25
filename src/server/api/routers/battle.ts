@@ -5,6 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { BattleSchema } from "~/types/schema";
 
 export const battleRouter = createTRPCRouter({
   createBattle: protectedProcedure.query(async ({ ctx }) => {
@@ -51,14 +52,33 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
-  fetchCurrentBattle: publicProcedure.query(async ({ ctx }) => {
-    const data = ctx.prisma.battle.findFirstOrThrow({
-      where: {
-        isActive: "ACTIVE",
-      },
-    });
-    return data;
-  }),
+  fetchCurrentBattle: publicProcedure
+    .output(BattleSchema)
+    .query(async ({ ctx }) => {
+      const data = ctx.prisma.battle.findFirstOrThrow({
+        where: {
+          isActive: "ACTIVE",
+        },
+        select: {
+          id: true,
+          description: true,
+          createdAt: true,
+          winnerId: true,
+          sample: true,
+          isActive: true,
+          entries: {
+            include: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return data;
+    }),
   toggleBattleVoting: protectedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
@@ -74,7 +94,7 @@ export const battleRouter = createTRPCRouter({
     }),
   voteEntry: protectedProcedure
     .input(z.object({ entryId: z.number() }))
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const voteExists = await ctx.prisma.battleEntry.findFirst({
         where: {
           user: {
