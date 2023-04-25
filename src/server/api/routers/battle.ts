@@ -18,6 +18,30 @@ export const battleRouter = createTRPCRouter({
   submitBattleEntry: protectedProcedure
     .input(z.object({ trackUrl: z.string(), battleId: z.number() }))
     .query(async ({ ctx, input }) => {
+      const battleStatus = await ctx.prisma.battle.findFirst({
+        where: {
+          id: input.battleId,
+        },
+      });
+
+      if (
+        battleStatus?.isActive === "VOTING" ||
+        battleStatus?.isActive === "ENDED"
+      ) {
+        throw new Error(`Submissions are now closed, we'll see you next week`);
+      }
+
+      const entryExists = await ctx.prisma.battleEntry.findFirst({
+        where: {
+          userId: ctx.session.user.id,
+          battleId: input.battleId,
+        },
+      });
+
+      if (entryExists) {
+        throw new Error("You have already submitted");
+      }
+
       const data = ctx.prisma.battleEntry.create({
         data: {
           userId: ctx.session?.user.id,
