@@ -1,8 +1,24 @@
 import React, { useState } from "react";
-import soundCloudUrl from "~/utils/soundcloudUrl";
+import BattleEntry from "~/components/battles/BattleEntry";
+import { type BattleEntrySchema } from "~/types/schema";
+import { api } from "~/utils/api";
 
 function Community() {
   const [submitActive, setSubmitActive] = useState(false);
+  const battleQuery = api.battles.fetchCurrentBattle.useQuery();
+  console.log(battleQuery.data);
+
+  // const submitTrack = async (url: string) => {
+  //   await api.battles.submitBattleEntry.useQuery({
+  //     trackUrl: url,
+  //     battleId: battleQuery.data,
+  //   });
+  // };
+  if (!battleQuery.data) {
+    return null;
+  }
+  console.log(battleQuery.error);
+
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
       <h1>{`Love that you're here...`}</h1>
@@ -31,16 +47,18 @@ function Community() {
           <div>
             <h3>Vote for your favorite beat - This Week</h3>
 
-            <button className="w-fit rounded-lg border border-zinc-400 px-4 text-xs">
-              Download the sample
-            </button>
+            {battleQuery.data.sample && (
+              <button className="w-fit rounded-lg border border-zinc-400 px-4 text-xs">
+                Download the sample
+              </button>
+            )}
           </div>
           {submitActive ? (
             <div className="flex gap-2">
               <input
                 type="text"
                 placeholder="Enter your soundcloud url"
-                className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
+                className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
               />
               <button className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600">
                 Submit
@@ -48,7 +66,7 @@ function Community() {
             </div>
           ) : (
             <button
-              onClick={void setSubmitActive(true)}
+              onClick={() => setSubmitActive(true)}
               className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
             >
               Submit A Track
@@ -62,36 +80,14 @@ function Community() {
           <h5 className="text-xs">Vote</h5>
         </div>
         <div>
-          <div className="flex justify-between border-zinc-400 px-4 py-4">
-            <h5 className="text-sm">Artist Name</h5>
-            <iframe
-              allow="autoplay"
-              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
-              height="20"
-            ></iframe>
-
-            <h5 className="text-sm">Vote</h5>
-          </div>
-          <div className="flex justify-between border-zinc-400 px-4 py-4">
-            <h5 className="text-sm">Artist Name</h5>
-            <iframe
-              allow="autoplay"
-              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
-              height="20"
-            ></iframe>
-
-            <h5 className="text-sm">Vote</h5>
-          </div>
-          <div className="flex justify-between border-zinc-400 px-4 py-4">
-            <h5 className="text-sm">Artist Name</h5>
-            <iframe
-              allow="autoplay"
-              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
-              height="20"
-            ></iframe>
-
-            <h5 className="text-sm">Vote</h5>
-          </div>
+          {battleQuery.data.entries &&
+            battleQuery.data.entries.map((entry) => (
+              <BattleEntry
+                key={entry.id}
+                entry={entry}
+                // error={battleQuery.error}
+              />
+            ))}
         </div>
         <div>
           <div>left</div>
