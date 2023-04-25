@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
+import soundCloudUrl from "~/utils/soundcloudUrl";
 
 function Community() {
+  const [submitActive, setSubmitActive] = useState(false);
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
       <h1>{`Love that you're here...`}</h1>
@@ -33,9 +35,25 @@ function Community() {
               Download the sample
             </button>
           </div>
-          <button className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400">
-            Submit A Track
-          </button>
+          {submitActive ? (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter your soundcloud url"
+                className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
+              />
+              <button className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600">
+                Submit
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={void setSubmitActive(true)}
+              className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
+            >
+              Submit A Track
+            </button>
+          )}
         </div>
 
         <div className="flex justify-between border-b border-zinc-400 px-4 py-2">
@@ -46,12 +64,32 @@ function Community() {
         <div>
           <div className="flex justify-between border-zinc-400 px-4 py-4">
             <h5 className="text-sm">Artist Name</h5>
-            <h5 className="text-sm">Beat</h5>
+            <iframe
+              allow="autoplay"
+              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
+              height="20"
+            ></iframe>
+
             <h5 className="text-sm">Vote</h5>
           </div>
           <div className="flex justify-between border-zinc-400 px-4 py-4">
             <h5 className="text-sm">Artist Name</h5>
-            <h5 className="text-sm">Beat</h5>
+            <iframe
+              allow="autoplay"
+              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
+              height="20"
+            ></iframe>
+
+            <h5 className="text-sm">Vote</h5>
+          </div>
+          <div className="flex justify-between border-zinc-400 px-4 py-4">
+            <h5 className="text-sm">Artist Name</h5>
+            <iframe
+              allow="autoplay"
+              src={soundCloudUrl(`https://soundcloud.com/dekafbass/catalyst`)}
+              height="20"
+            ></iframe>
+
             <h5 className="text-sm">Vote</h5>
           </div>
         </div>
