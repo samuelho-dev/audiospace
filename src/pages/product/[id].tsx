@@ -9,9 +9,9 @@ function CategoryPage() {
   if (router.isFallback || !id) {
     return <div>Loading</div>;
   }
-  const productInfoQuery = api.products.getProductInfo.useQuery({
-    id,
-  });
+  // const productInfoQuery = api.products.getProductInfo.useQuery({
+  //   id,
+  // });
 
   return <div></div>;
 }

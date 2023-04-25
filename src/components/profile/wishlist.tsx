@@ -12,7 +12,7 @@ function Wishlist() {
   const wishlistRemoveMutation =
     api.userprofile.deleteProductFromWishlist.useMutation();
 
-  const handleWishlistRemove = async (id: number) => {
+  const handleWishlistRemove = async (id: string) => {
     await wishlistRemoveMutation.mutateAsync({
       id,
     });

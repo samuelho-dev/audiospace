@@ -174,7 +174,7 @@ export const productRouter = createTRPCRouter({
       return data;
     }),
   getProductInfo: publicProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const data = await ctx.prisma.product.findFirstOrThrow({
         where: {

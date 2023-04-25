@@ -135,7 +135,7 @@ export const userProfileRouter = createTRPCRouter({
       return data;
     }),
   addProductToWishlist: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
       console.log(ctx.session, "wishlist session");
       const data = ctx.prisma.user.update({
@@ -153,7 +153,7 @@ export const userProfileRouter = createTRPCRouter({
       return data;
     }),
   deleteProductFromWishlist: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
       const data = ctx.prisma.user.update({
         data: {
