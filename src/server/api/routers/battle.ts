@@ -5,7 +5,8 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { BattleSchema } from "~/types/schema";
+import { BattleEntrySchema, BattleSchema } from "~/types/schema";
+import { shuffle } from "~/utils/randomArray";
 
 export const battleRouter = createTRPCRouter({
   createBattle: protectedProcedure.query(async ({ ctx }) => {
@@ -17,7 +18,7 @@ export const battleRouter = createTRPCRouter({
     return data;
   }),
   submitBattleEntry: protectedProcedure
-    .input(z.object({ trackUrl: z.string(), battleId: z.number() }))
+    .input(z.object({ trackUrl: z.string().url(), battleId: z.number() }))
     .query(async ({ ctx, input }) => {
       const battleStatus = await ctx.prisma.battle.findFirst({
         where: {
@@ -59,25 +60,46 @@ export const battleRouter = createTRPCRouter({
         where: {
           isActive: "ACTIVE",
         },
+      });
+      return data;
+    }),
+  fetchCurrentEntries: publicProcedure
+    .output(z.array(BattleEntrySchema))
+    .query(async ({ ctx }) => {
+      const currBattle = await ctx.prisma.battle.findFirstOrThrow({
+        where: {
+          isActive: "ACTIVE",
+        },
+      });
+
+      if (!currBattle) {
+        throw new Error("No active battle found.");
+      }
+
+      const data = await ctx.prisma.battleEntry.findMany({
+        where: {
+          battleId: currBattle.id,
+        },
         select: {
+          battleId: true,
           id: true,
-          description: true,
-          createdAt: true,
-          winnerId: true,
-          sample: true,
-          isActive: true,
-          entries: {
-            include: {
-              user: {
-                select: {
-                  username: true,
-                },
-              },
+          rating: true,
+          trackUrl: true,
+          userId: true,
+          user: {
+            select: {
+              username: true,
             },
           },
         },
       });
-      return data;
+
+      if (data.length === 0) {
+        throw new Error("No entries yet.");
+      }
+
+      const result = shuffle(data) as BattleEntrySchema[];
+      return result;
     }),
   toggleBattleVoting: protectedProcedure
     .input(z.object({ id: z.number() }))
