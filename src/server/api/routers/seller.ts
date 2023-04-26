@@ -6,15 +6,6 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import { ProductSchema } from "~/types/schema";
-import cloudinary from "~/utils/cloudinary";
-import uploadCloudinary from "~/utils/uploadCloudinary";
-
-const sessionSchema = z.object({
-  user: z.object({
-    image: z.string(),
-    email: z.string().email(),
-  }),
-});
 
 export const sellerProfileRouter = createTRPCRouter({
   getSellerProduct: protectedProcedure
