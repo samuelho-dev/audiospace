@@ -30,11 +30,11 @@ export const CategorySchema = z.object({
 export const ProductSchema = z.object({
   id: z.string(),
   seller: SellerSchema,
-  description: z.string().optional(),
+  description: z.string(),
   name: z.string(),
   images: z.array(z.unknown()),
   price: z.number(),
-  preview_url: z.string().nullable(),
+  preview_url: z.string().nullable().optional(),
   discount_rate: z.number(),
   category: CategorySchema,
   subcategory: z.array(SubcategorySchema),

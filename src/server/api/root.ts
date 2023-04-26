@@ -7,6 +7,7 @@ import { kitProductRouter } from "./routers/kitProduct";
 import { adminRouter } from "./routers/admin";
 import { productRouter } from "./routers/product";
 import { battleRouter } from "./routers/battle";
+import { sellerProfileRouter } from "./routers/seller";
 
 /**
  * This is the primary router for your server.
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   kits: kitProductRouter,
   products: productRouter,
   userprofile: userProfileRouter,
+  sellerprofile: sellerProfileRouter,
   onload: onloadRouter,
   auth: authRouter,
   admin: adminRouter,

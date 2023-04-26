@@ -47,16 +47,14 @@ export const userProfileRouter = createTRPCRouter({
       })
     )
     .mutation(({ ctx, input }) => {
-      const updateData = {
-        email: input.email,
-        name: input.name,
-      };
-
       const data = ctx.prisma.user.update({
         where: {
           email: input.email,
         },
-        data: updateData,
+        data: {
+          email: input.email,
+          username: input.name,
+        },
       });
       return data;
     }),
