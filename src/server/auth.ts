@@ -33,6 +33,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: string;
+    name: string;
   }
 }
 
@@ -54,12 +55,11 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.accessToken = account?.access_token;
         token.id = user.id;
-        token.name = user.name;
-
+        token.name = user.username;
         token.email = user.email;
         token.role = user.role;
       }
-      // console.log({ token }, "JWT callback");
+      // console.log({ token, user, account, profile }, "JWT callback");
       return token;
     },
     session({ session, user, token }) {
@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as User & DefaultSession["user"]).id = token.id;
       }
 
-      // console.log({ token, session }, "session callback");
+      // console.log({ token, session, user }, "session callback");
       return session;
     },
   },
