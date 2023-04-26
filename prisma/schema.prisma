@@ -112,7 +112,7 @@ model ProductSubcategory {
 model Product {
   id              String               @id @default(cuid())
   seller          Seller               @relation(fields: [sellerId], references: [id])
-  sellerId        Int
+  sellerId        Int                  @unique
   name            String
   images          ProductImage[]
   category        ProductCategory      @relation(fields: [categoryId], references: [id])
