@@ -8,6 +8,7 @@ import Settings from "~/components/profile/settings";
 import BasicInfo from "~/components/profile/basic-info";
 import Wishlist from "~/components/profile/wishlist";
 import AdminPanel from "~/components/profile/admin-panel";
+import MyProducts from "~/components/profile/sellers/my-products";
 
 interface ProfileRouteProps {
   route?: string;
@@ -30,6 +31,8 @@ function ProfileRoute({ route, session }: ProfileRouteProps) {
       return <Submissions />;
     case "settings":
       return <Settings />;
+    case "my-products":
+      return <MyProducts />;
     case "admin-panel":
       return <AdminPanel />;
 
@@ -50,12 +53,12 @@ function Profile() {
   };
 
   if (status === "unauthenticated") {
-    void router.push("/auth/signin");
+    void router.push("/");
   }
-
+  console.log(session?.user.role);
   if (status === "authenticated") {
     return (
-      <div className="flex w-full max-w-3xl items-center justify-between gap-8">
+      <div className="flex w-full max-w-3xl items-center justify-between gap-8 lg:max-w-5xl">
         <div className="h-full w-1/5">
           <div>
             <h3>PROFILE ⬇️</h3>
@@ -90,6 +93,17 @@ function Profile() {
               >
                 Settings
               </h5>
+              {session.user.role === "SELLER" ||
+                (session.user.role === "ADMIN" && (
+                  <>
+                    <h5
+                      className="cursor-pointer hover:bg-gray-900"
+                      onClick={() => profileNavigation("my-products")}
+                    >
+                      My Products
+                    </h5>
+                  </>
+                ))}
               {session.user.role === "ADMIN" && (
                 <h5
                   className="cursor-pointer bg-zinc-700 hover:bg-gray-900"
