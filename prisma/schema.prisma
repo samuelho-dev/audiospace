@@ -63,7 +63,7 @@ model User {
   cart             Product[]          @relation("Cart")
   accounts         Account[]
   sessions         Session[]
-  transactions     Transaction[]
+  transactions     Transaction[]    
   verifiedAt       DateTime?
   seller           Seller?
   createdAt        DateTime           @default(now())
@@ -79,7 +79,7 @@ enum Role {
 
 model Seller {
   id       Int       @id @default(autoincrement())
-  user     User      @relation(fields: [userId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   String    @unique
   products Product[]
 }
