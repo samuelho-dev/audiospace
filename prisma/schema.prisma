@@ -23,13 +23,13 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
+  refreshToken      String? @db.Text
+  accessToken       String? @db.Text
+  expiresAt         Int?
+  tokenType         String?
   scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  idToken           String? @db.Text
+  sessionState      String?
 
   @@unique([provider, providerAccountId])
 }
@@ -63,7 +63,7 @@ model User {
   cart             Product[]          @relation("Cart")
   accounts         Account[]
   sessions         Session[]
-  transactions     Transaction[]    
+  transactions     Transaction[]
   verifiedAt       DateTime?
   seller           Seller?
   createdAt        DateTime           @default(now())
@@ -119,20 +119,20 @@ model Product {
   categoryId      Int
   subcategory     ProductSubcategory[]
   description     String               @db.Text
-  price           Int
+  price           Decimal              @db.Decimal(4, 2)
   rating          Int                  @default(0)
-  preview_url     String?
-  download_url    String
+  previewUrl      String?
+  downloadUrl     String
   isPromoted      ProductPromoteStatus @default(NONE)
   isOnSale        Boolean              @default(false)
-  discount_rate   Int                  @default(0)
-  wishlist_users  User[]               @relation("Wishlist")
-  cart_users      User[]               @relation("Cart")
+  discountRate    Decimal              @default(0) @db.Decimal(3, 2)
+  wishlistUsers   User[]               @relation("Wishlist")
+  cartUsers       User[]               @relation("Cart")
   createdAt       DateTime             @default(now())
   stripeProductId String?              @unique
   stripePriceId   String?              @unique
   transactions    Transaction[]
-  TransactionItem TransactionItem[]
+  transactionItem TransactionItem[]
 
   @@index([sellerId])
   @@index([categoryId])
@@ -169,7 +169,7 @@ model BattleEntry {
   userId   String
   trackUrl String
   rating   Int    @default(0)
-  Battle   Battle @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  battle   Battle @relation(fields: [battleId], references: [id], onDelete: Cascade)
   battleId Int
   likedBy  User[] @relation("Liked")
 
@@ -192,7 +192,7 @@ model Transaction {
   items            TransactionItem[]
   balance          Int
   createdAt        DateTime          @default(now())
-  Product          Product           @relation(fields: [productId], references: [id])
+  product          Product           @relation(fields: [productId], references: [id])
   productId        String
 
   @@index([userId])
@@ -206,7 +206,7 @@ model TransactionItem {
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId Int
   quantity      Int
-  price         Float
+  price         Decimal     @db.Decimal(6, 2)
 
   @@index([transactionId])
   @@index([productId])
