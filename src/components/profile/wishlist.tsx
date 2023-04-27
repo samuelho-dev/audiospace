@@ -40,7 +40,7 @@ function Wishlist() {
                 <h5>
                   {product.name} by {product.seller.user.username}
                 </h5>
-                <p>${product.price}</p>
+                <p>${Number(product.price)}</p>
               </div>
               <div className="flex flex-col items-end gap-2">
                 <button className="rounded-lg px-2 text-sm outline outline-1 outline-zinc-400 hover:bg-zinc-500">

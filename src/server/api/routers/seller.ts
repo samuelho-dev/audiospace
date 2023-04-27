@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { z } from "zod";
 
 import {
@@ -40,7 +41,7 @@ export const sellerProfileRouter = createTRPCRouter({
               name: true,
               images: true,
               price: true,
-              discount_rate: true,
+              discountRate: true,
             },
           },
         },
@@ -54,7 +55,7 @@ export const sellerProfileRouter = createTRPCRouter({
         id: z.string(),
         name: z.string().min(1),
         description: z.string().min(5),
-        price: z.number(),
+        price: z.instanceof(Decimal),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -64,7 +65,7 @@ export const sellerProfileRouter = createTRPCRouter({
         },
       });
 
-      const data = await ctx.prisma.product.update({
+      const data = await ctx.prisma.product.updateMany({
         where: {
           sellerId: seller.id,
           id: input.id,

@@ -97,7 +97,7 @@ function ProductCard({ product }: ProductCardProps) {
         ))}
       </div>
       <div className="flex justify-between pt-2">
-        <h5 className="text-gray-200">${product?.price}</h5>
+        <h5 className="text-gray-200">${Number(product?.price)}</h5>
         <div className="flex items-center gap-2">
           {(userWishlistQuery.data &&
             userWishlistQuery.data.includes(product.id)) ||

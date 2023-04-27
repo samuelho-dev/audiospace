@@ -1,4 +1,5 @@
 import { z } from "zod";
+import Decimal from "decimal.js";
 
 export const ProductImageSchema = z.object({
   id: z.number(),
@@ -33,12 +34,32 @@ export const ProductSchema = z.object({
   description: z.string(),
   name: z.string(),
   images: z.array(z.unknown()),
-  price: z.number(),
-  preview_url: z.string().nullable().optional(),
-  discount_rate: z.number(),
+  price: z
+    .instanceof(Decimal)
+    .or(z.number())
+    .refine((value) => {
+      try {
+        return new Decimal(value);
+      } catch (error) {
+        return false;
+      }
+    })
+    .transform((value) => new Decimal(value)),
+  previewUrl: z.string().nullable().optional(),
+  discountRate: z
+    .instanceof(Decimal)
+    .or(z.number())
+    .refine((value) => {
+      try {
+        return new Decimal(value);
+      } catch (error) {
+        return false;
+      }
+    })
+    .transform((value) => new Decimal(value)),
   category: CategorySchema,
   subcategory: z.array(SubcategorySchema),
-  wishlist_users: z.array(z.unknown()).optional(),
+  wishlistUsers: z.array(z.unknown()).optional(),
 });
 
 export const UserSchema = z.object({

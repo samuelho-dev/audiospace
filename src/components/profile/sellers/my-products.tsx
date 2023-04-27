@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -12,6 +13,7 @@ interface EditProductProps {
 }
 
 function EditProduct({ product, i, setEditEntry }: EditProductProps) {
+  const router = useRouter();
   const [form, setForm] = useState({
     id: product.id,
     name: product.name,
@@ -23,15 +25,22 @@ function EditProduct({ product, i, setEditEntry }: EditProductProps) {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prevData) => ({ ...prevData, [name]: value }));
+
+    setForm((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const productUpdateMutation =
     api.sellerprofile.updateSellerProduct.useMutation();
 
   const handleSubmitProductUpdate = async () => {
-    await productUpdateMutation.mutateAsync(form);
-    setEditEntry(false);
+    const revisedForm = { ...form };
+    revisedForm.price = new Decimal(revisedForm.price);
+    console.log(typeof revisedForm.price);
+    await productUpdateMutation.mutateAsync(revisedForm);
+    router.reload();
   };
 
   return (
@@ -73,7 +82,7 @@ function EditProduct({ product, i, setEditEntry }: EditProductProps) {
       </div>
       <input
         type="number"
-        value={product.price}
+        value={Number(form.price)}
         name="price"
         onChange={handleChange}
         className="flex h-10 w-full items-center justify-center text-start text-sm text-black"
@@ -86,7 +95,10 @@ function EditProduct({ product, i, setEditEntry }: EditProductProps) {
         >
           X
         </button>
-        <button className="rounded-lg border border-zinc-400 px-1 text-xs hover:bg-zinc-500">
+        <button
+          onClick={() => void handleSubmitProductUpdate()}
+          className="rounded-lg border border-zinc-400 px-1 text-xs hover:bg-zinc-500"
+        >
           Submit
         </button>
       </div>
@@ -183,7 +195,7 @@ function MyProducts() {
               ))} */}
 
                 <p className="flex h-10 w-full items-center justify-center text-start text-sm">
-                  {product.price}
+                  {Number(product.price)}
                 </p>
                 <button
                   onClick={() => setEditEntry(true)}
