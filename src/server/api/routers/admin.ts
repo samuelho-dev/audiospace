@@ -44,8 +44,8 @@ export const adminRouter = createTRPCRouter({
             images: {
               create: uploadImages,
             },
-            preview_url: uploadPreviewTrack,
-            download_url: uploadProduct,
+            previewUrl: uploadPreviewTrack,
+            downloadUrl: uploadProduct,
             sellerId: input.sellerId,
             categoryId: input.categoryId,
             subcategory: {

@@ -122,8 +122,8 @@ export const userProfileRouter = createTRPCRouter({
               name: true,
               images: true,
               price: true,
-              preview_url: true,
-              discount_rate: true,
+              previewUrl: true,
+              discountRate: true,
             },
           },
         },
@@ -135,7 +135,6 @@ export const userProfileRouter = createTRPCRouter({
   addProductToWishlist: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
-      console.log(ctx.session, "wishlist session");
       const data = ctx.prisma.user.update({
         data: {
           wishlist: {

@@ -55,9 +55,9 @@ export const productRouter = createTRPCRouter({
           name: true,
           images: true,
           price: true,
-          preview_url: true,
-          discount_rate: true,
-          wishlist_users: true,
+          previewUrl: true,
+          discountRate: true,
+          wishlistUsers: true,
         },
       });
       // console.log(data);
@@ -93,9 +93,9 @@ export const productRouter = createTRPCRouter({
           category: true,
           subcategory: true,
           price: true,
-          preview_url: true,
-          discount_rate: true,
-          wishlist_users: true,
+          previewUrl: true,
+          discountRate: true,
+          wishlistUsers: true,
         },
       });
       // console.log(data);
@@ -129,9 +129,9 @@ export const productRouter = createTRPCRouter({
           category: true,
           subcategory: true,
           price: true,
-          preview_url: true,
-          discount_rate: true,
-          wishlist_users: true,
+          previewUrl: true,
+          discountRate: true,
+          wishlistUsers: true,
         },
       });
       // console.log(data);
@@ -168,9 +168,9 @@ export const productRouter = createTRPCRouter({
           category: true,
           subcategory: true,
           price: true,
-          preview_url: true,
-          discount_rate: true,
-          wishlist_users: true,
+          previewUrl: true,
+          discountRate: true,
+          wishlistUsers: true,
         },
       });
       // console.log(data);
