@@ -139,7 +139,7 @@ function MyProducts() {
           </h5>
         ))}
       </div>
-      <div className="bg-zinc-900">
+      <div className="">
         {sellerProductQuery.data.products.map((product, i) =>
           curProductId === product.id ? (
             <EditProduct
@@ -151,9 +151,7 @@ function MyProducts() {
           ) : (
             <div
               key={product.id}
-              className={`grid grid-cols-7 items-center gap-2 justify-self-center px-2 ${
-                i % 2 !== 0 ? "border-b border-zinc-500" : ""
-              }`}
+              className={`my-2 grid grid-cols-7 items-center gap-2 justify-self-center border-b border-zinc-800 bg-zinc-900 px-2 py-1`}
             >
               <p className="flex h-10 w-full items-center justify-center text-start text-sm">
                 {product.name}
