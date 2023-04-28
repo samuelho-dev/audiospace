@@ -23,43 +23,54 @@ export const adminRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const uploadPreviewTrack = await uploadB2(
-          input.previewTrack,
-          "AudiospacePlugins"
-        );
-        const uploadProduct = await uploadB2(
-          input.product,
-          "AudiospacePlugins"
-        );
-        const uploadImages = await uploadCloudinary(
-          input.images,
-          "audiospace/product"
-        );
-        const uploadedProduct = await ctx.prisma.product.create({
-          data: {
-            name: input.name,
-            description: input.description,
-            price: input.price,
-            images: {
-              create: uploadImages,
-            },
-            previewUrl: uploadPreviewTrack,
-            downloadUrl: uploadProduct,
-            sellerId: input.sellerId,
-            categoryId: input.categoryId,
-            subcategory: {
-              connect: input.subcategories.map((subcategoryId) => ({
-                id: subcategoryId,
-              })),
-            },
-          },
-        });
-        await ctx.prisma.$disconnect();
-        return uploadedProduct;
-      } catch (err) {
-        console.error("Product upload failed", err);
+      const uploadPreviewTrack = await uploadB2(
+        input.previewTrack,
+        "AudiospacePlugins"
+      );
+
+      if (!uploadPreviewTrack) {
+        throw new Error("Error uploading preview track");
       }
+      const uploadProduct = await uploadB2(input.product, "AudiospacePlugins");
+
+      if (!uploadProduct) {
+        throw new Error("Error uploading product");
+      }
+
+      const uploadImages = await uploadCloudinary(
+        input.images,
+        "audiospace/product"
+      );
+
+      if (!uploadImages) {
+        throw new Error("Error uploading images");
+      }
+
+      const uploadedProduct = await ctx.prisma.product.create({
+        data: {
+          sellerId: input.sellerId,
+          name: input.name,
+          images: {
+            create: uploadImages,
+          },
+          categoryId: input.categoryId,
+          subcategory: {
+            connect: input.subcategories.map((subcategoryId) => ({
+              id: subcategoryId,
+            })),
+          },
+          description: input.description,
+          price: input.price,
+          previewUrl: uploadPreviewTrack,
+          downloadUrl: uploadProduct,
+        },
+      });
+
+      if (!uploadedProduct) {
+        throw new Error("Error uploading product to DB");
+      }
+
+      return uploadedProduct;
     }),
   // createSeller: protectedProcedure
   //   .input(z.object({ name: z.string() }))

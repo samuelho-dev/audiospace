@@ -114,7 +114,6 @@ function MyProducts() {
   }
 
   const sellerProductQuery = api.sellerprofile.getSellerProduct.useQuery();
-  console.log(typeof sellerProductQuery.data?.products[0]?.price);
 
   if (!sellerProductQuery.data) {
     return null;
