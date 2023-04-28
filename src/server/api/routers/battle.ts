@@ -97,7 +97,7 @@ export const battleRouter = createTRPCRouter({
       if (data.length === 0) {
         throw new Error("No entries yet.");
       }
-
+      console.log(data);
       const result = shuffle(data) as BattleEntrySchema[];
       return result;
     }),
