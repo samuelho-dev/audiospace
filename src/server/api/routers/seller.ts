@@ -17,8 +17,8 @@ export const sellerProfileRouter = createTRPCRouter({
         products: z.array(ProductSchema),
       })
     )
-    .query(({ ctx }) => {
-      const data = ctx.prisma.seller.findFirstOrThrow({
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.seller.findFirstOrThrow({
         where: {
           userId: ctx.session.user.id,
         },
@@ -46,7 +46,6 @@ export const sellerProfileRouter = createTRPCRouter({
           },
         },
       });
-
       return data;
     }),
   updateSellerProduct: protectedProcedure

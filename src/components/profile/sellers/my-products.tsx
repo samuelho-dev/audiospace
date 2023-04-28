@@ -38,7 +38,6 @@ function EditProduct({ product, i, setEditEntry }: EditProductProps) {
   const handleSubmitProductUpdate = async () => {
     const revisedForm = { ...form };
     revisedForm.price = new Decimal(revisedForm.price);
-    console.log(typeof revisedForm.price);
     await productUpdateMutation.mutateAsync(revisedForm);
     router.reload();
   };
@@ -115,7 +114,7 @@ function MyProducts() {
   }
 
   const sellerProductQuery = api.sellerprofile.getSellerProduct.useQuery();
-  console.log(sellerProductQuery.data);
+  console.log(typeof sellerProductQuery.data?.products[0]?.price);
 
   if (!sellerProductQuery.data) {
     return null;

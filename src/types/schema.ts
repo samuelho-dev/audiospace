@@ -35,11 +35,10 @@ export const ProductSchema = z.object({
   name: z.string(),
   images: z.array(z.unknown()),
   price: z
-    .instanceof(Decimal)
-    .or(z.number())
-    .refine((value) => {
+    .custom<Decimal>((value) => {
       try {
-        return new Decimal(value);
+        new Decimal(value as number);
+        return true;
       } catch (error) {
         return false;
       }
@@ -47,11 +46,10 @@ export const ProductSchema = z.object({
     .transform((value) => new Decimal(value)),
   previewUrl: z.string().nullable().optional(),
   discountRate: z
-    .instanceof(Decimal)
-    .or(z.number())
-    .refine((value) => {
+    .custom<Decimal>((value) => {
       try {
-        return new Decimal(value);
+        new Decimal(value as number);
+        return true;
       } catch (error) {
         return false;
       }
