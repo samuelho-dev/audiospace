@@ -36,7 +36,6 @@ function ProductCard({ product }: ProductCardProps) {
     });
   };
 
-  console.log(product);
   const handleWishlistRemove = () => {
     setFavorite(false);
     void wishlistRemoveMutation.mutateAsync({

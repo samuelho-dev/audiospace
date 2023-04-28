@@ -229,7 +229,7 @@ function AdminPanel() {
                 >
                   {sellers.data &&
                     sellers.data.map((seller) => (
-                      <option key={seller.id} value={seller.id}>
+                      <option key={seller.id} value={Number(seller.id)}>
                         {seller.user.username}
                       </option>
                     ))}
