@@ -40,11 +40,8 @@ function PluginDropdown({
             key={category.id}
             className="grid w-full max-w-3xl grid-cols-[1fr_4fr] justify-between py-4"
           >
-            <div className="">
-              <h4 className="whitespace-nowrap text-white">
-                {category.name} ➡️
-              </h4>
-            </div>
+            <h4 className="whitespace-nowrap text-white">{category.name} ➡️</h4>
+
             <div className="grid grid-cols-4 border-l-2 border-white pl-2">
               {category.subcategories.map((subcategory) => (
                 <div key={subcategory.id} className="hover:bg-slate-300 ">
@@ -86,7 +83,7 @@ function Navbar() {
       <Link href={"/"} className="z-20">
         <h1>audio.space</h1>
       </Link>
-      <div className="flex items-center justify-center gap-4">
+      <div className="absolute left-1/2 flex -translate-x-1/2  items-center justify-center gap-4">
         <Link
           href={"/plugins"}
           onMouseOver={() => handleDropdown("PluginDropdown")}
@@ -123,16 +120,19 @@ function Navbar() {
             Sign In
           </button>
         ) : (
-          <UserNav
-            handleDropdown={handleDropdown}
-            activeDropdown={activeDropdown}
-          />
+          <>
+            <UserNav
+              handleDropdown={handleDropdown}
+              activeDropdown={activeDropdown}
+            />
+            <Link href={"/cart"}>
+              <button className="z-20 flex items-center justify-center rounded-full bg-white px-2 py-1 text-lg">
+                🛒
+              </button>
+            </Link>
+          </>
         )}
-        <button className="z-20">
-          <h3 className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
-            🛒
-          </h3>
-        </button>
+
         {activeDropdown === "AuthModal" && (
           <AuthModal handleDropdown={handleDropdown} />
         )}
