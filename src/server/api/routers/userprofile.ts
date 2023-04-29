@@ -85,17 +85,53 @@ export const userProfileRouter = createTRPCRouter({
         id: ctx.session.user.id,
       },
       select: {
-        wishlist: {
+        cart: {
           select: {
             id: true,
           },
         },
       },
     });
-    const result = data.wishlist.map((el) => el.id);
+    const result = data.cart.map((el) => el.id);
     // console.log(ctx.session.user, "getwishlist");
     return result;
   }),
+  getCartProducts: protectedProcedure
+    // .output(z.object({ wishlist: z.array(ProductSchema) }))
+    .query(async ({ ctx }) => {
+      const data = await ctx.prisma.user.findFirstOrThrow({
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          cart: {
+            select: {
+              id: true,
+              seller: {
+                select: {
+                  user: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                },
+              },
+              description: true,
+              category: true,
+              subcategory: true,
+              name: true,
+              images: true,
+              price: true,
+              previewUrl: true,
+              discountRate: true,
+            },
+          },
+        },
+      });
+
+      console.log(data, "getwishlist");
+      return data;
+    }),
   getWishlistProducts: protectedProcedure
     .output(z.object({ wishlist: z.array(ProductSchema) }))
     .query(async ({ ctx }) => {
@@ -162,6 +198,46 @@ export const userProfileRouter = createTRPCRouter({
         },
         where: {
           id: ctx.session.user.id,
+        },
+      });
+      return data;
+    }),
+  addProductToCart: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) => {
+      const data = ctx.prisma.user.update({
+        data: {
+          cart: {
+            connect: {
+              id: input.id,
+            },
+          },
+        },
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+      return data;
+    }),
+  deleteProductFromCart: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) => {
+      const data = ctx.prisma.user.update({
+        data: {
+          cart: {
+            disconnect: {
+              id: input.id,
+            },
+          },
+        },
+        where: {
+          id: ctx.session.user.id,
+        },
+        select: {
+          id: true,
         },
       });
       return data;
