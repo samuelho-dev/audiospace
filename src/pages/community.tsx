@@ -19,7 +19,6 @@ function Community() {
       battleId: battleQuery.data.id,
     });
   };
-  console.log(battleEntriesQuery.data);
 
   return (
     <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
@@ -41,7 +40,7 @@ function Community() {
         <h3>Previous Winners</h3>
         <div className="flex w-full justify-between rounded-lg border border-zinc-400 p-2">
           <h5>Artist Name</h5>
-          <p>Audio</p>
+          <p>Link</p>
         </div>
       </div>
       <div className="flex flex-col rounded-lg p-2 outline outline-1 outline-zinc-200">
@@ -91,8 +90,9 @@ function Community() {
               <BattleEntry key={entry.id} entry={entry} />
             ))}
         </div>
-        <div>
-          <div>left</div>
+        <div className="flex justify-between border-t border-t-zinc-500 px-1 py-2">
+          <h5>{battleEntriesQuery.data?.length} Entries</h5>
+          <button>Next</button>
         </div>
       </div>
     </div>
