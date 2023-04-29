@@ -21,7 +21,7 @@ function FilterProductView() {
   }
 
   const productsQuery = api.products.getFilteredProducts.useQuery({
-    categories: Array.isArray(category) ? category : [],
+    categories: Array.isArray(category) ? category : category ? [category] : [],
     subcategories: checkedTags,
   });
 
