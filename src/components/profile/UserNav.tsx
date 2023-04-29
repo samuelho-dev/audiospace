@@ -13,18 +13,18 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   return (
     <div className="flex cursor-pointer flex-col">
       <div
-        className="z-20 flex items-center"
+        className="z-20 mr-[-10%] flex w-fit items-center"
         onClick={() => handleDropdown("ProfileDropdown")}
       >
         <h5
-          className={`mr-[-10%] h-6 w-40 overflow-clip bg-white px-6 text-center text-sm text-black ${
+          className={`mr-[-10%] h-6 w-36 overflow-clip bg-white px-6 text-center text-sm font-medium text-black ${
             activeDropdown === "ProfileDropdown" ? "rounded-t-lg" : "rounded-lg"
           }`}
         >
           {session?.user.name}
         </h5>
         <div
-          className="h-12 w-12 rounded-full bg-pink-300"
+          className="h-12 w-fit rounded-full bg-pink-300 px-2"
           // onClick={() => void signOut()}
         >
           <h1 className="z-20 flex h-full w-full items-center justify-center">

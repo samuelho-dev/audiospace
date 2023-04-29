@@ -21,18 +21,21 @@ export default function FilterModule({ categories, handleRoute }: FilterProps) {
       <div className="flex gap-2">
         <h5>Types :</h5>
         <div className="flex gap-3">
-          {categories.map((category) => (
+          {categories.map((filterCategory) => (
             <FilterBtn
-              key={category.id}
+              key={filterCategory.id}
               active={
-                tag === category.name.toLowerCase().replace(" ", "-") ||
-                tag?.includes(category.name.toLowerCase().replace(" ", "-"))
+                category ===
+                  filterCategory.name.toLowerCase().replace(" ", "-") ||
+                category?.includes(
+                  filterCategory.name.toLowerCase().replace(" ", "-")
+                )
                   ? true
                   : false
               }
             >
-              <p onClick={() => handleFilterClick(category.name)}>
-                {category.name}
+              <p onClick={() => handleFilterClick(filterCategory.name)}>
+                {filterCategory.name}
               </p>
             </FilterBtn>
           ))}
