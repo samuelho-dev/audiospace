@@ -81,7 +81,7 @@ function Navbar() {
   return (
     <nav className="top flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
       <Link href={"/"} className="z-20">
-        <h1>audio.space</h1>
+        <h1>audiospace</h1>
       </Link>
       <div className="absolute left-1/2 flex -translate-x-1/2  items-center justify-center gap-4">
         <Link
