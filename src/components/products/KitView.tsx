@@ -9,7 +9,7 @@ function Main({}) {
   const newKitsQuery = api.products.getNewProducts.useQuery({
     category: "Kits",
   });
-  console.log(newKitsQuery.data);
+
   return (
     <div className="w-full px-2 py-4">
       <div>
