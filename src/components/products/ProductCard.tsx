@@ -19,26 +19,45 @@ function ProductCard({ product }: ProductCardProps) {
   const { asPath, query } = useRouter();
   const [previewHover, setPreviewHover] = useState(false);
   const [favorite, setFavorite] = useState(false);
-  const [cartItem, setCartItem] = useState(false);
+  const [cart, setCart] = useState(false);
   const { handleRoute } = UseRouterFilter();
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   // useEffect(() => (setAudio(new Audio(product.preview_url));), [product.preview_url]);
 
   const userWishlistQuery = api.userprofile.getWishlist.useQuery();
+  const userCartQuery = api.userprofile.getCart.useQuery();
+
   const wishlistAddMutation =
     api.userprofile.addProductToWishlist.useMutation();
   const wishlistRemoveMutation =
     api.userprofile.deleteProductFromWishlist.useMutation();
+
+  const cartAddMutation = api.userprofile.addProductToCart.useMutation();
+  const cartDeleteMutation =
+    api.userprofile.deleteProductFromCart.useMutation();
+
   const handleWishlistAdd = () => {
     setFavorite(true);
     void wishlistAddMutation.mutateAsync({
       id: product.id,
     });
   };
-
   const handleWishlistRemove = () => {
     setFavorite(false);
     void wishlistRemoveMutation.mutateAsync({
+      id: product.id,
+    });
+  };
+
+  const handleAddToCart = () => {
+    setCart(true);
+    void cartAddMutation.mutateAsync({
+      id: product.id,
+    });
+  };
+  const handleRemoveFromCart = () => {
+    setCart(false);
+    void cartDeleteMutation.mutateAsync({
       id: product.id,
     });
   };
@@ -112,13 +131,16 @@ function ProductCard({ product }: ProductCardProps) {
             />
           )}
 
-          {cartItem ? (
+          {(userCartQuery.data && userCartQuery.data.includes(product.id)) ||
+          cart ? (
             <HiShoppingCart
+              onClick={handleRemoveFromCart}
               size={20}
               className="cursor-pointer hover:fill-zinc-500"
             />
           ) : (
             <HiOutlineShoppingCart
+              onClick={handleAddToCart}
               size={20}
               className="cursor-pointer hover:fill-zinc-500"
             />
