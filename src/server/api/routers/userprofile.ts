@@ -242,4 +242,12 @@ export const userProfileRouter = createTRPCRouter({
       });
       return data;
     }),
+  getPastBeatSubmissions: protectedProcedure.query(({ ctx }) => {
+    const data = ctx.prisma.battleEntry.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+    return data;
+  }),
 });
