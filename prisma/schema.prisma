@@ -172,7 +172,7 @@ model BattleEntry {
   battle   Battle @relation(fields: [battleId], references: [id], onDelete: Cascade)
   battleId Int
   likedBy  User[] @relation("Liked")
-
+  subimittedAt   DateTime      @default(now())
   @@unique([userId])
   @@index([battleId])
 }
