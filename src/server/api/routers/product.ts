@@ -8,6 +8,36 @@ import {
 import { CategorySchema, SubcategorySchema } from "~/types/schema";
 
 export const productRouter = createTRPCRouter({
+  getMainFeaturedProducts: publicProcedure.query(async ({ ctx, input }) => {
+    const data = await ctx.prisma.product.findMany({
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+      select: {
+        id: true,
+        seller: {
+          select: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
+        description: true,
+        name: true,
+        images: true,
+        category: true,
+        subcategory: true,
+        price: true,
+        previewUrl: true,
+        discountRate: true,
+        wishlistUsers: true,
+      },
+    });
+    return data;
+  }),
   getFilteredProducts: publicProcedure
     .input(
       z
