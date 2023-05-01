@@ -2,86 +2,40 @@ import { type SignInResponse, signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { api } from "~/utils/api";
+import SignUpCredential from "./CredentialSignUp";
+import SignInCredential from "./CredentialSignIn";
+import SignInOAuth from "./SignInOAuth";
+import CredentialLogin from "./CredentialSignIn";
 
 interface AuthModalProps {
   handleDropdown: (dropdownName: string | null) => void;
 }
 
+interface LoginRouteProps {
+  route: string | null;
+  setRoute: (dropdownName: string | null) => void;
+}
+
+function LoginRoute({ route, setRoute }: LoginRouteProps) {
+  switch (route) {
+    case "sign-in-credential":
+      return <CredentialLogin loginToggle={true} />;
+    case "log-in-credential":
+      return <CredentialLogin loginToggle={false} />;
+    case "sign-in-oauth":
+      return <SignInOAuth setRoute={setRoute} loginToggle={true} />;
+    case "sign-up-oauth":
+      return <SignInOAuth setRoute={setRoute} loginToggle={false} />;
+
+    default:
+      return <SignInOAuth setRoute={setRoute} loginToggle={true} />;
+  }
+}
+
 export default function AuthModal({ handleDropdown }: AuthModalProps) {
   const [errorState, setErrorState] = useState<string | null>(null);
-  const [formSubmitType, setFormSubmitType] = useState(false);
-  const handleFormType = () => setFormSubmitType(!formSubmitType);
+  const [route, setRoute] = useState<string | null>(null);
   const signUpMutation = api.auth.signUp.useMutation();
-  const router = useRouter();
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.target as HTMLFormElement;
-    const username = (form.username as HTMLInputElement).value;
-    const password = (form.password as HTMLInputElement).value;
-
-    if (formSubmitType) {
-      const email = (form.email as HTMLInputElement).value;
-      await signUpMutation
-        .mutateAsync({
-          user: {
-            username,
-            email,
-            password,
-          },
-        })
-        .then(() =>
-          signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-          }).then((response: SignInResponse | undefined) => {
-            if (!response) {
-              setErrorState("An error occurred during sign in.");
-              return;
-            }
-            const { ok, error } = response;
-            if (!ok && error) {
-              setErrorState("Failed Sign in");
-            }
-          })
-        )
-        .then(() => {
-          handleDropdown(null);
-          router.reload();
-        })
-        .catch((err: string) => {
-          console.error(err);
-        });
-
-      // await verificationEmailMutation.mutateAsync({
-      //   email: user?.email as string,
-      //   token: user?.token as string,
-      // });
-    } else {
-      await signIn("credentials", {
-        username,
-        password,
-        redirect: false,
-      })
-        .then((response: SignInResponse | undefined) => {
-          console.log(response);
-          if (!response) {
-            setErrorState("An error occurred during sign in.");
-            return;
-          }
-          const { ok, error } = response;
-          if (!ok && error) {
-            setErrorState("Failed Sign in");
-          }
-        })
-        .then(() => handleDropdown(null))
-        .catch((err: string) => {
-          console.error(err);
-        });
-    }
-  };
 
   return (
     <>
@@ -89,63 +43,10 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
         className="absolute left-0 top-0 z-40 h-full w-full bg-zinc-950 bg-opacity-50"
         onClick={() => handleDropdown(null)}
       />
-      <form
-        onSubmit={(e) => void handleSubmit(e)}
-        className=" absolute left-1/2 top-1/2 z-50 w-fit -translate-x-1/2 -translate-y-1/2 transform flex-col items-center rounded-lg bg-zinc-900 p-4 outline outline-1 outline-zinc-700"
-      >
+      <div className="absolute left-1/2 top-1/2 z-50 w-fit -translate-x-1/2 -translate-y-1/2 transform flex-col items-center rounded-lg bg-zinc-900 p-8 outline outline-1 outline-zinc-700">
         <h1>audio.space</h1>
-        <h3>{formSubmitType ? "Create an Account" : "Sign In"}</h3>
-
-        <div className="flex flex-col gap-8 py-10">
-          {formSubmitType && (
-            <label className="flex flex-row justify-between gap-10">
-              Email address:
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="rounded-lg text-center text-black"
-              />
-            </label>
-          )}
-
-          <label className="flex flex-row justify-between gap-10">
-            Username:
-            <input
-              type="text"
-              id="username"
-              name="username"
-              className="rounded-lg text-center text-black"
-            />
-          </label>
-
-          <label className="flex flex-row justify-between gap-10">
-            Password:
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="rounded-lg text-center text-black"
-            />
-          </label>
-        </div>
-        <div className="flex flex-col items-center gap-2">
-          {errorState && <p className="text-xs text-red-400">{errorState}</p>}
-          <button
-            type="button"
-            onClick={handleFormType}
-            className="rounded-lg px-2 py-1 text-xs outline outline-1 outline-zinc-700 hover:bg-zinc-800"
-          >
-            {formSubmitType ? "Sign In" : "Create An Account"}
-          </button>
-          <button
-            type="submit"
-            className="h-8 w-1/2 rounded-lg bg-yellow-400 text-lg text-black"
-          >
-            {formSubmitType ? "Create An Account" : "Sign In"}
-          </button>
-        </div>
-      </form>
+        <LoginRoute route={route} setRoute={setRoute} />
+      </div>
     </>
   );
 }
