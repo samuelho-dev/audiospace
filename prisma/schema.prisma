@@ -19,27 +19,28 @@ datasource db {
 model Account {
   id                String  @id @default(cuid())
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId            String  @unique
+  userId            String
   type              String
   provider          String
   providerAccountId String
-  refreshToken      String? @db.Text
-  accessToken       String? @db.Text
-  expiresAt         Int?
-  tokenType         String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
   scope             String?
-  idToken           String? @db.Text
+  id_token          String? @db.Text
   sessionState      String?
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId       String   @unique
-  expires      DateTime
+  id            String   @id @default(cuid())
+  session_token String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String   @unique
+  expires       DateTime
 }
 
 model EmailVerification {
@@ -56,7 +57,7 @@ model User {
   stripeCustomerId String?            @unique
   username         String             @unique
   email            String             @unique
-  password         String
+  password         String?
   emailVerified    EmailVerification?
   image            String?
   wishlist         Product[]          @relation("Wishlist")
@@ -112,7 +113,7 @@ model ProductSubcategory {
 model Product {
   id              String               @id @default(cuid())
   seller          Seller               @relation(fields: [sellerId], references: [id])
-  sellerId        Int                  
+  sellerId        Int
   name            String
   images          ProductImage[]
   category        ProductCategory      @relation(fields: [categoryId], references: [id])
@@ -164,15 +165,16 @@ model Battle {
 }
 
 model BattleEntry {
-  id       Int    @id @default(autoincrement())
-  user     User   @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  trackUrl String
-  rating   Int    @default(0)
-  battle   Battle @relation(fields: [battleId], references: [id], onDelete: Cascade)
-  battleId Int
-  likedBy  User[] @relation("Liked")
-  subimittedAt   DateTime      @default(now())
+  id           Int      @id @default(autoincrement())
+  user         User     @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  trackUrl     String
+  rating       Int      @default(0)
+  battle       Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  battleId     Int
+  likedBy      User[]   @relation("Liked")
+  subimittedAt DateTime @default(now())
+
   @@unique([userId])
   @@index([battleId])
 }
