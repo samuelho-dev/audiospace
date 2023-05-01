@@ -97,12 +97,18 @@ function BasicInfo({ session }: BasicInfoProps) {
             className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none "
           />
         </div>
-        <button
-          type="submit"
-          className="mt-4 w-fit rounded-2xl bg-white px-4 py-1 text-black"
-        >
-          Update {updated && "DONE"}
-        </button>
+        {updated ? (
+          <div className="w-fit border border-zinc-800 bg-zinc-100 px-4 text-sm text-black">
+            PLEASE LOG IN AGAIN TO SEE CHANGES
+          </div>
+        ) : (
+          <button
+            type="submit"
+            className="mt-4 w-fit rounded-2xl bg-white px-4 py-1 text-black"
+          >
+            Update
+          </button>
+        )}
       </div>
       <div className="flex flex-col gap-2 py-4">
         <h5 className="underline">Change Password</h5>
