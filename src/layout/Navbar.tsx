@@ -83,18 +83,18 @@ function Navbar() {
       <Link href={"/"} className="z-20">
         <h1>audiospace</h1>
       </Link>
-      <div className="absolute left-1/2 flex -translate-x-1/2  items-center justify-center gap-4">
+      <div className="absolute left-1/2 flex -translate-x-1/2 items-center justify-center gap-4 font-bold">
         <Link
           href={"/plugins"}
           onMouseOver={() => handleDropdown("PluginDropdown")}
         >
-          <h4>Plugins</h4>
+          <h4 className="text-md tracking-wide">PLUGINS</h4>
         </Link>
         <Link href={"/kits"} onMouseOver={() => handleDropdown("KitDropdown")}>
-          <h4>Kits</h4>
+          <h4 className="text-md tracking-wide">KITS</h4>
         </Link>
         <Link href={"/community"}>
-          <h4>Community</h4>
+          <h4 className="text-md tracking-wide">COMMUNITY</h4>
         </Link>
       </div>
       {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
@@ -113,12 +113,17 @@ function Navbar() {
       )}
       <div className="flex items-center gap-2">
         {!session ? (
-          <button
-            onClick={() => handleDropdown("AuthModal")}
-            className="rounded-full bg-yellow-300 px-4 py-1 text-black"
-          >
-            Sign In
-          </button>
+          <div className="flex gap-4">
+            <button className="border border-zinc-500 px-4 font-bold tracking-widest">
+              Sell
+            </button>
+            <button
+              onClick={() => handleDropdown("AuthModal")}
+              className="rounded-full bg-yellow-300 px-4 py-1 font-bold tracking-wide text-black"
+            >
+              Sign In
+            </button>
+          </div>
         ) : (
           <>
             <UserNav
