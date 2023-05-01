@@ -1,7 +1,16 @@
 import { type NextPage } from "next";
 import Link from "next/link";
+import ProductCard from "~/components/products/ProductCard";
+import { api } from "~/utils/api";
 
 const Home: NextPage = () => {
+  const featureProductsQuery = api.products.getMainFeaturedProducts.useQuery();
+  const effectCategoryQuery = api.onload.getSelectedSubcategories.useQuery({
+    categoryId: 1,
+  });
+  const instrumentCategoryQuery = api.onload.getSelectedSubcategories.useQuery({
+    categoryId: 2,
+  });
   return (
     <div className="flex h-full w-full max-w-3xl flex-col gap-12 lg:max-w-5xl">
       <section className="flex w-full justify-center">
@@ -14,22 +23,28 @@ const Home: NextPage = () => {
           <div className="flex w-full items-center justify-between">
             <h3 className="py-4">Featured Products</h3>
           </div>
-          <div className="flex gap-2 overflow-x-clip lg:gap-4">
-            {/* <ProductCard />
-              <ProductCard />
-              <ProductCard />
-              <ProductCard /> */}
+          <div className="flex justify-around gap-2 overflow-x-scroll lg:gap-4">
+            {featureProductsQuery.data &&
+              featureProductsQuery.data.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
           </div>
         </section>
         <section>
           <div className="flex w-full items-center justify-between">
-            <h3 className="py-4">Popular This Week</h3>
+            <h3 className="py-4">Shop Effects</h3>
           </div>
-          <div className="flex gap-2 overflow-x-clip">
-            {/* <ProductCard />
-              <ProductCard />
-              <ProductCard />
-              <ProductCard /> */}
+          <div className="flex justify-around gap-2 overflow-x-scroll lg:gap-4">
+            {effectCategoryQuery.data &&
+              effectCategoryQuery.data.map((category, i) => {
+                if (i < 5) {
+                  return (
+                    <div key={category.id}>
+                      <h5>{category.name}</h5>
+                    </div>
+                  );
+                }
+              })}
           </div>
         </section>
         <section className="flex flex-col">
