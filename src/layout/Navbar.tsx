@@ -96,6 +96,9 @@ function Navbar() {
         <Link href={"/community"}>
           <h4 className="text-md tracking-wide">COMMUNITY</h4>
         </Link>
+        <Link href={"/hi-pass"}>
+          <h4 className="text-md tracking-wide">READ</h4>
+        </Link>
       </div>
       {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
         <PluginDropdown
