@@ -35,7 +35,7 @@ export const battleRouter = createTRPCRouter({
 
       const entryExists = await ctx.prisma.battleEntry.findFirst({
         where: {
-          userId: ctx.session.user.id,
+          userId: ctx.session?.user.id,
           battleId: input.battleId,
         },
       });
