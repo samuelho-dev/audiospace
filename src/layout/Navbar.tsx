@@ -114,7 +114,10 @@ function Navbar() {
       <div className="flex items-center gap-2">
         {!session ? (
           <div className="flex gap-4">
-            <button className="border border-zinc-500 px-4 font-bold tracking-widest">
+            <button
+              onClick={() => handleDropdown("AuthModal")}
+              className="border border-zinc-500 px-4 font-bold tracking-widest"
+            >
               Sell
             </button>
             <button
