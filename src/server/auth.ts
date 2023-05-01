@@ -1,5 +1,16 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
+
 import { type GetServerSidePropsContext } from "next";
 import CredentialsProvider from "next-auth/providers/credentials";
+import AppleProvider from "next-auth/providers/apple";
+import DiscordProvider from "next-auth/providers/discord";
+
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import {
@@ -21,8 +32,9 @@ import { prisma } from "./db";
 declare module "next-auth" {
   interface User {
     id: string;
-    username: string;
+    name: string;
     role: string;
+    accessToken: string;
   }
   interface Session extends DefaultSession {
     user: User & DefaultSession["user"];
@@ -45,27 +57,39 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
-    signIn({ user, account, profile, email, credentials }) {
+    async signIn({ user, account, profile, email, credentials }) {
+      const existingUser = await prisma.user.findUniqueOrThrow({
+        where: { email: user.email },
+      });
+
+      if (existingUser) return true;
+
+      await prisma.user.create({
+        data: {
+          email: user.email,
+          username: `user`,
+        },
+      });
+
       // console.log({ user, credentials }, "signin callback");
       return true;
     },
     jwt({ token, account, profile, user }) {
-      if (user) {
-        token.accessToken = account?.access_token;
-        token.id = user.id;
-        token.name = user.username;
-        token.email = user.email;
+      if (account && user) {
         token.role = user.role;
+        token.name = user.username;
+        // console.log({ token, account, user }, "jwt callback");
       }
-      // console.log({ token, user, account, profile }, "JWT callback");
       return token;
     },
     session({ session, user, token }) {
       if (session.user) {
-        (session.user as User & DefaultSession["user"]).role = token.role;
-        (session.user as User & DefaultSession["user"]).id = token.id;
+        session.user.role = token.role;
+        session.user.name = token.name;
+        session.user.id = token.id;
       }
 
       // console.log({ token, session, user }, "session callback");
@@ -74,22 +98,33 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
+    DiscordProvider({
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    // AppleProvider({
+    //   clientId: process.env.APPLE_ID,
+    //   clientSecret: process.env.APPLE_SECRET,
+    //   allowDangerousEmailAccountLinking: true,
+    // }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "Sign In with..",
       credentials: {
         email: { label: "Email", type: "email" },
-        username: { label: "username", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        if (credentials) {
+        if (credentials && credentials.password && credentials.email) {
           try {
             const user = await prisma.user.findFirstOrThrow({
               where: {
-                OR: [
-                  { email: credentials?.email },
-                  { username: credentials?.username },
-                ],
+                email: credentials?.email,
               },
               select: {
                 id: true,
@@ -100,7 +135,7 @@ export const authOptions: NextAuthOptions = {
               },
             });
 
-            if (user) {
+            if (user && user.password) {
               const passwordMatch = await bcrypt.compare(
                 credentials.password,
                 user.password

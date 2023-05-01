@@ -8,9 +8,13 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { getCsrfToken } from "next-auth/react";
+import { getCsrfToken, getProviders } from "next-auth/react";
 
 export const authRouter = createTRPCRouter({
+  getProviders: publicProcedure.query(async () => {
+    const data = await getProviders();
+    return data;
+  }),
   csrfToken: publicProcedure.query(async () => {
     const csrfToken = await getCsrfToken();
     return csrfToken;
