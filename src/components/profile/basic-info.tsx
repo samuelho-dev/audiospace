@@ -110,36 +110,6 @@ function BasicInfo({ session }: BasicInfoProps) {
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-2 py-4">
-        <h5 className="underline">Change Password</h5>
-        <div className="flex flex-row justify-between gap-2">
-          <label htmlFor="name" className="text-sm">
-            Old Password:
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="Old password"
-            className="rounded-lg px-2 text-center text-black"
-          />
-        </div>
-        <div className="flex flex-row justify-between gap-2">
-          <label htmlFor="name" className="text-sm">
-            New Password:
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            placeholder="New password"
-            className="rounded-lg px-2 text-center text-black"
-          />
-        </div>
-        <button className="w-fit rounded-md p-1 text-xs outline outline-1 outline-zinc-400 hover:bg-zinc-500">
-          Update Password
-        </button>
-      </div>
     </form>
   );
 }
