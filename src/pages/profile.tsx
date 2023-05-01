@@ -51,10 +51,11 @@ function Profile() {
       .push(`/profile?section=${section}`, undefined, { shallow: true })
       .catch((err) => console.error(err));
   };
-
-  if (status === "unauthenticated") {
-    void router.push("/");
-  }
+  useEffect(() => {
+    if (status === "unauthenticated" || !session) {
+      void router.push("/");
+    }
+  }, [status, session, router]);
   console.log(session?.user.role);
   if (status === "authenticated") {
     return (

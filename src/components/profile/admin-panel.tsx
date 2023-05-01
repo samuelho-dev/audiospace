@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
@@ -12,9 +12,12 @@ function AdminPanel() {
   const [newSellerName, setNewSellerName] = useState("");
   const router = useRouter();
 
-  if (session?.user.role !== "ADMIN" || status === "unauthenticated") {
-    void router.push("/");
-  }
+  useEffect(() => {
+    if (session?.user.role !== "ADMIN" || status === "unauthenticated") {
+      void router.push("/");
+    }
+  }, [status, session, router]);
+
   const categories = api.onload.getAllCategories.useQuery();
   const subcategories = api.onload.getSelectedSubcategories.useQuery({
     categoryId,
