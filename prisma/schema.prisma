@@ -213,3 +213,22 @@ model TransactionItem {
   @@index([transactionId])
   @@index([productId])
 }
+
+model Post {
+  id          String   @unique
+  title       String
+  description String
+  contentUrl  String
+  author      String   @default("Audiospace Team")
+  tag         Tag      @relation(fields: [tagId], references: [id])
+  tagId       Int
+  createdAt   DateTime @default(now())
+
+  @@index([tagId])
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String
+  posts Post[]
+}
