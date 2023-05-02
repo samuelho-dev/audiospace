@@ -49,6 +49,12 @@ const categories = [
     ],
   },
 ];
+const tags = [
+  { name: "FEATURED" },
+  { name: "DEVLOG" },
+  { name: "SPOTLIGHT" },
+  { name: "CULTURE" },
+];
 
 async function seedCategoriesAndSubcategories() {
   for (const categoryData of categories) {
@@ -64,6 +70,14 @@ async function seedCategoriesAndSubcategories() {
         },
       });
     }
+  }
+
+  for (const blogTag of tags) {
+    await prisma.tag.create({
+      data: {
+        name: blogTag.name,
+      },
+    });
   }
 }
 
