@@ -9,6 +9,7 @@ import { productRouter } from "./routers/product";
 import { battleRouter } from "./routers/battle";
 import { sellerProfileRouter } from "./routers/seller";
 import { blogRouter } from "./routers/blog";
+import { b2Router } from "./routers/s3";
 
 /**
  * This is the primary router for your server.
@@ -23,9 +24,10 @@ export const appRouter = createTRPCRouter({
   userprofile: userProfileRouter,
   sellerprofile: sellerProfileRouter,
   onload: onloadRouter,
+  blog: blogRouter,
   auth: authRouter,
   admin: adminRouter,
-  blog: blogRouter,
+  b2: b2Router,
 });
 
 // export type definition of API
