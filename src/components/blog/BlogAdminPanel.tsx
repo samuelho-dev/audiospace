@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { readFileasBase64 } from "~/utils/readFileAsBase64";
+import { StandardDropzone } from "../dropzone/StandardDropzone";
 
 function BlogAdminPanel() {
   const [newPost, setNewPost] = useState({
@@ -9,32 +9,19 @@ function BlogAdminPanel() {
     blogTag: 1,
     file: "",
   });
+
+  const [uploadedFile, setUploadedFile] = useState(false);
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
+
   const handleNewBlogPost = async () => {
     const post = { ...newPost };
     post.blogTag = Number(post.blogTag);
-
-    console.log(typeof post.blogTag);
     await blogPostMutation.mutateAsync(post);
   };
-  console.log(newPost);
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: string
-  ) => {
-    const files = e.target.files;
-    if (files) {
-      try {
-        const file = files[0];
-        if (file instanceof File) {
-          const base64Files = await readFileasBase64(file);
-          setNewPost((prevData) => ({ ...prevData, [field]: base64Files }));
-        }
-      } catch (error) {
-        console.error("Error reading files:", error);
-      }
-    }
+
+  const handleFileChange = (value: string) => {
+    setNewPost((prevData) => ({ ...prevData, file: value }));
   };
 
   const handleChange = (
@@ -43,6 +30,7 @@ function BlogAdminPanel() {
     const { name, value } = e.target;
     setNewPost((prevData) => ({ ...prevData, [name]: value }));
   };
+
   return (
     <div>
       <div>
@@ -64,21 +52,36 @@ function BlogAdminPanel() {
             onChange={handleChange}
           />
         </div>
-        <input
-          onChange={(e) => void handleFileChange(e, "file")}
-          type="file"
-          accept=".md"
-          multiple={false}
-        />
-        <select name="blogTag" className="text-black" onChange={handleChange}>
-          {blogTagsQuery.data &&
-            blogTagsQuery.data.map((tag) => (
-              <option key={tag.id} value={tag.id}>
-                {tag.name}
-              </option>
-            ))}
-        </select>
-        <button onClick={() => void handleNewBlogPost()}>SUBMIT</button>
+        {uploadedFile ? (
+          <h3>Submitted</h3>
+        ) : (
+          <StandardDropzone
+            bucket="AudiospaceBlog"
+            handleFileChange={handleFileChange}
+            setUploadedFile={setUploadedFile}
+          />
+        )}
+        <div className="flex flex-col gap-2">
+          <label>Blog Type</label>
+          <select
+            name="blogTag"
+            className="w-fit text-black"
+            onChange={handleChange}
+          >
+            {blogTagsQuery.data &&
+              blogTagsQuery.data.map((tag) => (
+                <option key={tag.id} value={tag.id}>
+                  {tag.name}
+                </option>
+              ))}
+          </select>
+        </div>
+        <button
+          className="my-2 border border-zinc-300 px-2"
+          onClick={() => void handleNewBlogPost()}
+        >
+          SUBMIT
+        </button>
       </div>
     </div>
   );
