@@ -1,0 +1,17 @@
+b2 update-bucket --corsRules '[
+  {
+    "corsRuleName": "AllowAll",
+    "allowedOrigins": ["*"],
+    "allowedHeaders": ["*"],
+    "allowedOperations": [
+      "s3_put"
+    ],
+    "maxAgeSeconds": 3600
+  }
+]' AudiospaceBlog
+
+
+
+curl -X PUT -H "Content-Type: 'text/markdown'" --upload-file "/Users/samuelho/Downloads/testblog.md" "https://s3.us-east-005.backblazeb2.com/AudiospaceBlog/7d70f207-a46d-4156-a8a8-1780271fae7d?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=0053e7f3a86de150000000001%2F20230503%2Fus-east-5%2Fs3%2Faws4_request&X-Amz-Date=20230503T003741Z&X-Amz-Expires=900&X-Amz-Signature=3e8c4a49f54f5fd487789cc36b9ae5f057e7305a4377f615b385d5daaf21f6da&X-Amz-SignedHeaders=host&x-id=PutObject"
+
+curl -i -X PUT --data-binary 'Hello' --header 'Content-Type: text/plain' 'https://s3.us-east-005.backblazeb2.com/AudiospaceBlog/af7aaee6-801d-49b4-ae82-ca1d94c96f1e?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=0053e7f3a86de150000000001%2F20230503%2Fus-east-5%2Fs3%2Faws4_request&X-Amz-Date=20230503T014534Z&X-Amz-Expires=900&X-Amz-Signature=c552b0769a87f85ba436a5ad17fa266d3efe4397b26771b0e62145b5936fcf1a&X-Amz-SignedHeaders=host&x-id=PutObject'
