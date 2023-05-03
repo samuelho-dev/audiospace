@@ -1,8 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "~/env.mjs";
-import { v4 as uuidv4 } from "uuid";
-import { readFileasBase64 } from "./readFileAsBase64";
-import { Readable } from "stream";
+
+import { type Readable } from "stream";
 import { unknown } from "zod";
 
 const REGION = "us-east-5";
@@ -20,7 +19,7 @@ const client = new S3Client({
 async function streamToString(stream: Readable): Promise<string> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
-    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("data", (chunk: Buffer) => chunks.push(chunk));
     stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     stream.on("error", reject);
   });
@@ -37,7 +36,7 @@ export default async function getB2File(key: string, bucket: string) {
     const data = await streamToString(response.Body as Readable);
     return data;
   } catch (err) {
-    console.error("Upload to B2 failed", err);
-    throw new Error("B2_UPLOAD_FAILED");
+    console.error("Get B2 file failed", err);
+    throw new Error("B2_Get_Failed");
   }
 }
