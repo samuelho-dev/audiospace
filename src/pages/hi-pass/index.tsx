@@ -3,7 +3,6 @@ import Link from "next/link";
 import React, { useState } from "react";
 import BlogAdminPanel from "~/components/blog/BlogAdminPanel";
 import { api } from "~/utils/api";
-import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
 function Blog() {
   const blogPostsQuery = api.blog.getBlogPosts.useQuery();
