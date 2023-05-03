@@ -1,25 +1,20 @@
-import { getAllPostIds, getPostData } from "lib/posts";
-import { remark } from "remark";
-import html from "remark-html";
 import React from "react";
-import Layout from "~/layout/Layout";
-import Head from "next/head";
-import { parseISO, format } from "date-fns";
-import { api } from "~/utils/api";
 import { PrismaClient } from "@prisma/client";
 import { decode, encode } from "~/utils/quickHash";
-import { z } from "zod";
 import { type GetStaticProps } from "next";
 import getB2File from "~/utils/getB2File";
-import matter from "gray-matter";
+import { MDXRemote } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
+import Layout from "~/components/mdx/Layout";
 
-function Post({ postData }) {
+function Post({ source, postData }) {
   console.log(postData);
   return (
-    <div>
-      <h1>Post {postData.id}</h1>
-      <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
-    </div>
+    <Layout>
+      <main>
+        <MDXRemote {...source} />
+      </main>
+    </Layout>
   );
 }
 
@@ -36,20 +31,14 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     },
   });
   await prisma.$disconnect();
-  const postData = { ...data };
-  postData.createdAt = JSON.stringify(postData.createdAt);
+  console.log(data.contentUrl);
   const b2File = await getB2File(data.contentUrl, "AudiospaceBlog");
-  const matterResult = matter(b2File);
-  const processedContent = await remark()
-    .use(html)
-    .process(matterResult.content);
-  const contentHtml = processedContent.toString();
+  const mdxSource = await serialize(b2File);
+  console.log(b2File);
 
-  console.log({ contentHtml, ...postData });
   return {
     props: {
-      contentHtml,
-      ...postData,
+      source: mdxSource,
     },
   };
 };
