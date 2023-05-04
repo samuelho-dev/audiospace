@@ -37,7 +37,7 @@ export const b2Router = createTRPCRouter({
         Key: key,
       });
 
-      return await getSignedUrl(b2, putObjectCommand);
+      return await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
     }),
 
   getStandardDownloadPresignedUrl: publicProcedure
@@ -51,7 +51,7 @@ export const b2Router = createTRPCRouter({
         Key: key,
       });
 
-      return await getSignedUrl(b2, putObjectCommand);
+      return await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
     }),
 
   getMultipartUploadPresignedUrl: publicProcedure
@@ -90,7 +90,9 @@ export const b2Router = createTRPCRouter({
           PartNumber: i,
         });
 
-        const url = getSignedUrl(b2, uploadPartCommand).then((url) => ({
+        const url = getSignedUrl(b2, uploadPartCommand, {
+          expiresIn: 3600,
+        }).then((url) => ({
           url,
           partNumber: i,
         }));
