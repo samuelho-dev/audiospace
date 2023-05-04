@@ -45,17 +45,12 @@ export const blogRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const uploadProduct = await uploadB2(input.file, "AudiospaceBlog");
-
-      if (!uploadProduct) {
-        throw new Error("Error uploading post");
-      }
       const data = await ctx.prisma.post.create({
         data: {
           id: encode(input.title.replace(" ", "-").toLowerCase()),
           title: input.title,
           description: input.description,
-          contentUrl: uploadProduct,
+          contentUrl: input.file,
           tag: {
             connect: {
               id: input.blogTag,
