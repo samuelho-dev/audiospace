@@ -61,7 +61,7 @@ function SignInOAuth({ setRoute, loginToggle }: SignInOAuthProps) {
         ) : (
           <div className="flex flex-col gap-2 py-2">
             <button
-              onClick={() => setRoute("sign-in-credential")}
+              onClick={() => setRoute("sign-up-credential")}
               className="bg-zinc-800 text-sm font-medium"
             >
               CREATE ACCOUNT WITH EMAIL

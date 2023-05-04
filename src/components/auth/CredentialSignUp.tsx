@@ -4,11 +4,10 @@ import React, { useState } from "react";
 import { api } from "~/utils/api";
 
 interface CredentialSignUpProps {
-  setRoute: (dropdownName: string | null) => void;
+  setErrorState: (error: string | null) => void;
 }
 
-function CredentialSignUp({ setRoute }: CredentialSignUpProps) {
-  const [errorState, setErrorState] = useState<string | null>(null);
+function CredentialSignUp({ setErrorState }: CredentialSignUpProps) {
   const signUpMutation = api.auth.signUp.useMutation();
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
