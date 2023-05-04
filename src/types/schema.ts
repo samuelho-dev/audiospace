@@ -93,6 +93,22 @@ export const BattleSchema = z.object({
   isActive: z.enum(["ACTIVE", "ENDED", "VOTING"]),
 });
 
+export const PostSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  contentUrl: z.string(),
+  author: z.string(),
+  tagId: z.number(),
+  createdAt: z.date(),
+});
+
+export const TagSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  posts: z.array(PostSchema).optional(),
+});
+
 export type SellerSchema = z.infer<typeof SellerSchema>;
 export type SubcategorySchema = z.infer<typeof SubcategorySchema>;
 export type CategorySchema = z.infer<typeof CategorySchema>;
@@ -100,3 +116,5 @@ export type ProductSchema = z.infer<typeof ProductSchema>;
 export type UserSchema = z.infer<typeof UserSchema>;
 export type BattleEntrySchema = z.infer<typeof BattleEntrySchema>;
 export type BattleSchema = z.infer<typeof BattleSchema>;
+export type PostSchema = z.infer<typeof PostSchema>;
+export type TagSchema = z.infer<typeof TagSchema>;
