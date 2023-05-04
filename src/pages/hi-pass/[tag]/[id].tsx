@@ -3,15 +3,22 @@ import { PrismaClient } from "@prisma/client";
 import { decode, encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
 import getB2File from "~/utils/getB2File";
-import { MDXRemote } from "next-mdx-remote";
+import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import Layout from "~/components/mdx/Layout";
+import { type PostSchema } from "~/types/schema";
+import { parse, stringify } from "superjson";
 
-function Post({ source, postData }) {
-  console.log(postData);
+interface PostProps {
+  source: MDXRemoteProps;
+  postData: string;
+}
+function Post({ source, postData }: PostProps) {
+  const data = parse(postData);
+  console.log(data);
   return (
     <Layout>
-      <main>
+      <main className="flex h-full w-full max-w-2xl flex-col">
         <MDXRemote {...source} />
       </main>
     </Layout>
@@ -21,24 +28,24 @@ function Post({ source, postData }) {
 export default Post;
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const decodedId = encode(params?.id as string);
+  const encodedId = encode(params?.id as string);
 
-  // const postData = await api.blog.getPost.useQuery({ id: decodedId });
   const prisma = new PrismaClient();
+
   const data = await prisma.post.findUniqueOrThrow({
     where: {
-      id: decodedId,
+      id: encodedId,
     },
   });
   await prisma.$disconnect();
-  console.log(data.contentUrl);
+
   const b2File = await getB2File(data.contentUrl, "AudiospaceBlog");
   const mdxSource = await serialize(b2File);
-  console.log(b2File);
 
   return {
     props: {
       source: mdxSource,
+      postData: stringify(data),
     },
   };
 };
