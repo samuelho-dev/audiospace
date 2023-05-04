@@ -1,24 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { api } from "~/utils/api";
-interface StandardDropzoneProps {
+interface StandardB2DropzoneProps {
   bucket: string;
   handleFileChange: (value: string) => void;
   setUploadedFile: (boolean: boolean) => void;
 }
-export const StandardDropzone = ({
+export const StandardB2Dropzone = ({
   bucket,
   handleFileChange,
   setUploadedFile,
-}: StandardDropzoneProps) => {
+}: StandardB2DropzoneProps) => {
   const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
   const { mutateAsync: fetchPresignedUrls } =
     api.b2.getStandardUploadPresignedUrl.useMutation();
@@ -38,8 +33,8 @@ export const StandardDropzone = ({
         })
           .then((url) => {
             setPresignedUrl(url);
+            console.log({ url, key });
             handleFileChange(key);
-            console.log(url);
             setSubmitDisabled(false);
           })
           .catch((err) => console.error(err));
@@ -73,7 +68,8 @@ export const StandardDropzone = ({
         .then((response) => {
           console.log(response);
           setUploadedFile(true);
-          console.log("Successfully uploaded ", file.name);
+
+          console.log("Successfully uploaded ", file);
         })
         .catch((err) => console.error(err));
       setSubmitDisabled(true);
