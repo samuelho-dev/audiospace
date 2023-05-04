@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { StandardDropzone } from "../dropzone/StandardDropzone";
+import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
 
 function BlogAdminPanel() {
   const [newPost, setNewPost] = useState({
@@ -28,6 +28,7 @@ function BlogAdminPanel() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    // console.log(newPost);
     setNewPost((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -52,10 +53,11 @@ function BlogAdminPanel() {
             onChange={handleChange}
           />
         </div>
+
         {uploadedFile ? (
           <h3>Submitted</h3>
         ) : (
-          <StandardDropzone
+          <StandardB2Dropzone
             bucket="AudiospaceBlog"
             handleFileChange={handleFileChange}
             setUploadedFile={setUploadedFile}
