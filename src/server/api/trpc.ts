@@ -1,5 +1,5 @@
 import { b2 } from "../backblaze/b2";
-
+import cloudinary from "~/server/cloudinary/cloudinary";
 /**
  * YOU PROBABLY DON'T NEED TO EDIT THIS FILE, UNLESS:
  * 1. You want to modify request context (see Part 1).
@@ -38,9 +38,10 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    b2,
     session: opts.session,
     prisma,
+    b2,
+    cloudinary,
   };
 };
 
