@@ -1,12 +1,11 @@
 import React from "react";
 import { PrismaClient } from "@prisma/client";
-import { decode, encode } from "~/utils/quickHash";
+import { encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
 import getB2File from "~/utils/getB2File";
 import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import Layout from "~/components/mdx/Layout";
-import { type PostSchema } from "~/types/schema";
 import { parse, stringify } from "superjson";
 
 interface PostProps {

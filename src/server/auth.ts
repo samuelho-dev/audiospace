@@ -81,6 +81,7 @@ export const authOptions: NextAuthOptions = {
       if (account && user) {
         token.role = user.role;
         token.name = user.username;
+        token.id = user.id;
         // console.log({ token, account, user }, "jwt callback");
       }
       return token;
