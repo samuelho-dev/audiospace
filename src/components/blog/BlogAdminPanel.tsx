@@ -1,23 +1,42 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
 import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
+import { stringify } from "superjson";
 
 function BlogAdminPanel() {
   const [newPost, setNewPost] = useState({
     title: "",
     description: "",
     blogTag: 1,
+    image: "",
     file: "",
   });
 
   const [uploadedFile, setUploadedFile] = useState(false);
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
+  const bannerQuery = api.cloudinary.uploadImages.useMutation();
 
   const handleNewBlogPost = async () => {
     const post = { ...newPost };
     post.blogTag = Number(post.blogTag);
+
+    const data = await bannerQuery.mutateAsync({
+      images: [newPost.image],
+      folder: "user",
+    });
+    post.image = data[0]?.imageUrl as string;
+
     await blogPostMutation.mutateAsync(post);
+  };
+
+  const bannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { files } = e.target;
+    if (files) {
+      const file = files[0] as File;
+      const data = stringify(file);
+      setNewPost((prevData) => ({ ...prevData, image: data }));
+    }
   };
 
   const handleFileChange = (value: string) => {
@@ -28,7 +47,6 @@ function BlogAdminPanel() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    // console.log(newPost);
     setNewPost((prevData) => ({ ...prevData, [name]: value }));
   };
 
@@ -53,7 +71,7 @@ function BlogAdminPanel() {
             onChange={handleChange}
           />
         </div>
-
+        <input type="file" className="py-2" onChange={bannerUpload} />
         {uploadedFile ? (
           <h3>Submitted</h3>
         ) : (
