@@ -2,7 +2,6 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "~/env.mjs";
 
 import { type Readable } from "stream";
-import { unknown } from "zod";
 
 const REGION = "us-east-5";
 const BACKBLAZE_ENDPOINT = `https://s3.us-east-005.backblazeb2.com`;
