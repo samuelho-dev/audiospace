@@ -34,11 +34,23 @@ export const blogRouter = createTRPCRouter({
     return data;
   }),
   getFilteredBlogPostsByTag: publicProcedure
-    .input(z.object({ tagId: z.number() }))
+    .input(z.object({ tag: z.string() }))
     .query(async ({ ctx, input }) => {
       const data = ctx.prisma.post.findMany({
         where: {
-          tagId: input.tagId,
+          tag: {
+            name: input.tag,
+          },
+        },
+        select: {
+          id: true,
+          title: true,
+          author: true,
+          contentUrl: true,
+          description: true,
+          createdAt: true,
+          imageUrl: true,
+          tag: true,
         },
       });
       return data;
