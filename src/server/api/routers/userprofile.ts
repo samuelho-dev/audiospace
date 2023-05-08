@@ -6,7 +6,6 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import { ProductSchema } from "~/types/schema";
-import cloudinary from "~/utils/cloudinary";
 import uploadCloudinary from "~/utils/uploadCloudinary";
 
 const sessionSchema = z.object({
@@ -23,9 +22,8 @@ export const userProfileRouter = createTRPCRouter({
       const parsedSession = sessionSchema.parse(ctx.session);
 
       if (parsedSession.user.image) {
-        await cloudinary.uploader.destroy(parsedSession.user.image);
+        await ctx.cloudinary.uploader.destroy(parsedSession.user.image);
       }
-
       const data = await uploadCloudinary([input.image], "audiospace/user");
 
       const load = ctx.prisma.user.update({
@@ -93,7 +91,7 @@ export const userProfileRouter = createTRPCRouter({
       },
     });
     const result = data.cart.map((el) => el.id);
-    // console.log(ctx.session.user, "getwishlist");
+    // console.log(data, "getwishlist");
     return result;
   }),
   getCartProducts: protectedProcedure
@@ -129,7 +127,7 @@ export const userProfileRouter = createTRPCRouter({
         },
       });
 
-      console.log(data, "getwishlist");
+      console.log({ data, id: ctx.session.user }, "getwishlist");
       return data;
     }),
   getWishlistProducts: protectedProcedure
@@ -165,7 +163,7 @@ export const userProfileRouter = createTRPCRouter({
         },
       });
 
-      console.log(data, "getwishlist");
+      // console.log(data, "getwishlistproducts");
       return data;
     }),
   addProductToWishlist: protectedProcedure
@@ -204,8 +202,8 @@ export const userProfileRouter = createTRPCRouter({
     }),
   addProductToCart: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(({ ctx, input }) => {
-      const data = ctx.prisma.user.update({
+    .mutation(async ({ ctx, input }) => {
+      const data = await ctx.prisma.user.update({
         data: {
           cart: {
             connect: {
@@ -216,10 +214,12 @@ export const userProfileRouter = createTRPCRouter({
         where: {
           id: ctx.session.user.id,
         },
-        select: {
-          id: true,
-        },
+
+        // select: {
+        //   id: true,
+        // },
       });
+      console.log(data, input);
       return data;
     }),
   deleteProductFromCart: protectedProcedure

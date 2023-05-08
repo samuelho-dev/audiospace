@@ -217,6 +217,7 @@ model TransactionItem {
 model Post {
   id          String   @unique
   title       String
+  imageUrl    String
   description String
   contentUrl  String
   author      String   @default("Audiospace Team")

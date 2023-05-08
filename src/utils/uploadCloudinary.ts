@@ -1,4 +1,4 @@
-import cloudinary from "../server/cloudinary/cloudinary";
+import cloudinary from "~/server/cloudinary/cloudinary";
 
 export default async function uploadCloudinary(
   images: string[],
