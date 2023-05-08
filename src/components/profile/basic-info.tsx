@@ -1,5 +1,6 @@
 import type { Session } from "next-auth";
 import React, { useState } from "react";
+import { stringify } from "superjson";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
@@ -13,7 +14,7 @@ function BasicInfo({ session }: BasicInfoProps) {
     name: session.user.name || "",
   });
 
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<File | string | null>(null);
   const [updated, setUpdated] = useState(false);
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,8 +26,8 @@ function BasicInfo({ session }: BasicInfoProps) {
     const { files } = e.target;
     if (files) {
       const file = files[0] as File;
-      const base64 = await readFileasBase64(file);
-      setProfileImage(base64);
+
+      setProfileImage(file);
     }
   };
 
@@ -39,7 +40,7 @@ function BasicInfo({ session }: BasicInfoProps) {
       formupdate.mutate(form);
 
       if (profileImage) {
-        profileimageupdate.mutate({ image: profileImage });
+        profileimageupdate.mutate({ image: stringify(profileImage) });
       }
       setUpdated(true);
       // if (form.email === session.user.email && form.name === session.user.name)

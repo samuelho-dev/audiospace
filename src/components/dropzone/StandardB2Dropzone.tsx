@@ -77,7 +77,7 @@ export const StandardB2Dropzone = ({
   }, [acceptedFiles, presignedUrl, setUploadedFile]);
 
   return (
-    <section className="my-4 border border-zinc-700 p-4">
+    <section className="border border-zinc-700 p-4">
       <div {...getRootProps()} className="dropzone-container">
         <input {...getInputProps()} />
         {isDragActive ? (
