@@ -1,7 +1,8 @@
+import { type ReactNode } from "@mdx-js/react/lib";
 import React from "react";
 
 interface HeadingProps {
-  children: string;
+  children?: ReactNode;
 }
 
 function Paragraph({ children }: HeadingProps) {

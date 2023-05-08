@@ -1,7 +1,8 @@
-import React, { type DetailedHTMLProps, type HTMLAttributes } from "react";
+import { type ReactNode } from "@mdx-js/react/lib";
+import React from "react";
 
 interface HeadingProps {
-  children: string;
+  children?: ReactNode;
 }
 
 export const Heading = {

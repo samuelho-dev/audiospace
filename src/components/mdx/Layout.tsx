@@ -1,9 +1,10 @@
 import { MDXProvider } from "@mdx-js/react";
 import Paragraph from "./Paragraph";
 import { Heading } from "./Heading";
+import { type ReactNode } from "@mdx-js/react/lib";
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const components = {
