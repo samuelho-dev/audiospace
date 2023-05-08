@@ -1,3 +1,4 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -7,6 +8,7 @@ import FilteredBlogsByTag from "~/components/blog/FilteredBlogsByTag";
 import { api } from "~/utils/api";
 
 function Blog() {
+  const session = useSession();
   const blogPostsQuery = api.blog.getBlogPosts.useQuery();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
   const router = useRouter();
@@ -30,7 +32,7 @@ function Blog() {
       </div>
 
       <div className="w-full">
-        <BlogAdminPanel />
+        {session.data?.user.role === "ADMIN" && <BlogAdminPanel />}
         <div>
           <h1>Blog Posts</h1>
           {tag ? (
