@@ -19,7 +19,7 @@ export const battleRouter = createTRPCRouter({
   }),
   submitBattleEntry: protectedProcedure
     .input(z.object({ trackUrl: z.string().url(), battleId: z.number() }))
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const battleStatus = await ctx.prisma.battle.findFirst({
         where: {
           id: input.battleId,
@@ -101,19 +101,6 @@ export const battleRouter = createTRPCRouter({
       const result = shuffle(data) as BattleEntrySchema[];
       return result;
     }),
-  toggleBattleVoting: protectedProcedure
-    .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
-      const data = await ctx.prisma.battle.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          isActive: "VOTING",
-        },
-      });
-      return data;
-    }),
   voteEntry: protectedProcedure
     .input(z.object({ entryId: z.number() }))
     .mutation(async ({ ctx, input }) => {
@@ -144,7 +131,7 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
-  endBattle: protectedProcedure
+  toggleBattleVoting: protectedProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ ctx, input }) => {
       const data = await ctx.prisma.battle.update({
@@ -152,7 +139,52 @@ export const battleRouter = createTRPCRouter({
           id: input.id,
         },
         data: {
-          isActive: "ENDED",
+          isActive: "VOTING",
+        },
+      });
+      return data;
+    }),
+  endBattleandCreate: protectedProcedure
+    .input(
+      z.object({
+        description: z.string(),
+        sample: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const currBattle = await ctx.prisma.battle.findFirst({
+        where: {
+          isActive: "ACTIVE",
+        },
+        select: {
+          id: true,
+          entries: {
+            orderBy: [
+              {
+                rating: "desc",
+              },
+            ],
+            take: 5,
+          },
+        },
+      });
+
+      if (currBattle) {
+        await ctx.prisma.battle.update({
+          where: {
+            id: currBattle.id,
+          },
+          data: {
+            isActive: "ENDED",
+            winnerId: currBattle.entries[0]?.userId,
+            endedAt: new Date(),
+          },
+        });
+      }
+      const data = await ctx.prisma.battle.create({
+        data: {
+          description: input.description,
+          sample: input.sample,
         },
       });
       return data;

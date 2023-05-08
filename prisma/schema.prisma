@@ -161,6 +161,7 @@ model Battle {
   winnerId    String?
   sample      String?
   createdAt   DateTime      @default(now())
+  endedAt     DateTime?
   isActive    BattleStatus  @default(ACTIVE)
 }
 
