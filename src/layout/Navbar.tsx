@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import UserNav from "~/components/profile/UserNav";
 import AuthModal from "~/components/auth/AuthModal";
 import { api } from "~/utils/api";
+import { BiSearchAlt } from "react-icons/bi";
 
 interface Subcategory {
   id: number;
@@ -32,7 +33,7 @@ function PluginDropdown({
   return (
     <div
       onMouseLeave={() => handleDropdown(null)}
-      className="absolute left-0 top-0 z-10 h-fit w-full translate-y-14 justify-center gap-1 rounded-b-lg border-b border-zinc-600 bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90"
+      className="absolute left-0 top-0 z-10 h-fit w-full translate-y-24 justify-center gap-1 rounded-b-lg border-b border-zinc-600 bg-gradient-to-b from-[#191919] to-[#101010] py-2 opacity-90"
     >
       <div className="flex w-full flex-col items-center justify-between">
         {categories.map((category) => (
@@ -77,13 +78,58 @@ function Navbar() {
   const handleDropdown = (dropdownName: string | null) => {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
-
+  {
+  }
   return (
-    <nav className="top flex w-full max-w-3xl items-center justify-between gap-4 lg:max-w-5xl">
-      <Link href={"/"} className="z-20">
-        <h1>audiospace</h1>
-      </Link>
-      <div className="absolute left-1/2 flex -translate-x-1/2 items-center justify-center gap-4 font-bold">
+    <nav className="top flex w-full max-w-3xl flex-col items-center justify-between lg:max-w-5xl">
+      <div className="flex h-10 w-full items-center justify-between">
+        <Link href={"/"} className="z-20">
+          <h1>audiospace</h1>
+        </Link>
+        <div className="absolute left-1/2 flex w-1/4 -translate-x-1/2 items-center justify-center font-bold">
+          <input
+            type="text"
+            className="h-6 w-full rounded-sm bg-zinc-100 text-black"
+          />
+          <BiSearchAlt className="ml-[-10%]" fill="darkgray" size={20} />
+        </div>
+        <div className="flex items-center gap-2">
+          {!session ? (
+            <div className="flex gap-4">
+              <button
+                onClick={() => handleDropdown("AuthModal")}
+                className="border border-zinc-500 px-4 font-bold tracking-widest"
+              >
+                Sell
+              </button>
+              <button
+                onClick={() => handleDropdown("AuthModal")}
+                className="rounded-full bg-yellow-300 px-4 py-1 font-bold tracking-wide text-black"
+              >
+                Sign In
+              </button>
+            </div>
+          ) : (
+            <>
+              <UserNav
+                handleDropdown={handleDropdown}
+                activeDropdown={activeDropdown}
+              />
+              <Link href={"/cart"}>
+                <button className="z-20 flex items-center justify-center rounded-full bg-white px-2 py-1 text-lg">
+                  🛒
+                </button>
+              </Link>
+            </>
+          )}
+
+          {activeDropdown === "AuthModal" && (
+            <AuthModal handleDropdown={handleDropdown} />
+          )}
+        </div>
+      </div>
+
+      <div className="my-2 flex gap-8">
         <Link
           href={"/plugins"}
           onMouseOver={() => handleDropdown("PluginDropdown")}
@@ -99,53 +145,19 @@ function Navbar() {
         <Link href={"/hi-pass"}>
           <h4 className="text-md tracking-wide">READ</h4>
         </Link>
-      </div>
-      {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
-        <PluginDropdown
-          route={"/plugins"}
-          handleDropdown={handleDropdown}
-          categories={pluginCategoriesQuery.data}
-        />
-      )}
-      {activeDropdown === "KitDropdown" && kitCategoriesQuery.data && (
-        <PluginDropdown
-          route={"/kits"}
-          handleDropdown={handleDropdown}
-          categories={kitCategoriesQuery.data}
-        />
-      )}
-      <div className="flex items-center gap-2">
-        {!session ? (
-          <div className="flex gap-4">
-            <button
-              onClick={() => handleDropdown("AuthModal")}
-              className="border border-zinc-500 px-4 font-bold tracking-widest"
-            >
-              Sell
-            </button>
-            <button
-              onClick={() => handleDropdown("AuthModal")}
-              className="rounded-full bg-yellow-300 px-4 py-1 font-bold tracking-wide text-black"
-            >
-              Sign In
-            </button>
-          </div>
-        ) : (
-          <>
-            <UserNav
-              handleDropdown={handleDropdown}
-              activeDropdown={activeDropdown}
-            />
-            <Link href={"/cart"}>
-              <button className="z-20 flex items-center justify-center rounded-full bg-white px-2 py-1 text-lg">
-                🛒
-              </button>
-            </Link>
-          </>
+        {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
+          <PluginDropdown
+            route={"/plugins"}
+            handleDropdown={handleDropdown}
+            categories={pluginCategoriesQuery.data}
+          />
         )}
-
-        {activeDropdown === "AuthModal" && (
-          <AuthModal handleDropdown={handleDropdown} />
+        {activeDropdown === "KitDropdown" && kitCategoriesQuery.data && (
+          <PluginDropdown
+            route={"/kits"}
+            handleDropdown={handleDropdown}
+            categories={kitCategoriesQuery.data}
+          />
         )}
       </div>
     </nav>

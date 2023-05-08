@@ -1,6 +1,5 @@
 import React from "react";
 import type { CategorySchema } from "~/types/schema";
-import Searchbar from "~/components/products/Searchbar";
 import FilterModule from "~/components/products/FilterModule";
 import FilterProductView from "~/components/products/FilterProductView";
 import ProductSidebar from "~/components/products/ProductSidebar";
@@ -28,7 +27,6 @@ function MarketLayout({ categories }: MarketLayoutProps) {
 
   return (
     <div className="flex h-full w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
-      <Searchbar />
       {categories && (
         <div className="flex w-full gap-4">
           <div className="w-1/5">
