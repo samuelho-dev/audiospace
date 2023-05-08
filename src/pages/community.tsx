@@ -1,4 +1,6 @@
+import { useSession } from "next-auth/react";
 import React, { useState } from "react";
+import BattleAdminPanel from "~/components/battles/BattleAdminPanel";
 import BattleEntry from "~/components/battles/BattleEntry";
 import { type BattleEntrySchema } from "~/types/schema";
 import { api } from "~/utils/api";
@@ -6,18 +8,18 @@ import { api } from "~/utils/api";
 function Community() {
   const [submitActive, setSubmitActive] = useState(false);
   const [submitUrl, setSubmitUrl] = useState("");
+  const session = useSession();
   const battleQuery = api.battles.fetchCurrentBattle.useQuery();
 
   const battleEntriesQuery = api.battles.fetchCurrentEntries.useQuery();
-  if (!battleQuery.data) {
-    return null;
-  }
-
-  const submitTrack = () => {
-    api.battles.submitBattleEntry.useQuery({
-      trackUrl: submitUrl,
-      battleId: battleQuery.data.id,
-    });
+  const submitEntryMutation = api.battles.submitBattleEntry.useMutation();
+  const submitTrack = async () => {
+    if (battleQuery.data) {
+      await submitEntryMutation.mutateAsync({
+        trackUrl: submitUrl,
+        battleId: battleQuery.data.id,
+      });
+    }
   };
 
   return (
@@ -43,12 +45,13 @@ function Community() {
           <p>Link</p>
         </div>
       </div>
+      {session.data?.user.role === "ADMIN" && <BattleAdminPanel />}
       <div className="flex flex-col rounded-lg p-2 outline outline-1 outline-zinc-200">
         <div className="flex items-center justify-between border-b border-zinc-400 pb-2">
           <div>
             <h3>Vote for your favorite beat - This Week</h3>
 
-            {battleQuery.data.sample && (
+            {battleQuery.data && battleQuery.data.sample && (
               <button className="w-fit rounded-lg border border-zinc-400 px-4 text-xs">
                 Download the sample
               </button>
@@ -86,7 +89,7 @@ function Community() {
         </div>
         <div>
           {battleEntriesQuery.data &&
-            battleEntriesQuery.data.map((entry) => (
+            battleEntriesQuery.data.map((entry: BattleEntrySchema) => (
               <BattleEntry key={entry.id} entry={entry} />
             ))}
         </div>
