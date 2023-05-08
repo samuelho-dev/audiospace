@@ -15,6 +15,9 @@ interface PostProps {
 function Post({ source, postData }: PostProps) {
   const data = parse(postData);
   console.log(data);
+  if (!data || !source) {
+    return null;
+  }
   return (
     <Layout>
       <main className="flex h-full w-full max-w-2xl flex-col">
@@ -64,7 +67,10 @@ export async function getStaticPaths() {
   });
   await prisma.$disconnect();
   const paths = allPosts.map((post) => ({
-    params: { tag: post.tag.name, id: post.title },
+    params: {
+      tag: post.tag.name.toLowerCase(),
+      id: post.title.replace(" ", "-").toLowerCase(),
+    },
   }));
 
   return {
