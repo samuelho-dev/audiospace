@@ -15,15 +15,3 @@ function hashedString(str: string, key: string) {
 export function encode(el: string) {
   return Buffer.from(hashedString(el, hashKey)).toString("base64");
 }
-
-export function decode(el: string) {
-  const decoded = Buffer.from(el, "base64").toString();
-  let result = "";
-  for (let i = 0; i < decoded.length; i++) {
-    const decodedChar = decoded.charCodeAt(i);
-    const keyChar = hashKey.charCodeAt(i % hashKey.length);
-    const originalChar = String.fromCharCode(decodedChar ^ keyChar);
-    result += originalChar;
-  }
-  return result;
-}

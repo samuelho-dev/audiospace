@@ -98,6 +98,7 @@ export const PostSchema = z.object({
   title: z.string(),
   description: z.string(),
   contentUrl: z.string(),
+  imageUrl: z.string().url(),
   author: z.string(),
   tagId: z.number(),
   createdAt: z.date(),

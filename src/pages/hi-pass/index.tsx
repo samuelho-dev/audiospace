@@ -48,7 +48,7 @@ function Blog() {
                     className="flex border border-zinc-800 p-4 hover:rounded-lg hover:bg-zinc-900"
                   >
                     <Image
-                      src="https://res.cloudinary.com/ddhal4lbv/image/upload/v1680578842/audiospace/RC-20-Retro-Color-UI-Alpha_ue0qpp.png"
+                      src={post.imageUrl as string}
                       className="rounded-lg object-scale-down"
                       alt="productimg"
                       width={100}
