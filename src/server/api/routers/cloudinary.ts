@@ -1,4 +1,3 @@
-import { parse } from "superjson";
 import { z } from "zod";
 
 import {
@@ -6,7 +5,6 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { api } from "~/utils/api";
 
 export const cloudinaryRouter = createTRPCRouter({
   uploadImages: protectedProcedure

@@ -7,9 +7,7 @@
 
 import { type GetServerSidePropsContext } from "next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import AppleProvider from "next-auth/providers/apple";
 import DiscordProvider from "next-auth/providers/discord";
-
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
@@ -17,9 +15,7 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
-  type User,
 } from "next-auth";
-import { env } from "../env.mjs";
 import { prisma } from "./db";
 
 /**

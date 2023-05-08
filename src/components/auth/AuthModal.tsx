@@ -1,9 +1,4 @@
-import { type SignInResponse, signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import { useState } from "react";
-import { api } from "~/utils/api";
-import SignUpCredential from "./CredentialSignUp";
-import SignInCredential from "./CredentialSignIn";
 import SignInOAuth from "./SignInOAuth";
 import CredentialLogin from "./CredentialSignIn";
 import CredentialSignUp from "./CredentialSignUp";
@@ -46,6 +41,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
       />
       <div className="absolute left-1/2 top-1/2 z-50 w-fit -translate-x-1/2 -translate-y-1/2 transform flex-col items-center rounded-lg bg-zinc-900 p-8 outline outline-1 outline-zinc-700">
         <h1>audio.space</h1>
+        {errorState && <h5>{errorState}</h5>}
         <LoginRoute
           route={route}
           setRoute={setRoute}

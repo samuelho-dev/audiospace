@@ -1,16 +1,12 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { env } from "~/env.mjs";
 import {
   GetObjectCommand,
   PutObjectCommand,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
-import {
-  getSignedUrl,
-  S3RequestPresigner,
-} from "@aws-sdk/s3-request-presigner";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
 
 export const b2Router = createTRPCRouter({

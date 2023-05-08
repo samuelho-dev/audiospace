@@ -22,7 +22,7 @@ function BasicInfo({ session }: BasicInfoProps) {
     setForm({ ...form, [name]: value });
   };
 
-  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files) {
       const file = files[0] as File;

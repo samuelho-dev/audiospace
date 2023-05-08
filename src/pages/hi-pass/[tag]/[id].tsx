@@ -14,7 +14,6 @@ interface PostProps {
 }
 function Post({ source, postData }: PostProps) {
   const data = parse(postData);
-  console.log(data);
   if (!data || !source) {
     return null;
   }

@@ -2,7 +2,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import BlogAdminPanel from "~/components/blog/BlogAdminPanel";
 import FilteredBlogsByTag from "~/components/blog/FilteredBlogsByTag";
 import { api } from "~/utils/api";
@@ -50,7 +50,7 @@ function Blog() {
                     className="flex border border-zinc-800 p-4 hover:rounded-lg hover:bg-zinc-900"
                   >
                     <Image
-                      src={post.imageUrl as string}
+                      src={post.imageUrl}
                       className="rounded-lg object-scale-down"
                       alt="productimg"
                       width={100}
