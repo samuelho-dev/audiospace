@@ -94,7 +94,7 @@ function BasicInfo({ session }: BasicInfoProps) {
             type="file"
             multiple={false}
             onChange={(e) => void handleFileInput(e)}
-            accept="image/*"
+            accept="image/png, image/jpeg, image/jpg"
             className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none "
           />
         </div>

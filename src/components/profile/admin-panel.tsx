@@ -161,7 +161,7 @@ function AdminPanel() {
               type="file"
               id="images"
               name="images"
-              accept="image/png, image/jpeg"
+              accept="image/png, image/jpeg, image/jpg"
               multiple
               onChange={(e) => void handleFileChange(e, "images")}
               className="block w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none"

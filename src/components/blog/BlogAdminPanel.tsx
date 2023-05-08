@@ -81,7 +81,7 @@ function BlogAdminPanel() {
         <div className="my-2 flex">
           <input
             type="file"
-            accept="/png, /jpeg,"
+            accept="image/png, image/jpeg, image/jpg"
             multiple={false}
             onChange={(e) => void blogImageState(e)}
           />
