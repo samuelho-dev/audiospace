@@ -18,9 +18,10 @@ export const cloudinaryRouter = createTRPCRouter({
         overwrite: true,
         folder: `audiospace/${input.folder}`,
       };
+
       const data = await Promise.all(
         input.images.map((image) =>
-          ctx.cloudinary.uploader.upload(parse(image), options)
+          ctx.cloudinary.uploader.upload(image, options)
         )
       );
       return data.map((img) => ({ imageUrl: img.secure_url }));

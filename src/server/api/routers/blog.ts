@@ -7,8 +7,6 @@ import {
 } from "~/server/api/trpc";
 import { encode } from "~/utils/quickHash";
 
-import uploadB2 from "~/utils/uploadB2";
-
 export const blogRouter = createTRPCRouter({
   getPost: publicProcedure
     .input(z.object({ id: z.string() }))
@@ -51,6 +49,7 @@ export const blogRouter = createTRPCRouter({
         title: z.string(),
         description: z.string(),
         file: z.string(),
+        imageUrl: z.string().url(),
         blogTag: z.number(),
       })
     )
@@ -61,6 +60,7 @@ export const blogRouter = createTRPCRouter({
           title: input.title,
           description: input.description,
           contentUrl: input.file,
+          imageUrl: input.imageUrl,
           tag: {
             connect: {
               id: input.blogTag,
