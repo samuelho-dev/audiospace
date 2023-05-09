@@ -132,19 +132,19 @@ function Navbar() {
             href={"/plugins"}
             onMouseOver={() => handleDropdown("PluginDropdown")}
           >
-            <h4 className="text-md tracking-wide">PLUGINS</h4>
+            <h4 className="text-md tracking-widest">PLUGINS</h4>
           </Link>
           <Link
             href={"/kits"}
             onMouseOver={() => handleDropdown("KitDropdown")}
           >
-            <h4 className="text-md tracking-wide">KITS</h4>
+            <h4 className="text-md tracking-widest">KITS</h4>
           </Link>
           <Link href={"/community"}>
-            <h4 className="text-md tracking-wide">COMMUNITY</h4>
+            <h4 className="text-md tracking-widest">COMMUNITY</h4>
           </Link>
           <Link href={"/hi-pass"}>
-            <h4 className="text-md tracking-wide">READ</h4>
+            <h4 className="text-md tracking-widest">READ</h4>
           </Link>
         </div>
         {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
