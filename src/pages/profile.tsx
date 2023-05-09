@@ -1,5 +1,4 @@
-import type { Session } from "next-auth";
-import { useSession } from "next-auth/react";
+import { type SessionContextValue, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import Submissions from "~/components/profile/submissions";
@@ -12,17 +11,23 @@ import MyProducts from "~/components/profile/sellers/my-products";
 
 interface ProfileRouteProps {
   route?: string;
-  session: Session;
+  user: {
+    id: string;
+    role: string;
+    image: string | null;
+    email: string;
+    name: string;
+  };
 }
 
 function getRoute(section: string | string[] | undefined): string {
   return typeof section === "string" ? section : "";
 }
 
-function ProfileRoute({ route, session }: ProfileRouteProps) {
+function ProfileRoute({ route, user }: ProfileRouteProps) {
   switch (route) {
     case "basic-info":
-      return <BasicInfo session={session} />;
+      return <BasicInfo user={user} />;
     case "wishlist":
       return <Wishlist />;
     case "purchase-history":
@@ -37,7 +42,7 @@ function ProfileRoute({ route, session }: ProfileRouteProps) {
       return <AdminPanel />;
 
     default:
-      return <BasicInfo session={session} />;
+      return <BasicInfo user={user} />;
   }
 }
 
@@ -52,11 +57,11 @@ function Profile() {
       .catch((err) => console.error(err));
   };
   useEffect(() => {
-    if (status === "unauthenticated" || !session) {
+    if (status === "unauthenticated") {
       void router.push("/");
     }
   }, [status, session, router]);
-  console.log(session?.user.role);
+
   if (status === "authenticated") {
     return (
       <div className="flex w-full max-w-3xl items-center justify-between gap-8 lg:max-w-5xl">
@@ -117,7 +122,7 @@ function Profile() {
           </div>
         </div>
         <div className="w-4/5">
-          <ProfileRoute route={getRoute(section)} session={session} />
+          <ProfileRoute route={getRoute(section)} user={session.user} />
         </div>
       </div>
     );
