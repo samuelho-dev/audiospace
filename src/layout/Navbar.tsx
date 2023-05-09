@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import UserNav from "~/components/profile/UserNav";
 import AuthModal from "~/components/auth/AuthModal";
 import { api } from "~/utils/api";
-import { BiSearchAlt } from "react-icons/bi";
 
 interface Subcategory {
   id: number;
@@ -80,18 +79,12 @@ function Navbar() {
   {
   }
   return (
-    <nav className="top flex w-full max-w-3xl flex-col items-center justify-between lg:max-w-5xl">
+    <nav className="top flex w-full max-w-3xl flex-col items-center justify-between lg:max-w-6xl">
       <div className="flex h-10 w-full items-center justify-between">
         <Link href={"/"} className="z-20">
           <h1>audiospace</h1>
         </Link>
-        <div className="absolute left-1/2 flex w-1/4 -translate-x-1/2 items-center justify-center font-bold">
-          <input
-            type="text"
-            className="h-6 w-full rounded-sm bg-zinc-100 text-black"
-          />
-          <BiSearchAlt className="ml-[-10%]" fill="darkgray" size={20} />
-        </div>
+
         <div className="flex items-center gap-2">
           {!session ? (
             <div className="flex gap-4">
@@ -128,22 +121,32 @@ function Navbar() {
         </div>
       </div>
 
-      <div className="my-2 flex gap-8">
-        <Link
-          href={"/plugins"}
-          onMouseOver={() => handleDropdown("PluginDropdown")}
-        >
-          <h4 className="text-md tracking-wide">PLUGINS</h4>
-        </Link>
-        <Link href={"/kits"} onMouseOver={() => handleDropdown("KitDropdown")}>
-          <h4 className="text-md tracking-wide">KITS</h4>
-        </Link>
-        <Link href={"/community"}>
-          <h4 className="text-md tracking-wide">COMMUNITY</h4>
-        </Link>
-        <Link href={"/hi-pass"}>
-          <h4 className="text-md tracking-wide">READ</h4>
-        </Link>
+      <div className="my-2 flex w-full items-center gap-4">
+        <input
+          type="text"
+          placeholder="SEARCH"
+          className="h-6 rounded-sm bg-zinc-100 px-2 text-black"
+        />
+        <div className="flex w-full justify-between">
+          <Link
+            href={"/plugins"}
+            onMouseOver={() => handleDropdown("PluginDropdown")}
+          >
+            <h4 className="text-md tracking-wide">PLUGINS</h4>
+          </Link>
+          <Link
+            href={"/kits"}
+            onMouseOver={() => handleDropdown("KitDropdown")}
+          >
+            <h4 className="text-md tracking-wide">KITS</h4>
+          </Link>
+          <Link href={"/community"}>
+            <h4 className="text-md tracking-wide">COMMUNITY</h4>
+          </Link>
+          <Link href={"/hi-pass"}>
+            <h4 className="text-md tracking-wide">READ</h4>
+          </Link>
+        </div>
         {activeDropdown === "PluginDropdown" && pluginCategoriesQuery.data && (
           <PluginDropdown
             route={"/plugins"}
