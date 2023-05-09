@@ -12,7 +12,7 @@ const Home: NextPage = () => {
     categoryId: 2,
   });
   return (
-    <div className="flex h-full w-full max-w-3xl flex-col gap-12 lg:max-w-5xl">
+    <div className="flex h-full w-full max-w-3xl flex-col gap-12 lg:max-w-6xl">
       <section className="flex w-full justify-center">
         <div className="flex h-32 w-3/4 items-center justify-center bg-white text-black">
           Featured Big Video

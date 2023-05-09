@@ -7,7 +7,7 @@ function Cart() {
 
   console.log(cartQuery.data);
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
+    <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-6xl">
       <h1 className="border-b">Your Cart</h1>
       <div className="flex flex-col gap-2 border-b border-b-zinc-500">
         {cartQuery.data &&

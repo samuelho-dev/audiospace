@@ -23,7 +23,7 @@ function Community() {
   };
 
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-5xl">
+    <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-6xl">
       <h1>{`Love that you're here...`}</h1>
       <div>
         <h3>Live Events</h3>
