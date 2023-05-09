@@ -37,29 +37,56 @@ export const userProfileRouter = createTRPCRouter({
 
       return load;
     }),
-  updateProfile: protectedProcedure
+  updateProfileUsername: protectedProcedure
     .input(
       z.object({
-        email: z.string().email("Invalid Email.").min(5),
         name: z.string().min(3, "Names must be longer than 3 characters."),
       })
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
+      const existingUsername = await ctx.prisma.user.findFirst({
+        where: {
+          username: input.name,
+        },
+      });
+      if (existingUsername?.username === ctx.session.user.name) {
+        throw new Error("Username already taken.");
+      }
       const data = ctx.prisma.user.update({
         where: {
-          email: input.email,
+          id: ctx.session.user.id,
         },
         data: {
-          email: input.email,
           username: input.name,
         },
       });
       return data;
     }),
-
-  // updatePassword: protectedProcedur.mutation(({ctx, input}) => {
-
-  // }),
+  updateProfileEmail: protectedProcedure
+    .input(
+      z.object({
+        email: z.string().email("Invalid Email.").min(5),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existingEmail = await ctx.prisma.user.findFirst({
+        where: {
+          email: input.email,
+        },
+      });
+      if (existingEmail?.email === ctx.session.user.email) {
+        throw new Error("Email already taken.");
+      }
+      const data = ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          email: input.email,
+        },
+      });
+      return data;
+    }),
   getWishlist: protectedProcedure.query(async ({ ctx }) => {
     const data = await ctx.prisma.user.findFirstOrThrow({
       where: {
