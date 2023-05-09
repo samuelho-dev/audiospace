@@ -76,8 +76,7 @@ function Navbar() {
   const handleDropdown = (dropdownName: string | null) => {
     setActiveDropdown(activeDropdown === dropdownName ? null : dropdownName);
   };
-  {
-  }
+
   return (
     <nav className="top flex w-full max-w-3xl flex-col items-center justify-between lg:max-w-6xl">
       <div className="flex h-10 w-full items-center justify-between">
