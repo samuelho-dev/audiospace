@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "~/env.mjs";
 
 import {
   createTRPCRouter,
@@ -9,7 +10,7 @@ import {
 export const cloudinaryRouter = createTRPCRouter({
   uploadImages: protectedProcedure
     .input(z.object({ folder: z.string(), images: z.array(z.string()) }))
-    .output(z.array(z.object({ imageUrl: z.string() })))
+    .output(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
       const options = {
         unique_filename: true,
@@ -22,6 +23,6 @@ export const cloudinaryRouter = createTRPCRouter({
           ctx.cloudinary.uploader.upload(image, options)
         )
       );
-      return data.map((img) => ({ imageUrl: img.secure_url }));
+      return data.map((img) => img.secure_url);
     }),
 });

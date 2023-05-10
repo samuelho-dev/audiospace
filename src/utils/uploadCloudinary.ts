@@ -1,7 +1,7 @@
 import cloudinary from "~/server/cloudinary/cloudinary";
 
 export default async function uploadCloudinary(
-  images: string[],
+  images: FileList,
   folder: string
 ) {
   const options = {
@@ -9,12 +9,21 @@ export default async function uploadCloudinary(
     overwrite: true,
     folder: folder,
   };
-
   try {
+    const filesArray = Array.from(images);
     const uploadImages = await Promise.all(
-      images.map((image) => cloudinary.uploader.upload(image, options))
+      filesArray.map(async (file: File) => {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        return cloudinary.uploader.upload(dataUrl, options);
+      })
     );
-    return uploadImages.map((img) => ({ imageUrl: img.secure_url }));
+
+    return uploadImages.map((img) => img.secure_url);
   } catch (err) {
     console.error("Upload to Cloudinary failed", err);
     throw new Error("CLOUDINARY_UPLOAD_FAILED");
