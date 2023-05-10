@@ -54,7 +54,6 @@ model EmailVerification {
 model User {
   id               String             @id @default(cuid())
   role             Role               @default(USER)
-  stripeCustomerId String?            @unique
   username         String             @unique
   email            String             @unique
   password         String?
@@ -120,7 +119,7 @@ model Product {
   categoryId      Int
   subcategory     ProductSubcategory[]
   description     String               @db.Text
-  price           Decimal              @db.Decimal(4, 2)
+  price           Int              
   rating          Int                  @default(0)
   previewUrl      String?
   downloadUrl     String
@@ -130,8 +129,6 @@ model Product {
   wishlistUsers   User[]               @relation("Wishlist")
   cartUsers       User[]               @relation("Cart")
   createdAt       DateTime             @default(now())
-  stripeProductId String?              @unique
-  stripePriceId   String?              @unique
   transactions    Transaction[]
   transactionItem TransactionItem[]
 
@@ -188,8 +185,9 @@ enum BattleStatus {
 
 model Transaction {
   id               Int               @id @default(autoincrement())
-  stripeChargeId   String?           @unique
-  stripeReceiptUrl String?
+  paypalChargeId   String?           @unique
+  paypalReceiptUrl String?
+  status           TransactionStatus @default(UNPAID)
   user             User              @relation(fields: [userId], references: [id])
   userId           String
   items            TransactionItem[]
@@ -200,6 +198,11 @@ model Transaction {
 
   @@index([userId])
   @@index([productId])
+}
+
+enum TransactionStatus {
+  UNPAID
+  PAID
 }
 
 model TransactionItem {
