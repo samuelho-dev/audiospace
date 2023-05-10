@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -6,7 +5,6 @@ import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
-import uploadCloudinary from "~/utils/uploadCloudinary";
 
 function NewItem() {
   const { data: session, status } = useSession();
@@ -41,10 +39,10 @@ function NewItem() {
     return null;
   }
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prevData) => ({
-      ...prevData,
+    setForm({
+      ...form,
       price: parseInt(e.target.value) * 100,
-    }));
+    });
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +52,7 @@ function NewItem() {
       const filesBase64 = await Promise.all(
         filesArray.map((file) => readFileasBase64(file))
       );
-      setForm((prevData) => ({ ...prevData, images: filesBase64 }));
+      setForm({ ...form, images: filesBase64 });
     }
   };
 
@@ -64,7 +62,7 @@ function NewItem() {
     >
   ) => {
     const { name, value } = e.target;
-    setForm((prevData) => ({ ...prevData, [name]: value }));
+    setForm({ ...form, [name]: value });
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,7 +79,7 @@ function NewItem() {
   };
 
   const handleFileChange = (value: string, field: string) => {
-    setForm((prevData) => ({ ...prevData, [field]: value }));
+    setForm({ ...form, [field]: value });
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
@@ -99,9 +97,7 @@ function NewItem() {
             images: form.images,
             folder: "products",
           })
-          .then((data) =>
-            setForm((prevData) => ({ ...prevData, images: data }))
-          );
+          .then((data) => setForm({ ...form, images: data }));
 
         await axios({
           method: "put",
@@ -119,7 +115,7 @@ function NewItem() {
             "Content-Type": productFile.type,
           },
         });
-        console.log({ form });
+
         await productMutation.mutateAsync({ ...form });
         void router.push(`/seller/${session.user.name}`);
       }

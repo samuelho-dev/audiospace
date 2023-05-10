@@ -1,26 +1,42 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
 import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
+import axios from "axios";
 
 function BattleAdminPanel() {
   const endAndCreateBattleMutation =
     api.battles.endBattleandCreate.useMutation();
-  const [uploadedFile, setuploadedFile] = useState(false);
+  const [sampleFile, setSampleFile] = useState<File | null>(null);
+  const [presignUrl, setPresignUrl] = useState<string | null>("");
   const [newBattle, setNewBattle] = useState({
     description: "",
     file: "",
   });
   const handleDescription = (value: string) => {
-    setNewBattle((prevData) => ({ ...prevData, description: value }));
+    setNewBattle({ ...newBattle, description: value });
   };
-  const handleFileChange = (value: string) => {
-    setNewBattle((prevData) => ({ ...prevData, file: value }));
+  const handleFileChange = (value: string, key: string) => {
+    setNewBattle({ ...newBattle, [key]: value });
   };
 
   const handleNewBattle = async () => {
-    await endAndCreateBattleMutation.mutateAsync({
-      description: newBattle.description,
-    });
+    try {
+      if (presignUrl && sampleFile) {
+        await axios({
+          method: "put",
+          url: presignUrl,
+          data: sampleFile,
+          headers: {
+            "Content-Type": sampleFile.type,
+          },
+        });
+      }
+      await endAndCreateBattleMutation.mutateAsync({
+        description: newBattle.description,
+      });
+    } catch (err) {
+      console.error("Error with battle", err);
+    }
   };
   return (
     <div className="flex flex-col gap-2 rounded-sm bg-zinc-900 p-4">
@@ -32,18 +48,17 @@ function BattleAdminPanel() {
           onChange={(e) => handleDescription(e.target.value)}
         />
       </div>
-      {uploadedFile ? (
-        <h3>Submitted</h3>
-      ) : (
-        <div className="flex flex-col">
-          <label>Sample</label>
-          <StandardB2Dropzone
-            bucket="battles"
-            handleFileChange={handleFileChange}
-            setUploadedFile={setuploadedFile}
-          />
-        </div>
-      )}
+
+      <div className="flex flex-col">
+        <label>Sample</label>
+        <StandardB2Dropzone
+          bucket="battles"
+          field="file"
+          handleFileChange={handleFileChange}
+          setPresignedUrl={setPresignUrl}
+          setProductDownloadFile={setSampleFile}
+        />
+      </div>
 
       <button
         onClick={() => void handleNewBattle()}

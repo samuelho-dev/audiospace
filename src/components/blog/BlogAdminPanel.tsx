@@ -14,10 +14,8 @@ function BlogAdminPanel() {
   });
   const [presignUrl, setPresignedUrl] = useState<string | null>(null);
   const [markdownFile, setMarkdownFile] = useState<File | null>(null);
-  const [uploadedImage, setUploadedImage] = useState(false);
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
-  const uploadCloudinaryMutation = api.cloudinary.uploadImages.useMutation();
 
   const handleNewBlogPost = async () => {
     try {
@@ -44,20 +42,8 @@ function BlogAdminPanel() {
     if (files) {
       const file = files[0] as File;
       const data = await readFileasBase64(file);
-      setNewPost((prevData) => ({ ...prevData, imageUrl: data }));
+      setNewPost({ ...newPost, imageUrl: data });
     }
-  };
-
-  const blogImageUpload = async () => {
-    const data = await uploadCloudinaryMutation.mutateAsync({
-      folder: "blog",
-      images: [newPost.imageUrl],
-    });
-    setNewPost((prevData) => ({
-      ...prevData,
-      imageUrl: data[0]?.imageUrl as string,
-    }));
-    setUploadedImage(true);
   };
 
   const handleFileChange = (value: string, field: string) => {
@@ -91,24 +77,13 @@ function BlogAdminPanel() {
           onChange={handleChange}
         />
       </div>
-      {uploadedImage ? (
-        <h3>Submitted</h3>
-      ) : (
-        <div className="my-2 flex">
-          <input
-            type="file"
-            accept="image/png, image/jpeg, image/jpg"
-            multiple={false}
-            onChange={(e) => void blogImageState(e)}
-          />
-          <button
-            className="border border-zinc-200 px-2"
-            onClick={() => void blogImageUpload()}
-          >
-            Submit Image
-          </button>
-        </div>
-      )}
+
+      <input
+        type="file"
+        accept="image/png, image/jpeg, image/jpg"
+        multiple={false}
+        onChange={(e) => void blogImageState(e)}
+      />
 
       <StandardB2Dropzone
         bucket="AudiospaceBlog"

@@ -1,9 +1,6 @@
-import { User } from "@prisma/client";
-import { Session } from "next-auth";
-import { type SessionContextValue } from "next-auth/react";
 import React, { useState } from "react";
-import { stringify } from "superjson";
 import { api } from "~/utils/api";
+import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
 interface BasicInfoProps {
   user: {
@@ -18,28 +15,27 @@ function BasicInfo({ user }: BasicInfoProps) {
   const [form, setForm] = useState({
     email: "",
     name: "",
+    image: "",
   });
   const [formSubmission, setFormSubmission] = useState({
     email: false,
     name: false,
     profilePic: false,
   });
-  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const handleForm = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (files) {
       const file = files[0] as File;
-      const data = stringify(file);
-      setProfileImage(data);
+      const data = await readFileasBase64(file);
+      setForm({ ...form, image: data });
     }
   };
-
   const profileImageMutation =
     api.userprofile.updateProfilePicture.useMutation();
   const usernameMutation = api.userprofile.updateProfileUsername.useMutation();
@@ -51,14 +47,17 @@ function BasicInfo({ user }: BasicInfoProps) {
     }
     setFormSubmission({ ...formSubmission, email: true });
   };
+
   const handleUsernameUpdate = () => {
     if (form.name !== user?.name) {
       usernameMutation.mutate({ name: form.name });
     }
     setFormSubmission({ ...formSubmission, name: true });
   };
-  const handleProfilePictureUpdate = () => {
-    profileImageMutation.mutate({ image: stringify(profileImage) });
+
+  const handleProfilePictureUpdate = async () => {
+    console.log(form.image);
+    await profileImageMutation.mutateAsync({ image: form.image });
     setFormSubmission({ ...formSubmission, profilePic: true });
   };
 
