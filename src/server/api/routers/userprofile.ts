@@ -6,32 +6,30 @@ import {
   protectedProcedure,
 } from "~/server/api/trpc";
 import { ProductSchema } from "~/types/schema";
-import uploadCloudinary from "~/utils/uploadCloudinary";
-
-const sessionSchema = z.object({
-  user: z.object({
-    image: z.string(),
-    email: z.string().email(),
-  }),
-});
 
 export const userProfileRouter = createTRPCRouter({
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const parsedSession = sessionSchema.parse(ctx.session);
-
-      if (parsedSession.user.image) {
-        await ctx.cloudinary.uploader.destroy(parsedSession.user.image);
+      console.log(input);
+      if (ctx.session.user.image) {
+        await ctx.cloudinary.uploader.destroy(ctx.session.user.image);
       }
-      const data = await uploadCloudinary([input.image], "audiospace/user");
+
+      const options = {
+        unique_filename: true,
+        overwrite: true,
+        folder: `audiospace/user`,
+      };
+
+      const data = await ctx.cloudinary.uploader.upload(input.image, options);
 
       const load = ctx.prisma.user.update({
         where: {
-          email: parsedSession.user.email,
+          email: ctx.session.user.email,
         },
         data: {
-          image: data[0]?.imageUrl,
+          image: data.secure_url,
         },
       });
 
