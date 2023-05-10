@@ -17,12 +17,25 @@ export const adminRouter = createTRPCRouter({
         images: z.array(z.string()),
         previewTrack: z.string(),
         product: z.string(),
-        sellerId: z.number(),
+
         categoryId: z.number(),
         subcategories: z.array(z.number()),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const sellerId = await ctx.prisma.seller.findFirstOrThrow({
+        where: {
+          userId: ctx.session.user.id,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!sellerId.id) {
+        throw new Error("User is not a seller");
+      }
+
       const uploadPreviewTrack = await uploadB2(
         input.previewTrack,
         "AudiospacePlugins"
@@ -48,7 +61,7 @@ export const adminRouter = createTRPCRouter({
 
       const uploadedProduct = await ctx.prisma.product.create({
         data: {
-          sellerId: input.sellerId,
+          sellerId: sellerId.id,
           name: input.name,
           images: {
             create: uploadImages,
@@ -72,13 +85,4 @@ export const adminRouter = createTRPCRouter({
 
       return uploadedProduct;
     }),
-  // createSeller: protectedProcedure
-  //   .input(z.object({ name: z.string() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     const data = await ctx.prisma.seller.create({
-  //       data : {}
-  //     });
-
-  //     return data;
-  //   }),
 });
