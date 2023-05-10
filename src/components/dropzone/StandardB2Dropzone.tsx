@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
@@ -29,7 +29,6 @@ export const StandardB2Dropzone = ({
       multiple: false,
       onDropAccepted: () => {
         const key = uuidv4();
-
         fetchPresignedUrls({
           key: key,
           bucket,
@@ -37,16 +36,22 @@ export const StandardB2Dropzone = ({
           .then((url) => {
             setPresignedUrl(url);
             handleFileChange(key, field);
+
             setSubmitDisabled(false);
           })
           .catch((err) => console.error(err));
       },
     });
 
+  useEffect(() => {
+    if (acceptedFiles[0]) {
+      setProductDownloadFile(acceptedFiles[0]);
+    }
+  }, [acceptedFiles, setProductDownloadFile]);
+
   const files = useMemo(() => {
     if (!submitDisabled) {
       return acceptedFiles.map((file) => {
-        setProductDownloadFile(file);
         return (
           <li key={file.name}>
             {file.name} - {file.size} bytes
@@ -56,7 +61,7 @@ export const StandardB2Dropzone = ({
     }
 
     return null;
-  }, [acceptedFiles, setProductDownloadFile, submitDisabled]);
+  }, [acceptedFiles, submitDisabled]);
 
   return (
     <section className="border border-zinc-700 p-4">
