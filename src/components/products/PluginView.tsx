@@ -10,7 +10,6 @@ function PluginView({}) {
     <div className="w-full px-2 py-4">
       <div className="flex flex-col">
         <h3>Instruments ⬇️</h3>
-
         <h4>Popular Instruments</h4>
         <div className="scrollbar-hide flex w-full gap-4 overflow-hidden overflow-x-scroll px-2 py-2">
           {featuredInstrumentsQuery.data &&

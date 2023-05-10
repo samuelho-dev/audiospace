@@ -4,7 +4,6 @@ import { authRouter } from "~/server/api/routers/auth";
 import { userProfileRouter } from "./routers/userprofile";
 import { pluginProductRouter } from "./routers/pluginProduct";
 import { kitProductRouter } from "./routers/kitProduct";
-import { adminRouter } from "./routers/admin";
 import { productRouter } from "./routers/product";
 import { battleRouter } from "./routers/battle";
 import { sellerProfileRouter } from "./routers/seller";
@@ -27,7 +26,6 @@ export const appRouter = createTRPCRouter({
   onload: onloadRouter,
   blog: blogRouter,
   auth: authRouter,
-  admin: adminRouter,
   b2: b2Router,
   cloudinary: cloudinaryRouter,
 });
