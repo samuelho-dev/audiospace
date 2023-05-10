@@ -14,7 +14,7 @@ function BlogFilteredByTag() {
     { enabled: !!tag }
   );
   return (
-    <div className="flex w-full max-w-3xl justify-center gap-8 lg:max-w-6xl">
+    <div className="flex w-full max-w-3xl flex-grow justify-center gap-8 lg:max-w-6xl">
       <Sidebar />
       <div className="w-full">
         <h3>{tag}</h3>

@@ -19,7 +19,7 @@ function Post({ source, postData }: PostProps) {
   }
   return (
     <Layout>
-      <main className="flex h-full w-full max-w-2xl flex-col">
+      <main className="flex h-full w-full max-w-3xl flex-grow flex-col">
         <MDXRemote {...source} />
       </main>
     </Layout>

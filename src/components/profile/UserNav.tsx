@@ -44,63 +44,63 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
       {activeDropdown === "ProfileDropdown" && (
         <ul
           onMouseLeave={() => handleDropdown(null)}
-          className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2"
+          className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white px-4 py-2"
         >
-          <Link
-            href={{
-              pathname: "/profile",
-              query: { section: "basic-info" },
-            }}
-          >
-            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
-              Profile
-            </li>
-          </Link>
-          <Link
-            href={{
-              pathname: "/profile",
-              query: { section: "submissions" },
-            }}
-          >
-            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
-              Submissions
-            </li>
-          </Link>
-          <Link
-            href={{
-              pathname: "/profile",
-              query: { section: "wishlist" },
-            }}
-          >
-            <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
-              Wishlist
-            </li>
-          </Link>
-          {session?.user.role !== "SELLER" && (
-            <Link
-              href={{
-                pathname: `/seller/${session?.user.name}`,
-              }}
-            >
-              <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
-                Seller Dashboard
-              </li>
-            </Link>
-          )}
-          {session?.user.role === "ADMIN" && (
+          <li className=" text-sm text-gray-700 hover:bg-slate-300">
             <Link
               href={{
                 pathname: "/profile",
-                query: { section: "admin-panel" },
+                query: { section: "basic-info" },
               }}
             >
-              <li className="w-full cursor-pointer bg-zinc-500 pl-8 text-sm text-red-300 hover:bg-slate-300">
-                ADMIN PANEL
-              </li>
+              Profile
             </Link>
+          </li>
+          <li className="text-sm text-gray-700 hover:bg-slate-300">
+            <Link
+              href={{
+                pathname: "/profile",
+                query: { section: "submissions" },
+              }}
+            >
+              Submissions
+            </Link>
+          </li>
+          <li className="text-sm text-gray-700 hover:bg-slate-300">
+            <Link
+              href={{
+                pathname: "/profile",
+                query: { section: "wishlist" },
+              }}
+            >
+              Wishlist
+            </Link>
+          </li>
+          {session?.user.role !== "SELLER" && (
+            <li className="text-sm text-gray-700 hover:bg-slate-300">
+              <Link
+                href={{
+                  pathname: `/seller/${session?.user.name}`,
+                }}
+              >
+                Seller Dashboard
+              </Link>
+            </li>
+          )}
+          {session?.user.role === "ADMIN" && (
+            <li className=" cursor-pointer bg-zinc-500 text-sm text-red-300 hover:bg-slate-300">
+              <Link
+                href={{
+                  pathname: "/profile",
+                  query: { section: "admin-panel" },
+                }}
+              >
+                ADMIN PANEL
+              </Link>
+            </li>
           )}
           <li
-            className="w-full cursor-pointer pl-8 text-sm text-gray-700 hover:bg-slate-300"
+            className="w-full cursor-pointer text-sm text-gray-700 hover:bg-slate-300"
             onClick={() => void signOut()}
           >
             Log Out
