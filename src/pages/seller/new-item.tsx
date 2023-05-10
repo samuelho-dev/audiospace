@@ -1,17 +1,23 @@
+import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
+import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
+import uploadCloudinary from "~/utils/uploadCloudinary";
 
 function NewItem() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [categoryId, setCategoryId] = useState<number>(1);
-  const categories = api.onload.getAllCategories.useQuery();
-  const subcategories = api.onload.getSelectedSubcategories.useQuery({
-    categoryId,
-  });
-  const productMutation = api.admin.uploadProduct.useMutation();
+  const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
+    string | null
+  >(null);
+  const [productPresignUrl, setProductDownload] = useState<string | null>(null);
+  const [previewTrackFile, setPreviewTrackFile] = useState<File | null>(null);
+  const [productFile, setProductFile] = useState<File | null>(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -20,13 +26,36 @@ function NewItem() {
     images: [] as string[],
     previewTrack: "",
     product: "",
-    sellerId: session?.user.id,
     categoryId: categoryId,
     subcategories: [] as number[],
   });
 
+  const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
+  const categories = api.onload.getAllCategories.useQuery();
+  const subcategories = api.onload.getSelectedSubcategories.useQuery({
+    categoryId,
+  });
+  const productMutation = api.sellerprofile.uploadProduct.useMutation();
+
+  if (!session) {
+    return null;
+  }
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm((prevData) => ({ ...prevData, price: parseInt(e.target.value) }));
+    setForm((prevData) => ({
+      ...prevData,
+      price: parseInt(e.target.value) * 100,
+    }));
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const filesArray = Array.from(files);
+      const filesBase64 = await Promise.all(
+        filesArray.map((file) => readFileasBase64(file))
+      );
+      setForm((prevData) => ({ ...prevData, images: filesBase64 }));
+    }
   };
 
   const handleChange = (
@@ -47,44 +76,53 @@ function NewItem() {
       const newSubcategories = checked
         ? [...prevSubcategories, subcategoryId]
         : prevSubcategories.filter((id) => id !== subcategoryId);
-
       return { ...prevData, subcategories: newSubcategories };
     });
   };
 
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: string
-  ) => {
-    const files = e.target.files;
-    if (files) {
-      try {
-        if (field === "images") {
-          const base64Files: string[] = [];
-          for (const file of files) {
-            if (file instanceof File) {
-              const readFile = await readFileasBase64(file);
-              base64Files.push(readFile);
-            }
-          }
-          setForm((prevData) => ({ ...prevData, [field]: base64Files }));
-        } else {
-          const file = files[0];
-          if (file instanceof File) {
-            const base64Files = await readFileasBase64(file);
-            setForm((prevData) => ({ ...prevData, [field]: base64Files }));
-          }
-        }
-      } catch (error) {
-        console.error("Error reading files:", error);
-      }
-    }
+  const handleFileChange = (value: string, field: string) => {
+    setForm((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await productMutation.mutateAsync({ ...form });
+      if (
+        previewTrackFile &&
+        previewTrackPresignUrl &&
+        productPresignUrl &&
+        productFile &&
+        session.user.role === "ADMIN"
+      ) {
+        await uploadImagesMutation
+          .mutateAsync({
+            images: form.images,
+            folder: "products",
+          })
+          .then((data) =>
+            setForm((prevData) => ({ ...prevData, images: data }))
+          );
+
+        await axios({
+          method: "put",
+          url: previewTrackPresignUrl,
+          data: previewTrackFile,
+          headers: {
+            "Content-Type": previewTrackFile.type,
+          },
+        });
+        await axios({
+          method: "put",
+          url: productPresignUrl,
+          data: productFile,
+          headers: {
+            "Content-Type": productFile.type,
+          },
+        });
+        console.log({ form });
+        await productMutation.mutateAsync({ ...form });
+        void router.push(`/seller/${session.user.name}`);
+      }
     } catch (err) {
       console.error("Error adding product:", err);
     }
@@ -134,35 +172,33 @@ function NewItem() {
               name="images"
               accept="image/png, image/jpeg, image/jpg"
               multiple
-              onChange={(e) => void handleFileChange(e, "images")}
+              onChange={(e) => void handleImageChange(e)}
               className="block w-full cursor-pointer rounded-lg border"
             />
           </div>
-          <div className="flex flex-col">
-            <label className="">Preview Track</label>
-            <input
-              type="file"
-              id="previewTrack"
-              name="previewTrack"
-              accept=".mp3, .wav"
-              onChange={(e) => void handleFileChange(e, "previewTrack")}
-              className="block w-full cursor-pointer rounded-lg border"
+          <div>
+            <label>Preview Track</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"previewTrack"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setPreviewTrackPresignUrl}
+              setProductDownloadFile={setPreviewTrackFile}
             />
           </div>
-          <div className="flex flex-col">
-            <label className="">Product Download Upload</label>
-            <input
-              type="file"
-              id="product"
-              name="product"
-              accept=".zip, .rar, .7z"
-              onChange={(e) => void handleFileChange(e, "product")}
-              className="block w-full cursor-pointer rounded-lg border"
+          <div>
+            <label>Product</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"product"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setProductDownload}
+              setProductDownloadFile={setProductFile}
             />
           </div>
 
-          <label className="flex flex-row justify-between">
-            Category
+          <div className="flex flex-row justify-between">
+            <label>Category</label>
             <select
               className="bg-zinc-700 px-2"
               onChange={(e) => setCategoryId(parseInt(e.target.value))}
@@ -174,7 +210,7 @@ function NewItem() {
                   </option>
                 ))}
             </select>
-          </label>
+          </div>
           <div className="flex flex-col justify-between gap-2">
             <label>Subcategories</label>
             <div className="grid grid-cols-4 gap-4 rounded-lg p-2 outline outline-1 outline-zinc-700">
