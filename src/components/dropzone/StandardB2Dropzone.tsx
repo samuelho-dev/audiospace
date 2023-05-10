@@ -6,15 +6,18 @@ import { v4 as uuidv4 } from "uuid";
 import { api } from "~/utils/api";
 interface StandardB2DropzoneProps {
   bucket: string;
-  handleFileChange: (value: string) => void;
-  setUploadedFile: (boolean: boolean) => void;
+  field: string;
+  handleFileChange: (value: string, field: string) => void;
+  setPresignedUrl: (value: string | null) => void;
+  setProductDownloadFile: (file: File) => void;
 }
 export const StandardB2Dropzone = ({
   bucket,
+  field,
   handleFileChange,
-  setUploadedFile,
+  setProductDownloadFile,
+  setPresignedUrl,
 }: StandardB2DropzoneProps) => {
-  const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
   const { mutateAsync: fetchPresignedUrls } =
     api.b2.getStandardUploadPresignedUrl.useMutation();
   const [submitDisabled, setSubmitDisabled] = useState(true);
@@ -33,8 +36,7 @@ export const StandardB2Dropzone = ({
         })
           .then((url) => {
             setPresignedUrl(url);
-            console.log({ url, key });
-            handleFileChange(key);
+            handleFileChange(key, field);
             setSubmitDisabled(false);
           })
           .catch((err) => console.error(err));
@@ -43,38 +45,18 @@ export const StandardB2Dropzone = ({
 
   const files = useMemo(() => {
     if (!submitDisabled) {
-      return acceptedFiles.map((file) => (
-        <li key={file.name}>
-          {file.name} - {file.size} bytes
-        </li>
-      ));
+      return acceptedFiles.map((file) => {
+        setProductDownloadFile(file);
+        return (
+          <li key={file.name}>
+            {file.name} - {file.size} bytes
+          </li>
+        );
+      });
     }
 
     return null;
-  }, [acceptedFiles, submitDisabled]);
-
-  const handleSubmit = useCallback(async () => {
-    if (acceptedFiles.length > 0 && presignedUrl !== null) {
-      const file = acceptedFiles[0] as File;
-      console.log(presignedUrl, "presign");
-      await axios({
-        method: "put",
-        url: presignedUrl,
-        data: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      })
-        .then((response) => {
-          console.log(response);
-          setUploadedFile(true);
-
-          console.log("Successfully uploaded ", file);
-        })
-        .catch((err) => console.error(err));
-      setSubmitDisabled(true);
-    }
-  }, [acceptedFiles, presignedUrl, setUploadedFile]);
+  }, [acceptedFiles, setProductDownloadFile, submitDisabled]);
 
   return (
     <section className="border border-zinc-700 p-4">
@@ -94,15 +76,6 @@ export const StandardB2Dropzone = ({
         <h4 className="font-semibold text-zinc-400">Files pending upload</h4>
         <ul>{files}</ul>
       </aside>
-      <button
-        onClick={() => void handleSubmit()}
-        disabled={
-          presignedUrl === null || acceptedFiles.length === 0 || submitDisabled
-        }
-        className="border border-zinc-300 px-2"
-      >
-        Upload
-      </button>
     </section>
   );
 };

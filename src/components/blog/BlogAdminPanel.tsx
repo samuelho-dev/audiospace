@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { api } from "~/utils/api";
 import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
+import axios from "axios";
 
 function BlogAdminPanel() {
   const [newPost, setNewPost] = useState({
@@ -11,16 +12,31 @@ function BlogAdminPanel() {
     imageUrl: "",
     file: "",
   });
-  const [uploadedFile, setUploadedFile] = useState(false);
+  const [presignUrl, setPresignedUrl] = useState<string | null>(null);
+  const [markdownFile, setMarkdownFile] = useState<File | null>(null);
   const [uploadedImage, setUploadedImage] = useState(false);
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
   const uploadCloudinaryMutation = api.cloudinary.uploadImages.useMutation();
 
   const handleNewBlogPost = async () => {
-    const post = { ...newPost };
-    post.blogTag = Number(post.blogTag);
-    await blogPostMutation.mutateAsync(post);
+    try {
+      if (presignUrl && markdownFile) {
+        const post = { ...newPost };
+        post.blogTag = Number(post.blogTag);
+        await axios({
+          method: "put",
+          url: presignUrl,
+          data: markdownFile,
+          headers: {
+            "Content-Type": markdownFile.type,
+          },
+        });
+        await blogPostMutation.mutateAsync(post);
+      }
+    } catch (err) {
+      console.error("An error occured", err);
+    }
   };
 
   const blogImageState = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,8 +60,8 @@ function BlogAdminPanel() {
     setUploadedImage(true);
   };
 
-  const handleFileChange = (value: string) => {
-    setNewPost((prevData) => ({ ...prevData, file: value }));
+  const handleFileChange = (value: string, field: string) => {
+    setNewPost((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleChange = (
@@ -93,15 +109,15 @@ function BlogAdminPanel() {
           </button>
         </div>
       )}
-      {uploadedFile ? (
-        <h3>Submitted</h3>
-      ) : (
-        <StandardB2Dropzone
-          bucket="AudiospaceBlog"
-          handleFileChange={handleFileChange}
-          setUploadedFile={setUploadedFile}
-        />
-      )}
+
+      <StandardB2Dropzone
+        bucket="AudiospaceBlog"
+        field={"file"}
+        handleFileChange={handleFileChange}
+        setPresignedUrl={setPresignedUrl}
+        setProductDownloadFile={setMarkdownFile}
+      />
+
       <div className="flex flex-col">
         <label>Blog Type</label>
         <select
