@@ -108,11 +108,16 @@ function MyProducts() {
   const [curProductId, setCurProductId] = useState<string>("");
   const { data: session } = useSession();
   const router = useRouter();
+  if (!session) {
+    return null;
+  }
   if (session?.user.role !== "SELLER" && session?.user.role !== "ADMIN") {
     void router.push("/");
   }
 
-  const sellerProductQuery = api.sellerprofile.getSellerProduct.useQuery();
+  const sellerProductQuery = api.sellerprofile.getSellerProduct.useQuery({
+    userId: session?.user.id,
+  });
 
   if (!sellerProductQuery.data) {
     return null;
