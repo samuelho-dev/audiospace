@@ -1,4 +1,3 @@
-import Decimal from "decimal.js";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -37,7 +36,7 @@ function EditProduct({ product, i, setCurProductId }: EditProductProps) {
 
   const handleSubmitProductUpdate = async () => {
     const revisedForm = { ...form };
-    revisedForm.price = new Decimal(revisedForm.price);
+    revisedForm.price = Number(revisedForm.price);
     await productUpdateMutation.mutateAsync(revisedForm);
     router.reload();
   };

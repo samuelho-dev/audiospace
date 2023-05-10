@@ -1,5 +1,4 @@
 import { z } from "zod";
-import Decimal from "decimal.js";
 
 export const ProductImageSchema = z.object({
   id: z.number(),

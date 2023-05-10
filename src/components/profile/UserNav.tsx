@@ -10,6 +10,9 @@ interface UserNavProps {
 
 function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   const { data: session } = useSession();
+  if (!session || !session.user) {
+    return null;
+  }
   return (
     <div className="flex cursor-pointer flex-col">
       <div
@@ -76,12 +79,11 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           {session?.user.role !== "SELLER" && (
             <Link
               href={{
-                pathname: "/profile",
-                query: { section: "wishlist" },
+                pathname: `/seller/${session?.user.name}`,
               }}
             >
               <li className="w-full pl-8 text-sm text-gray-700 hover:bg-slate-300">
-                Seller Signup
+                Seller Dashboard
               </li>
             </Link>
           )}
