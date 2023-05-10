@@ -95,7 +95,7 @@ function ProductCard({ product }: ProductCardProps) {
       </Link>
       <Link
         href={{
-          pathname: `/creator/${product?.seller.user.username}`,
+          pathname: `/seller/${product?.seller.user.username}`,
         }}
       >
         <p className="text-sm text-gray-300 hover:cursor-pointer hover:underline hover:underline-offset-2">
@@ -115,7 +115,7 @@ function ProductCard({ product }: ProductCardProps) {
         ))}
       </div>
       <div className="flex justify-between pt-2">
-        <h5 className="text-gray-200">${Number(product?.price)}</h5>
+        <h5 className="text-gray-200">${Number(product?.price) / 100}</h5>
         <div className="flex items-center gap-2">
           {(userWishlistQuery.data &&
             userWishlistQuery.data.includes(product.id)) ||

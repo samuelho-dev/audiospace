@@ -16,7 +16,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
   return (
     <div className="flex cursor-pointer flex-col">
       <div
-        className="z-20 mr-[-10%] flex w-fit items-center"
+        className="mr-[-10%] flex w-fit items-center"
         onClick={() => handleDropdown("ProfileDropdown")}
       >
         <h5
@@ -27,12 +27,10 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           {session?.user.name}
         </h5>
         <div
-          className="h-12 w-fit rounded-full bg-pink-300 px-2"
+          className="h-50 z-50 h-12 w-fit rounded-full bg-pink-300 px-2"
           // onClick={() => void signOut()}
         >
-          <h1 className="z-20 flex h-full w-full items-center justify-center">
-            😛
-          </h1>
+          <h1 className="flex h-full w-full items-center justify-center">😛</h1>
 
           {/* <Image
             src=""
@@ -44,7 +42,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
       {activeDropdown === "ProfileDropdown" && (
         <ul
           onMouseLeave={() => handleDropdown(null)}
-          className="absolute z-10 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white px-4 py-2"
+          className="absolute z-20 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white px-4 py-2"
         >
           <li className=" text-sm text-gray-700 hover:bg-slate-300">
             <Link

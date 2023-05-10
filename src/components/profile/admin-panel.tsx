@@ -24,7 +24,7 @@ function AdminPanel() {
   });
   const sellers = api.onload.getAllSellers.useQuery();
   // const sellerMutation = api.admin.createSeller.useMutation();
-  const productMutation = api.admin.uploadProduct.useMutation();
+  const productMutation = api.sellerprofile.uploadProduct.useMutation();
 
   const [form, setForm] = useState({
     name: "",
@@ -109,11 +109,11 @@ function AdminPanel() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      await productMutation.mutateAsync({ ...form });
-    } catch (err) {
-      console.error("Error adding product:", err);
-    }
+    await productMutation.mutateAsync({ ...form });
+    // try {
+    // } catch (err) {
+    //   console.error("Error adding product:", err);
+    // }
   };
 
   return (
