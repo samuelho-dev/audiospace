@@ -52,23 +52,23 @@ model EmailVerification {
 }
 
 model User {
-  id               String             @id @default(cuid())
-  role             Role               @default(USER)
-  username         String             @unique
-  email            String             @unique
-  password         String?
-  emailVerified    EmailVerification?
-  image            String?
-  wishlist         Product[]          @relation("Wishlist")
-  cart             Product[]          @relation("Cart")
-  accounts         Account[]
-  sessions         Session[]
-  transactions     Transaction[]
-  verifiedAt       DateTime?
-  seller           Seller?
-  createdAt        DateTime           @default(now())
-  entries          BattleEntry[]      @relation("Entries")
-  likedEntries     BattleEntry[]      @relation("Liked")
+  id            String             @id @default(cuid())
+  role          Role               @default(USER)
+  username      String             @unique
+  email         String             @unique
+  password      String?
+  emailVerified EmailVerification?
+  image         String?
+  wishlist      Product[]          @relation("Wishlist")
+  cart          Product[]          @relation("Cart")
+  accounts      Account[]
+  sessions      Session[]
+  transactions  Transaction[]
+  verifiedAt    DateTime?
+  seller        Seller?
+  createdAt     DateTime           @default(now())
+  entries       BattleEntry[]      @relation("Entries")
+  likedEntries  BattleEntry[]      @relation("Liked")
 }
 
 enum Role {
@@ -119,13 +119,13 @@ model Product {
   categoryId      Int
   subcategory     ProductSubcategory[]
   description     String               @db.Text
-  price           Int              
+  price           Int
   rating          Int                  @default(0)
   previewUrl      String?
   downloadUrl     String
   isPromoted      ProductPromoteStatus @default(NONE)
   isOnSale        Boolean              @default(false)
-  discountRate    Decimal              @default(0) @db.Decimal(3, 2)
+  discountRate    Int
   wishlistUsers   User[]               @relation("Wishlist")
   cartUsers       User[]               @relation("Cart")
   createdAt       DateTime             @default(now())
@@ -212,7 +212,7 @@ model TransactionItem {
   transaction   Transaction @relation(fields: [transactionId], references: [id])
   transactionId Int
   quantity      Int
-  price         Decimal     @db.Decimal(6, 2)
+  price         Int
 
   @@index([transactionId])
   @@index([productId])

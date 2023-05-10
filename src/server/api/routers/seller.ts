@@ -95,7 +95,7 @@ export const sellerProfileRouter = createTRPCRouter({
         id: z.string(),
         name: z.string().min(1),
         description: z.string().min(5),
-        price: z.instanceof(Decimal),
+        price: z.number(),
       })
     )
     .mutation(async ({ ctx, input }) => {

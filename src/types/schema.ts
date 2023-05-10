@@ -33,27 +33,7 @@ export const ProductSchema = z.object({
   description: z.string(),
   name: z.string(),
   images: z.array(z.unknown()),
-  price: z
-    .custom<Decimal>((value) => {
-      try {
-        new Decimal(value as number);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    })
-    .transform((value) => new Decimal(value)),
-  previewUrl: z.string().nullable().optional(),
-  discountRate: z
-    .custom<Decimal>((value) => {
-      try {
-        new Decimal(value as number);
-        return true;
-      } catch (error) {
-        return false;
-      }
-    })
-    .transform((value) => new Decimal(value)),
+  price: z.number(),
   category: CategorySchema,
   subcategory: z.array(SubcategorySchema),
   wishlistUsers: z.array(z.unknown()).optional(),
