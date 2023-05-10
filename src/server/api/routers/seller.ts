@@ -1,4 +1,3 @@
-import Decimal from "decimal.js";
 import { z } from "zod";
 
 import {
@@ -9,7 +8,49 @@ import {
 import { ProductSchema } from "~/types/schema";
 
 export const sellerProfileRouter = createTRPCRouter({
+  getSellerProfileProductandCategories: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.product.findMany({
+        where: {
+          id: input.userId,
+        },
+        select: {
+          id: true,
+          seller: {
+            include: {
+              user: {
+                select: {
+                  username: true,
+                },
+              },
+            },
+          },
+          description: true,
+          category: true,
+          subcategory: true,
+          name: true,
+          images: true,
+          price: true,
+          discountRate: true,
+        },
+      });
+
+      const uniqueCategories = new Set();
+      const uniqueSubcategories = new Set();
+
+      for (const product of data) {
+        uniqueCategories.add(product.category);
+        uniqueSubcategories.add(product.subcategory);
+      }
+      return {
+        products: data,
+        categories: Array.from(uniqueCategories),
+        subcategories: Array.from(uniqueSubcategories),
+      };
+    }),
   getSellerProduct: protectedProcedure
+    .input(z.object({ userId: z.string() }))
     .output(
       z.object({
         id: z.number(),
@@ -17,10 +58,10 @@ export const sellerProfileRouter = createTRPCRouter({
         products: z.array(ProductSchema),
       })
     )
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
       const data = await ctx.prisma.seller.findFirstOrThrow({
         where: {
-          userId: ctx.session.user.id,
+          userId: input.userId,
         },
         include: {
           products: {
