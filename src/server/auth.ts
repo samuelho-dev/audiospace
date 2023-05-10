@@ -63,12 +63,27 @@ export const authOptions: NextAuthOptions = {
         where: { email: user.email },
       });
 
-      if (existingUser) return true;
+      if (existingUser) {
+        return true;
+      }
+
+      let username = user.email.split("@")[0].replace(".", "-");
+      let usernameCheck = await prisma.user.findUnique({
+        where: { username },
+      });
+      let count = 1;
+      while (usernameCheck) {
+        username = `${usernameCheck.username}${count}`;
+        usernameCheck = await prisma.user.findUnique({
+          where: { username },
+        });
+        count++;
+      }
 
       await prisma.user.create({
         data: {
           email: user.email,
-          username: `user`,
+          username: username,
         },
       });
 
