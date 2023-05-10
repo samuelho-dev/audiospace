@@ -19,8 +19,8 @@ const MyApp: AppType<{
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        className="flex min-h-screen 
-        flex-col items-center justify-between bg-gradient-to-b from-[#191919] to-[#000000] py-4"
+        className="flex h-full min-h-screen w-full
+        flex-col items-center justify-between bg-gradient-to-b from-[#191919] to-[#000000]"
       >
         <Layout>
           <Component {...pageProps} />

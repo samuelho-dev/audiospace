@@ -78,7 +78,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="top flex w-full max-w-3xl flex-col items-center justify-between lg:max-w-6xl">
+    <header className="flex w-full max-w-3xl flex-col items-center justify-between py-4 lg:max-w-6xl">
       <div className="flex h-10 w-full items-center justify-between">
         <Link href={"/"} className="z-20">
           <h1>audiospace</h1>
@@ -161,7 +161,7 @@ function Navbar() {
           />
         )}
       </div>
-    </nav>
+    </header>
   );
 }
 

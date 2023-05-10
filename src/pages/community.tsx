@@ -23,7 +23,7 @@ function Community() {
   };
 
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-8 lg:max-w-6xl">
+    <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-6xl">
       <h1>{`Love that you're here...`}</h1>
       <div>
         <h3>Live Events</h3>
@@ -57,29 +57,36 @@ function Community() {
               </button>
             )}
           </div>
-          {submitActive ? (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                onChange={(e) => setSubmitUrl(e.target.value)}
-                placeholder="Enter your soundcloud url"
-                className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
-              />
-              <button
-                onClick={() => void submitTrack()}
-                className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
-              >
-                Submit
+          <div className="flex gap-2">
+            {session.data?.user.role === "ADMIN" && (
+              <button className="rounded-sm bg-yellow-300 px-2 text-black">
+                Toggle Voting
               </button>
-            </div>
-          ) : (
-            <button
-              onClick={() => setSubmitActive(true)}
-              className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
-            >
-              Submit A Track
-            </button>
-          )}
+            )}
+            {submitActive ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  onChange={(e) => setSubmitUrl(e.target.value)}
+                  placeholder="Enter your soundcloud url"
+                  className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
+                />
+                <button
+                  onClick={() => void submitTrack()}
+                  className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
+                >
+                  Submit
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setSubmitActive(true)}
+                className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
+              >
+                Submit A Track
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-between border-b border-zinc-400 px-4 py-2">

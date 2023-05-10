@@ -64,7 +64,7 @@ function Profile() {
 
   if (status === "authenticated") {
     return (
-      <div className="flex w-full max-w-3xl items-center justify-between gap-8 lg:max-w-6xl">
+      <div className="flex h-full w-full max-w-3xl flex-grow justify-between gap-8 py-10 lg:max-w-6xl">
         <div className="h-full w-1/5">
           <div>
             <h3>PROFILE ⬇️</h3>

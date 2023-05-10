@@ -26,7 +26,7 @@ function MarketLayout({ categories }: MarketLayoutProps) {
     ) : null;
 
   return (
-    <div className="flex h-full w-full max-w-3xl flex-col gap-8 lg:max-w-6xl">
+    <div className="flex h-full w-full max-w-3xl flex-grow flex-col gap-8 py-10 lg:max-w-6xl">
       {categories && (
         <div className="flex w-full gap-4">
           <div className="w-1/5">
