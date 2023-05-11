@@ -63,7 +63,7 @@ function BasicInfo({ user }: BasicInfoProps) {
 
   return (
     <div>
-      <h3>Basic Info</h3>
+      <h2>Basic Info</h2>
       <div className="flex justify-between gap-2">
         <div className="flex w-full flex-col gap-2">
           <div className="flex flex-row justify-between gap-2">
@@ -152,7 +152,7 @@ function BasicInfo({ user }: BasicInfoProps) {
                 </div>
                 <button
                   className="px-2 hover:bg-zinc-600"
-                  onClick={handleProfilePictureUpdate}
+                  onClick={() => void handleProfilePictureUpdate()}
                 >
                   Submit
                 </button>

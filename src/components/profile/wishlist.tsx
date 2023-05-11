@@ -20,7 +20,7 @@ function Wishlist() {
   };
   return (
     <div>
-      <h3>Wishlist</h3>
+      <h2>Wishlist</h2>
       <div className="flex flex-col items-start gap-4">
         {featuredInstrumentsQuery.data &&
           featuredInstrumentsQuery.data.wishlist.map((product) => (

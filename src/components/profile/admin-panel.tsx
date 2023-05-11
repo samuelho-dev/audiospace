@@ -119,7 +119,7 @@ function AdminPanel() {
   return (
     <div className="w-full">
       <form onSubmit={(e) => void handleAddProduct(e)}>
-        <h3>Add Product</h3>
+        <h2>Add Product</h2>
         <div className="flex flex-col gap-4">
           <label className="flex flex-row justify-between gap-10">
             Name

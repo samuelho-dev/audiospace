@@ -8,7 +8,7 @@ function Submissions() {
   console.log(submissionQuery.data);
   return (
     <div>
-      <h3>Submissions</h3>
+      <h2>Submissions</h2>
       <div className="h-40">
         {submissionQuery.data &&
           submissionQuery.data.map((submission) => (
