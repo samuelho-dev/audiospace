@@ -69,6 +69,7 @@ model User {
   createdAt     DateTime           @default(now())
   entries       BattleEntry[]      @relation("Entries")
   likedEntries  BattleEntry[]      @relation("Liked")
+  ratings       Rating[]
 }
 
 enum Role {
@@ -118,7 +119,7 @@ model Product {
   category        ProductCategory      @relation(fields: [categoryId], references: [id])
   categoryId      Int
   subcategory     ProductSubcategory[]
-  description     String               @db.Text
+  description     String               @db.LongText()
   price           Int
   rating          Int                  @default(0)
   previewUrl      String?
@@ -131,6 +132,7 @@ model Product {
   createdAt       DateTime             @default(now())
   transactions    Transaction[]
   transactionItem TransactionItem[]
+  ratings         Rating[]
 
   @@index([sellerId])
   @@index([categoryId])
@@ -149,6 +151,19 @@ model ProductImage {
   productId String
 
   @@index([productId])
+}
+
+model Rating {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  rating    Int     @default(0)
+  review    String? @db.Text
+
+  @@index([productId])
+  @@index([userId])
 }
 
 model Battle {
@@ -187,22 +202,18 @@ model Transaction {
   id               Int               @id @default(autoincrement())
   paypalChargeId   String?           @unique
   paypalReceiptUrl String?
-  status           TransactionStatus @default(UNPAID)
+  paymentId        String?
+  payerId          String?
+  paymentStatus    String
+  paypalEmail      String
   user             User              @relation(fields: [userId], references: [id])
   userId           String
   items            TransactionItem[]
-  balance          Int
+  total            Int
   createdAt        DateTime          @default(now())
-  product          Product           @relation(fields: [productId], references: [id])
-  productId        String
+  product          Product[]
 
   @@index([userId])
-  @@index([productId])
-}
-
-enum TransactionStatus {
-  UNPAID
-  PAID
 }
 
 model TransactionItem {
@@ -223,7 +234,7 @@ model Post {
   title       String
   imageUrl    String
   description String
-  contentUrl  String
+  content     Json
   author      String   @default("Audiospace Team")
   tag         Tag      @relation(fields: [tagId], references: [id])
   tagId       Int
