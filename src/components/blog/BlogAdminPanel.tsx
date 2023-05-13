@@ -3,8 +3,11 @@ import { api } from "~/utils/api";
 import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import axios from "axios";
+import RichTextEditor from "../text-editor/RichTextEditor";
+import useCustomEditor from "../text-editor/useCustomEditor";
 
 function BlogAdminPanel() {
+  const editor = useCustomEditor();
   const [newPost, setNewPost] = useState({
     title: "",
     description: "",
@@ -92,6 +95,7 @@ function BlogAdminPanel() {
         setPresignedUrl={setPresignedUrl}
         setProductDownloadFile={setMarkdownFile}
       />
+      {editor && <RichTextEditor editor={editor} />}
 
       <div className="flex flex-col">
         <label>Blog Type</label>
