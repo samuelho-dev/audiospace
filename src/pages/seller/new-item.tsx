@@ -5,10 +5,16 @@ import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
+import RichTextEditor from "~/components/text-editor/RichTextEditor";
+import { Editor, useEditor } from "@tiptap/react";
+import useCustomEditor from "~/components/text-editor/useCustomEditor";
+import DOMPurify from "isomorphic-dompurify";
 
 function NewItem() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const editor = useCustomEditor();
+
   const [categoryId, setCategoryId] = useState<number>(1);
   const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
     string | null
@@ -16,7 +22,6 @@ function NewItem() {
   const [productPresignUrl, setProductDownload] = useState<string | null>(null);
   const [previewTrackFile, setPreviewTrackFile] = useState<File | null>(null);
   const [productFile, setProductFile] = useState<File | null>(null);
-
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -28,6 +33,10 @@ function NewItem() {
     subcategories: [] as number[],
   });
 
+  if (session?.user.role !== "ADMIN") {
+    void router.push("/");
+  }
+
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const categories = api.onload.getAllCategories.useQuery();
   const subcategories = api.onload.getSelectedSubcategories.useQuery({
@@ -38,6 +47,7 @@ function NewItem() {
   if (!session) {
     return null;
   }
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
@@ -68,7 +78,6 @@ function NewItem() {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     const subcategoryId = parseInt(value);
-
     setForm((prevData) => {
       const prevSubcategories = prevData.subcategories;
       const newSubcategories = checked
@@ -90,15 +99,16 @@ function NewItem() {
         previewTrackPresignUrl &&
         productPresignUrl &&
         productFile &&
-        session.user.role === "ADMIN"
+        editor
       ) {
+        // UPLOAD IMAGES
         await uploadImagesMutation
           .mutateAsync({
             images: form.images,
             folder: "products",
           })
           .then((data) => setForm({ ...form, images: data }));
-
+        // UPLOAD PREVIEW TRACK
         await axios({
           method: "put",
           url: previewTrackPresignUrl,
@@ -107,6 +117,7 @@ function NewItem() {
             "Content-Type": previewTrackFile.type,
           },
         });
+        // UPLOAD PRODUCT FILE
         await axios({
           method: "put",
           url: productPresignUrl,
@@ -116,7 +127,17 @@ function NewItem() {
           },
         });
 
-        await productMutation.mutateAsync({ ...form });
+        const sanitizedForm = { ...form };
+        const sanitizedJson = DOMPurify.sanitize(
+          JSON.stringify(editor.getJSON())
+        );
+
+        sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
+        sanitizedForm.description = sanitizedJson;
+        console.log({ sanitizedForm });
+        await productMutation.mutateAsync({
+          ...sanitizedForm,
+        });
         void router.push(`/seller/${session.user.name}`);
       }
     } catch (err) {
@@ -126,9 +147,12 @@ function NewItem() {
 
   return (
     <div className="flex w-full max-w-3xl flex-col items-center gap-8 lg:max-w-6xl">
-      <form onSubmit={(e) => void handleAddProduct(e)}>
+      <form
+        onSubmit={(e) => void handleAddProduct(e)}
+        className="w-full max-w-3xl"
+      >
         <h3>Add Product</h3>
-        <div className="flex w-full max-w-3xl flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           <div className="flex flex-row justify-between ">
             <label>Name</label>
             <input
@@ -136,19 +160,12 @@ function NewItem() {
               id="name"
               name="name"
               onChange={handleChange}
-              className="rounded-lg text-center text-black"
+              className="rounded-sm p-2 text-center text-black"
             />
           </div>
           <div className="flex flex-col justify-between gap-2">
             <label>Description</label>
-            <textarea
-              id="freeform"
-              rows={4}
-              cols={50}
-              name="description"
-              onChange={handleChange}
-              className="rounded-lg p-4 text-black"
-            />
+            {editor && <RichTextEditor editor={editor} />}
           </div>
           <div className="flex flex-row justify-between ">
             <label>Price</label>
@@ -157,7 +174,7 @@ function NewItem() {
               id="price"
               name="price"
               onChange={handlePriceChange}
-              className="rounded-lg text-center text-black"
+              className="rounded-sm p-1 text-black"
             />
           </div>
           <div className="flex flex-col">
@@ -192,7 +209,7 @@ function NewItem() {
               setProductDownloadFile={setProductFile}
             />
           </div>
-
+          {/* CATEGORY */}
           <div className="flex flex-row justify-between">
             <label>Category</label>
             <select
@@ -208,7 +225,7 @@ function NewItem() {
             </select>
           </div>
           <div className="flex flex-col justify-between gap-2">
-            <label>Subcategories</label>
+            <label>{`Subcategories - Select up to 2`}</label>
             <div className="grid grid-cols-4 gap-4 rounded-lg p-2 outline outline-1 outline-zinc-700">
               {subcategories.data &&
                 subcategories.data.map((subcategory) => (
@@ -216,9 +233,14 @@ function NewItem() {
                     <input
                       id="subcategories"
                       type="checkbox"
+                      disabled={
+                        form.subcategories.length > 1 &&
+                        !form.subcategories.includes(subcategory.id)
+                      }
                       onChange={handleCheckboxChange}
                       value={subcategory.id}
                     />
+
                     <label
                       htmlFor="subcategories"
                       className={`whitespace-nowrap ${
