@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
-import axios from "axios";
 import RichTextEditor from "../text-editor/RichTextEditor";
 import useCustomEditor from "../text-editor/useCustomEditor";
 
@@ -12,28 +10,35 @@ function BlogAdminPanel() {
     title: "",
     description: "",
     blogTag: 1,
-    imageUrl: "",
-    file: "",
+    image: "",
   });
-  const [presignUrl, setPresignedUrl] = useState<string | null>(null);
-  const [markdownFile, setMarkdownFile] = useState<File | null>(null);
+
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
-
+  const createBlobMutation = api.blob.createBlob.useMutation();
+  const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const handleNewBlogPost = async () => {
     try {
-      if (presignUrl && markdownFile) {
+      if (editor) {
         const post = { ...newPost };
-        post.blogTag = Number(post.blogTag);
-        await axios({
-          method: "put",
-          url: presignUrl,
-          data: markdownFile,
-          headers: {
-            "Content-Type": markdownFile.type,
-          },
+
+        await uploadImagesMutation
+          .mutateAsync({
+            images: [newPost.image],
+            folder: "products",
+          })
+          .then((data) => {
+            console.log(data, "IMAGE DATA");
+            setNewPost({ ...newPost, image: data[0] });
+          });
+        const contentString = JSON.stringify(editor.getJSON());
+        const blob = await createBlobMutation.mutateAsync({
+          content: contentString,
         });
-        await blogPostMutation.mutateAsync(post);
+        post.blogTag = Number(post.blogTag);
+
+        console.log(post);
+        await blogPostMutation.mutateAsync({ ...post, contentId: blob.id });
       }
     } catch (err) {
       console.error("An error occured", err);
@@ -45,23 +50,19 @@ function BlogAdminPanel() {
     if (files) {
       const file = files[0] as File;
       const data = await readFileasBase64(file);
-      setNewPost({ ...newPost, imageUrl: data });
+      setNewPost({ ...newPost, image: data });
     }
-  };
-
-  const handleFileChange = (value: string, field: string) => {
-    setNewPost((prevData) => ({ ...prevData, [field]: value }));
   };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setNewPost((prevData) => ({ ...prevData, [name]: value }));
+    setNewPost({ ...newPost, [name]: value });
   };
 
   return (
-    <div className="rounded-lg bg-zinc-900 p-4">
+    <div className="flex flex-col gap-2 rounded-lg bg-zinc-900 p-4">
       <div className="flex w-full flex-col">
         <label>Title</label>
         <input
@@ -80,21 +81,16 @@ function BlogAdminPanel() {
           onChange={handleChange}
         />
       </div>
+      <div className="flex flex-col">
+        <label>Image</label>
+        <input
+          type="file"
+          accept="image/png, image/jpeg, image/jpg"
+          multiple={false}
+          onChange={(e) => void blogImageState(e)}
+        />
+      </div>
 
-      <input
-        type="file"
-        accept="image/png, image/jpeg, image/jpg"
-        multiple={false}
-        onChange={(e) => void blogImageState(e)}
-      />
-
-      <StandardB2Dropzone
-        bucket="AudiospaceBlog"
-        field={"file"}
-        handleFileChange={handleFileChange}
-        setPresignedUrl={setPresignedUrl}
-        setProductDownloadFile={setMarkdownFile}
-      />
       {editor && <RichTextEditor editor={editor} />}
 
       <div className="flex flex-col">
