@@ -40,3 +40,27 @@ h5 {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+.ProseMirror {
+  max-height: 40rem;
+  min-height: 10rem;
+
+  overflow: scroll;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  border: 1px solid white;
+}
+
+.ProseMirror p:empty::before {
+  content: "";
+  display: inline-block;
+}
+
+.ProseMirror ul {
+  list-style-type: circle;
+  padding: 1rem;
+}
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding: 1rem;
+}
