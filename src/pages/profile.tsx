@@ -1,49 +1,10 @@
-import { type SessionContextValue, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import Submissions from "~/components/profile/submissions";
-import PurchaseHistory from "~/components/profile/purchase-history";
-import Settings from "~/components/profile/settings";
-import BasicInfo from "~/components/profile/basic-info";
-import Wishlist from "~/components/profile/wishlist";
-import AdminPanel from "~/components/profile/admin-panel";
-import MyProducts from "~/components/profile/sellers/my-products";
-
-interface ProfileRouteProps {
-  route?: string;
-  user: {
-    id: string;
-    role: string;
-    image: string | null;
-    email: string;
-    name: string;
-  };
-}
+import ProfileRoute from "~/components/profile/ProfileRoute";
 
 function getRoute(section: string | string[] | undefined): string {
   return typeof section === "string" ? section : "";
-}
-
-function ProfileRoute({ route, user }: ProfileRouteProps) {
-  switch (route) {
-    case "basic-info":
-      return <BasicInfo user={user} />;
-    case "wishlist":
-      return <Wishlist />;
-    case "purchase-history":
-      return <PurchaseHistory />;
-    case "submissions":
-      return <Submissions />;
-    case "settings":
-      return <Settings />;
-    case "my-products":
-      return <MyProducts />;
-    case "admin-panel":
-      return <AdminPanel />;
-
-    default:
-      return <BasicInfo user={user} />;
-  }
 }
 
 function Profile() {

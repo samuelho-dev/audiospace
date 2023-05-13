@@ -27,10 +27,24 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           {session?.user.name}
         </h5>
         <div
-          className="h-50 z-50 h-12 w-fit rounded-full bg-pink-300 px-2"
+          className={`z-50 rounded-full ${
+            !session.user.image ? "bg-pink-300 px-2 " : "w-fit"
+          }`}
           // onClick={() => void signOut()}
         >
-          <h1 className="flex h-full w-full items-center justify-center">😛</h1>
+          {session.user.image ? (
+            <Image
+              src={session.user.image}
+              width={45}
+              height={45}
+              alt="profile-image"
+              className="rounded-full"
+            />
+          ) : (
+            <h1 className="flex h-full w-full items-center justify-center">
+              😛
+            </h1>
+          )}
 
           {/* <Image
             src=""
@@ -44,58 +58,58 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           onMouseLeave={() => handleDropdown(null)}
           className="absolute z-20 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white px-4 py-2"
         >
-          <li className=" text-sm text-gray-700 hover:bg-slate-300">
-            <Link
-              href={{
-                pathname: "/profile",
-                query: { section: "basic-info" },
-              }}
-            >
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "basic-info" },
+            }}
+          >
+            <li className=" text-sm text-gray-700 hover:bg-slate-300">
               Profile
-            </Link>
-          </li>
-          <li className="text-sm text-gray-700 hover:bg-slate-300">
-            <Link
-              href={{
-                pathname: "/profile",
-                query: { section: "submissions" },
-              }}
-            >
-              Submissions
-            </Link>
-          </li>
-          <li className="text-sm text-gray-700 hover:bg-slate-300">
-            <Link
-              href={{
-                pathname: "/profile",
-                query: { section: "wishlist" },
-              }}
-            >
-              Wishlist
-            </Link>
-          </li>
-          {session?.user.role !== "SELLER" && (
-            <li className="text-sm text-gray-700 hover:bg-slate-300">
-              <Link
-                href={{
-                  pathname: `/seller/${session?.user.name}`,
-                }}
-              >
-                Seller Dashboard
-              </Link>
             </li>
+          </Link>
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "submissions" },
+            }}
+          >
+            <li className="text-sm text-gray-700 hover:bg-slate-300">
+              Submissions
+            </li>
+          </Link>
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "wishlist" },
+            }}
+          >
+            <li className="text-sm text-gray-700 hover:bg-slate-300">
+              Wishlist
+            </li>
+          </Link>
+          {session?.user.role !== "SELLER" && (
+            <Link
+              href={{
+                pathname: `/seller/${session?.user.name}`,
+              }}
+            >
+              <li className="text-sm text-gray-700 hover:bg-slate-300">
+                Seller Dashboard
+              </li>
+            </Link>
           )}
           {session?.user.role === "ADMIN" && (
-            <li className=" cursor-pointer bg-zinc-500 text-sm text-red-300 hover:bg-slate-300">
-              <Link
-                href={{
-                  pathname: "/profile",
-                  query: { section: "admin-panel" },
-                }}
-              >
+            <Link
+              href={{
+                pathname: "/profile",
+                query: { section: "admin-panel" },
+              }}
+            >
+              <li className=" cursor-pointer bg-zinc-500 text-sm text-red-300 hover:bg-slate-300">
                 ADMIN PANEL
-              </Link>
-            </li>
+              </li>
+            </Link>
           )}
           <li
             className="w-full cursor-pointer text-sm text-gray-700 hover:bg-slate-300"
