@@ -2,27 +2,26 @@ import React from "react";
 import { PrismaClient } from "@prisma/client";
 import { encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
-import getB2File from "~/utils/getB2File";
-import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote";
-import { serialize } from "next-mdx-remote/serialize";
-import Layout from "~/components/mdx/Layout";
-import { parse, stringify } from "superjson";
+import { type PostSchema } from "~/types/schema";
+import dynamic from "next/dynamic";
 
 interface PostProps {
-  source: MDXRemoteProps;
-  postData: string;
+  postData: PostSchema;
 }
-function Post({ source, postData }: PostProps) {
-  const data = parse(postData);
-  if (!data || !source) {
-    return null;
+
+const RenderEditor = dynamic(
+  () => import("~/components/text-editor/RenderEditor"),
+  {
+    ssr: false,
   }
+);
+
+function Post({ postData }: PostProps) {
   return (
-    <Layout>
-      <main className="flex h-full w-full max-w-3xl flex-grow flex-col">
-        <MDXRemote {...source} />
-      </main>
-    </Layout>
+    <div className="flex w-full max-w-3xl flex-grow flex-col gap-8">
+      <h2>{postData.title}</h2>
+      <RenderEditor content={postData.content} />
+    </div>
   );
 }
 
@@ -37,16 +36,28 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     where: {
       id: encodedId,
     },
+    include: {
+      content: {
+        select: {
+          data: true,
+        },
+      },
+    },
   });
-  await prisma.$disconnect();
 
-  const b2File = await getB2File(data.contentUrl, "AudiospaceBlog");
-  const mdxSource = await serialize(b2File);
+  type Content = {
+    data: Buffer;
+  };
+
+  const createdAt = JSON.stringify(data.createdAt);
+  const content: Content = data.content;
+  const contentData = content.data.toString("utf-8");
+
+  await prisma.$disconnect();
 
   return {
     props: {
-      source: mdxSource,
-      postData: stringify(data),
+      postData: { ...data, createdAt, content: contentData },
     },
   };
 };
