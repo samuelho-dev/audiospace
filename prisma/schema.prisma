@@ -78,6 +78,13 @@ enum Role {
   SELLER
 }
 
+model Blob {
+  id      Int      @id @default(autoincrement())
+  data    Bytes
+  post    Post?
+  product Product?
+}
+
 model Seller {
   id       Int       @id @default(autoincrement())
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -119,7 +126,8 @@ model Product {
   category        ProductCategory      @relation(fields: [categoryId], references: [id])
   categoryId      Int
   subcategory     ProductSubcategory[]
-  description     String               @db.LongText()
+  description     Blob                 @relation(fields: [descriptionId], references: [id])
+  descriptionId   Int                  @unique
   price           Int
   rating          Int                  @default(0)
   previewUrl      String?
@@ -232,9 +240,10 @@ model TransactionItem {
 model Post {
   id          String   @unique
   title       String
-  imageUrl    String
+  image       String
   description String
-  content     Json
+  content     Blob     @relation(fields: [contentId], references: [id])
+  contentId   Int      @unique
   author      String   @default("Audiospace Team")
   tag         Tag      @relation(fields: [tagId], references: [id])
   tagId       Int
