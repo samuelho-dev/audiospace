@@ -1,3 +1,4 @@
+import DOMPurify from "isomorphic-dompurify";
 import { z } from "zod";
 
 import {
@@ -7,14 +8,13 @@ import {
 } from "~/server/api/trpc";
 import { ProductSchema } from "~/types/schema";
 import uploadB2 from "~/utils/uploadB2";
-import uploadCloudinary from "~/utils/uploadCloudinary";
 
 export const sellerProfileRouter = createTRPCRouter({
   uploadProduct: protectedProcedure
     .input(
       z.object({
         name: z.string(),
-        description: z.string(),
+        description: z.number(),
         price: z.number(),
         images: z.array(z.string()),
         previewTrack: z.string(),
@@ -24,7 +24,7 @@ export const sellerProfileRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log({ input });
+      const productName = DOMPurify.sanitize(input.name);
       const sellerId = await ctx.prisma.seller.findFirstOrThrow({
         where: {
           userId: ctx.session.user.id,
@@ -54,7 +54,7 @@ export const sellerProfileRouter = createTRPCRouter({
       const uploadedProduct = await ctx.prisma.product.create({
         data: {
           sellerId: sellerId.id,
-          name: input.name,
+          name: productName,
           images: {
             create: input.images.map((file) => ({
               imageUrl: file,
@@ -66,7 +66,7 @@ export const sellerProfileRouter = createTRPCRouter({
               id: subcategoryId,
             })),
           },
-          description: input.description,
+          descriptionId: input.description,
           price: input.price,
           discountRate: 0,
           previewUrl: uploadPreviewTrack,
@@ -123,13 +123,6 @@ export const sellerProfileRouter = createTRPCRouter({
     }),
   getSellerProduct: protectedProcedure
     .input(z.object({ userId: z.string() }))
-    .output(
-      z.object({
-        id: z.number(),
-        userId: z.string(),
-        products: z.array(ProductSchema),
-      })
-    )
     .query(async ({ ctx, input }) => {
       const data = await ctx.prisma.seller.findFirstOrThrow({
         where: {
@@ -148,7 +141,6 @@ export const sellerProfileRouter = createTRPCRouter({
                   },
                 },
               },
-              description: true,
               category: true,
               subcategory: true,
               name: true,
@@ -166,7 +158,7 @@ export const sellerProfileRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().min(1),
-        description: z.string().min(5),
+        descriptionId: z.number(),
         price: z.number(),
       })
     )
@@ -184,7 +176,7 @@ export const sellerProfileRouter = createTRPCRouter({
         },
         data: {
           name: input.name,
-          description: input.description,
+          descriptionId: input.descriptionId,
           price: input.price,
         },
       });
