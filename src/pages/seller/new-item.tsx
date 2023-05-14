@@ -6,13 +6,12 @@ import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
 import RichTextEditor from "~/components/text-editor/RichTextEditor";
-import { Editor, useEditor } from "@tiptap/react";
 import useCustomEditor from "~/components/text-editor/useCustomEditor";
 import DOMPurify from "isomorphic-dompurify";
 
 function NewItem() {
-  const { data: session, status } = useSession();
   const router = useRouter();
+  const { data: session, status } = useSession();
   const editor = useCustomEditor();
 
   const [categoryId, setCategoryId] = useState<number>(1);
@@ -24,7 +23,6 @@ function NewItem() {
   const [productFile, setProductFile] = useState<File | null>(null);
   const [form, setForm] = useState({
     name: "",
-    description: "",
     price: 0,
     images: [] as string[],
     previewTrack: "",
@@ -33,9 +31,9 @@ function NewItem() {
     subcategories: [] as number[],
   });
 
-  if (session?.user.role !== "ADMIN") {
-    void router.push("/");
-  }
+  // if (session?.user.role !== "ADMIN") {
+  //   void router.push("/");
+  // }
 
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const categories = api.onload.getAllCategories.useQuery();
@@ -43,7 +41,7 @@ function NewItem() {
     categoryId,
   });
   const productMutation = api.sellerprofile.uploadProduct.useMutation();
-
+  const createBlobMutation = api.blob.createBlob.useMutation();
   if (!session) {
     return null;
   }
@@ -102,12 +100,11 @@ function NewItem() {
         editor
       ) {
         // UPLOAD IMAGES
-        await uploadImagesMutation
-          .mutateAsync({
-            images: form.images,
-            folder: "products",
-          })
-          .then((data) => setForm({ ...form, images: data }));
+        const images = await uploadImagesMutation.mutateAsync({
+          images: form.images,
+          folder: "products",
+        });
+
         // UPLOAD PREVIEW TRACK
         await axios({
           method: "put",
@@ -117,6 +114,7 @@ function NewItem() {
             "Content-Type": previewTrackFile.type,
           },
         });
+
         // UPLOAD PRODUCT FILE
         await axios({
           method: "put",
@@ -126,17 +124,18 @@ function NewItem() {
             "Content-Type": productFile.type,
           },
         });
-
+        // UPLOAD BLOB FOR DESCRIPTION
+        const blob = await createBlobMutation.mutateAsync({
+          content: DOMPurify.sanitize(JSON.stringify(editor.getJSON())),
+        });
         const sanitizedForm = { ...form };
-        const sanitizedJson = DOMPurify.sanitize(
-          JSON.stringify(editor.getJSON())
-        );
 
         sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
-        sanitizedForm.description = sanitizedJson;
-        console.log({ sanitizedForm });
+        console.log({ sanitizedForm, form });
         await productMutation.mutateAsync({
           ...sanitizedForm,
+          images,
+          description: blob.id,
         });
         void router.push(`/seller/${session.user.name}`);
       }
