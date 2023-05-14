@@ -20,7 +20,7 @@ function Post({ postData }: PostProps) {
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8">
       <h2>{postData.title}</h2>
-      <RenderEditor content={postData.content} />
+      {postData.content && <RenderEditor content={postData.content} />}
     </div>
   );
 }
@@ -48,10 +48,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   type Content = {
     data: Buffer;
   };
-
-  const createdAt = JSON.stringify(data.createdAt);
   const content: Content = data.content;
   const contentData = content.data.toString("utf-8");
+
+  const createdAt = JSON.stringify(data.createdAt);
 
   await prisma.$disconnect();
 
@@ -75,6 +75,7 @@ export async function getStaticPaths() {
       },
     },
   });
+
   await prisma.$disconnect();
   const paths = allPosts.map((post) => ({
     params: {
