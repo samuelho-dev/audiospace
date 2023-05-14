@@ -22,15 +22,13 @@ function BlogAdminPanel() {
       if (editor) {
         const post = { ...newPost };
 
-        await uploadImagesMutation
-          .mutateAsync({
-            images: [newPost.image],
-            folder: "products",
-          })
-          .then((data) => {
-            console.log(data, "IMAGE DATA");
-            setNewPost({ ...newPost, image: data[0] });
-          });
+        const images = await uploadImagesMutation.mutateAsync({
+          images: [newPost.image],
+          folder: "products",
+        });
+        if (!images[0]) {
+          throw new Error("Error uploading images");
+        }
         const contentString = JSON.stringify(editor.getJSON());
         const blob = await createBlobMutation.mutateAsync({
           content: contentString,
@@ -38,7 +36,11 @@ function BlogAdminPanel() {
         post.blogTag = Number(post.blogTag);
 
         console.log(post);
-        await blogPostMutation.mutateAsync({ ...post, contentId: blob.id });
+        await blogPostMutation.mutateAsync({
+          ...post,
+          contentId: blob.id,
+          image: images[0],
+        });
       }
     } catch (err) {
       console.error("An error occured", err);
