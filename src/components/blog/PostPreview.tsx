@@ -18,7 +18,7 @@ function PostPreview({ post }: PostPreviewProps) {
         className="flex border border-zinc-800 p-4 hover:rounded-lg hover:bg-zinc-900"
       >
         <Image
-          src={post.imageUrl}
+          src={post.image}
           className="rounded-lg object-scale-down"
           alt="productimg"
           width={100}

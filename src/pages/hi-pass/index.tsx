@@ -1,6 +1,4 @@
 import { useSession } from "next-auth/react";
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 import BlogAdminPanel from "~/components/blog/BlogAdminPanel";
 import PostPreview from "~/components/blog/PostPreview";
@@ -18,7 +16,7 @@ function Blog() {
         {session.data?.user.role === "ADMIN" && <BlogAdminPanel />}
         <div>
           <h1>Blog Posts</h1>
-          <div>
+          <div className="flex flex-col gap-2">
             {blogPostsQuery.data &&
               blogPostsQuery.data.map((post) => (
                 <PostPreview post={post} key={post.id} />

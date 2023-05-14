@@ -19,7 +19,6 @@ interface ProfileRouteProps {
 }
 
 function ProfileRoute({ route, user }: ProfileRouteProps) {
-  console.log(route);
   switch (route) {
     case "basic-info":
       return <BasicInfo user={user} />;
