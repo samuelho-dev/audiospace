@@ -4,8 +4,6 @@ import Wishlist from "./wishlist";
 import PurchaseHistory from "./purchase-history";
 import Submissions from "./submissions";
 import Settings from "./settings";
-import MyProducts from "./sellers/my-products";
-import AdminPanel from "./admin-panel";
 
 interface ProfileRouteProps {
   route?: string;
@@ -30,10 +28,6 @@ function ProfileRoute({ route, user }: ProfileRouteProps) {
       return <Submissions />;
     case "settings":
       return <Settings />;
-    case "my-products":
-      return <MyProducts />;
-    case "admin-panel":
-      return <AdminPanel />;
 
     default:
       return <BasicInfo user={user} />;

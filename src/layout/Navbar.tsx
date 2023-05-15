@@ -139,6 +139,9 @@ function Navbar() {
           >
             <h4 className="text-md tracking-widest">KITS</h4>
           </Link>
+          <Link href={"/shop"}>
+            <h4 className="text-md tracking-widest">SHOP</h4>
+          </Link>
           <Link href={"/community"}>
             <h4 className="text-md tracking-widest">COMMUNITY</h4>
           </Link>

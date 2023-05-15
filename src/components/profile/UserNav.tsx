@@ -99,18 +99,6 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               </li>
             </Link>
           )}
-          {session?.user.role === "ADMIN" && (
-            <Link
-              href={{
-                pathname: "/profile",
-                query: { section: "admin-panel" },
-              }}
-            >
-              <li className=" cursor-pointer bg-zinc-500 text-sm text-red-300 hover:bg-slate-300">
-                ADMIN PANEL
-              </li>
-            </Link>
-          )}
           <li
             className="w-full cursor-pointer text-sm text-gray-700 hover:bg-slate-300"
             onClick={() => void signOut()}

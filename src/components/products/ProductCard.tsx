@@ -128,7 +128,6 @@ function ProductCard({ product }: ProductCardProps) {
               className="cursor-pointer hover:fill-zinc-500"
             />
           )}
-
           {(userCartQuery.data && userCartQuery.data.includes(product.id)) ||
           cart ? (
             <HiShoppingCart
