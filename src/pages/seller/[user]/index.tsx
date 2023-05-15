@@ -1,18 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
 import React from "react";
-import FilterModule from "~/components/products/FilterModule";
 import ProductCard from "~/components/products/ProductCard";
 import {
   type CategorySchema,
   type ProductSchema,
   type SubcategorySchema,
 } from "~/types/schema";
-import { api } from "~/utils/api";
 
 interface sellerProfileProps {
   products: ProductSchema[];

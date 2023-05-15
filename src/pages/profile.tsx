@@ -60,25 +60,6 @@ function Profile() {
               >
                 Settings
               </h5>
-              {session.user.role === "SELLER" ||
-                (session.user.role === "ADMIN" && (
-                  <>
-                    <h5
-                      className="cursor-pointer hover:bg-gray-900"
-                      onClick={() => profileNavigation("my-products")}
-                    >
-                      My Products
-                    </h5>
-                  </>
-                ))}
-              {session.user.role === "ADMIN" && (
-                <h5
-                  className="cursor-pointer bg-zinc-700 hover:bg-gray-900"
-                  onClick={() => profileNavigation("admin-panel")}
-                >
-                  Admin Panel
-                </h5>
-              )}
             </div>
           </div>
         </div>

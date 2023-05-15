@@ -2,7 +2,7 @@ import { createTRPCRouter } from "~/server/api/trpc";
 import { onloadRouter } from "~/server/api/routers/onload";
 import { authRouter } from "~/server/api/routers/auth";
 import { userRouter } from "./routers/user";
-import { pluginProductRouter } from "./routers/pluginProduct";
+
 import { kitProductRouter } from "./routers/kitProduct";
 import { productRouter } from "./routers/product";
 import { battleRouter } from "./routers/battle";
@@ -21,7 +21,6 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   seller: sellerRouter,
   battles: battleRouter,
-  plugins: pluginProductRouter,
   kits: kitProductRouter,
   products: productRouter,
   onload: onloadRouter,
