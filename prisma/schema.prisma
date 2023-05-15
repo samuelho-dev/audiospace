@@ -119,29 +119,31 @@ model ProductSubcategory {
 }
 
 model Product {
-  id              String               @id @default(cuid())
-  seller          Seller               @relation(fields: [sellerId], references: [id])
-  sellerId        Int
-  name            String
-  images          ProductImage[]
-  category        ProductCategory      @relation(fields: [categoryId], references: [id])
-  categoryId      Int
-  subcategory     ProductSubcategory[]
-  description     Blob                 @relation(fields: [descriptionId], references: [id])
-  descriptionId   Int                  @unique
-  price           Int
-  previewUrl      String?
-  downloadUrl     String
-  isPromoted      ProductPromoteStatus @default(NONE)
-  isOnSale        Boolean              @default(false)
-  discountRate    Int
-  wishlistUsers   User[]               @relation("Wishlist")
-  cartUsers       User[]               @relation("Cart")
-  createdAt       DateTime             @default(now())
-  transactions    Transaction[]
-  transactionItem TransactionItem[]
-  ratings         Rating[]
-  popularity      Int?
+  id               String               @id @default(cuid())
+  seller           Seller               @relation(fields: [sellerId], references: [id])
+  sellerId         Int
+  name             String
+  images           ProductImage[]
+  category         ProductCategory      @relation(fields: [categoryId], references: [id])
+  categoryId       Int
+  subcategory      ProductSubcategory[]
+  shortDescription String?
+  description      Blob                 @relation(fields: [descriptionId], references: [id])
+  descriptionId    Int                  @unique
+  price            Int
+  previewUrl       String?
+  downloadUrl      String
+  isPromoted       ProductPromoteStatus @default(NONE)
+  isOnSale         Boolean              @default(false)
+  discountRate     Int
+  wishlistUsers    User[]               @relation("Wishlist")
+  cartUsers        User[]               @relation("Cart")
+  createdAt        DateTime             @default(now())
+  transactions     Transaction[]
+  transactionItem  TransactionItem[]
+  ratings          Rating[]
+  popularity       Int?
+
   @@index([sellerId])
   @@index([categoryId])
 }
@@ -167,7 +169,7 @@ model Rating {
   productId String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  rating    Int     
+  rating    Int
   review    String? @db.Text
 
   @@index([productId])
@@ -218,7 +220,7 @@ model Transaction {
   userId           String
   items            TransactionItem[]
   total            Int
-  balance Int
+  balance          Int
   createdAt        DateTime          @default(now())
   product          Product[]
 
