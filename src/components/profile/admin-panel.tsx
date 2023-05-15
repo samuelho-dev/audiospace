@@ -24,7 +24,7 @@ function AdminPanel() {
   });
   const sellers = api.onload.getAllSellers.useQuery();
   // const sellerMutation = api.admin.createSeller.useMutation();
-  const productMutation = api.sellerprofile.uploadProduct.useMutation();
+  const productMutation = api.seller.uploadProduct.useMutation();
 
   const [form, setForm] = useState({
     name: "",

@@ -31,8 +31,7 @@ function EditProduct({ product, i, setCurProductId }: EditProductProps) {
     }));
   };
 
-  const productUpdateMutation =
-    api.sellerprofile.updateSellerProduct.useMutation();
+  const productUpdateMutation = api.seller.updateSellerProduct.useMutation();
 
   const handleSubmitProductUpdate = async () => {
     const revisedForm = { ...form };
@@ -115,7 +114,7 @@ function MyProducts() {
     void router.push("/");
   }
 
-  const sellerProductQuery = api.sellerprofile.getSellerProduct.useQuery({
+  const sellerProductQuery = api.seller.getSellerProduct.useQuery({
     userId: session?.user.id,
   });
 

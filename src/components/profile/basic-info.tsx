@@ -36,10 +36,9 @@ function BasicInfo({ user }: BasicInfoProps) {
       setForm({ ...form, image: data });
     }
   };
-  const profileImageMutation =
-    api.userprofile.updateProfilePicture.useMutation();
-  const usernameMutation = api.userprofile.updateProfileUsername.useMutation();
-  const emailMutation = api.userprofile.updateProfileEmail.useMutation();
+  const profileImageMutation = api.user.updateProfilePicture.useMutation();
+  const usernameMutation = api.user.updateProfileUsername.useMutation();
+  const emailMutation = api.user.updateProfileEmail.useMutation();
 
   const handleEmailUpdate = () => {
     if (form.email !== user?.email) {

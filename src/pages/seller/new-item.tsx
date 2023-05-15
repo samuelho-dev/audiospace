@@ -40,7 +40,7 @@ function NewItem() {
   const subcategories = api.onload.getSelectedSubcategories.useQuery({
     categoryId,
   });
-  const productMutation = api.sellerprofile.uploadProduct.useMutation();
+  const productMutation = api.seller.uploadProduct.useMutation();
   const createBlobMutation = api.blob.createBlob.useMutation();
   if (!session) {
     return null;

@@ -24,17 +24,15 @@ function ProductCard({ product }: ProductCardProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   // useEffect(() => (setAudio(new Audio(product.preview_url));), [product.preview_url]);
 
-  const userWishlistQuery = api.userprofile.getWishlist.useQuery();
-  const userCartQuery = api.userprofile.getCart.useQuery();
+  const userWishlistQuery = api.user.getWishlist.useQuery();
+  const userCartQuery = api.user.getCart.useQuery();
 
-  const wishlistAddMutation =
-    api.userprofile.addProductToWishlist.useMutation();
+  const wishlistAddMutation = api.user.addProductToWishlist.useMutation();
   const wishlistRemoveMutation =
-    api.userprofile.deleteProductFromWishlist.useMutation();
+    api.user.deleteProductFromWishlist.useMutation();
 
-  const cartAddMutation = api.userprofile.addProductToCart.useMutation();
-  const cartDeleteMutation =
-    api.userprofile.deleteProductFromCart.useMutation();
+  const cartAddMutation = api.user.addProductToCart.useMutation();
+  const cartDeleteMutation = api.user.deleteProductFromCart.useMutation();
 
   const handleWishlistAdd = () => {
     setFavorite(true);

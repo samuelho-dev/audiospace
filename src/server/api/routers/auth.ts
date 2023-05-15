@@ -8,16 +8,11 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { getCsrfToken, getProviders } from "next-auth/react";
 
 export const authRouter = createTRPCRouter({
   getProviders: publicProcedure.query(async () => {
     const data = await getProviders();
     return data;
-  }),
-  csrfToken: publicProcedure.query(async () => {
-    const csrfToken = await getCsrfToken();
-    return csrfToken;
   }),
   signUp: publicProcedure
     .input(
@@ -70,6 +65,8 @@ export const authRouter = createTRPCRouter({
         return data;
       }
     }),
+
+  // NEEDS WORK
   sendVerificationEmail: publicProcedure
     .input(z.object({ email: z.string(), token: z.string() }))
     .mutation(async ({ ctx, input }) => {

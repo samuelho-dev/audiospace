@@ -9,7 +9,7 @@ import {
 import { ProductSchema } from "~/types/schema";
 import uploadB2 from "~/utils/uploadB2";
 
-export const sellerProfileRouter = createTRPCRouter({
+export const sellerRouter = createTRPCRouter({
   uploadProduct: protectedProcedure
     .input(
       z.object({

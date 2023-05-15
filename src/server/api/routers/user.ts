@@ -7,7 +7,7 @@ import {
 } from "~/server/api/trpc";
 import { ProductSchema } from "~/types/schema";
 
-export const userProfileRouter = createTRPCRouter({
+export const userRouter = createTRPCRouter({
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
     .mutation(async ({ ctx, input }) => {

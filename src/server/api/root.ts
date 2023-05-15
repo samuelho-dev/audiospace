@@ -1,12 +1,12 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { onloadRouter } from "~/server/api/routers/onload";
 import { authRouter } from "~/server/api/routers/auth";
-import { userProfileRouter } from "./routers/userprofile";
+import { userRouter } from "./routers/user";
 import { pluginProductRouter } from "./routers/pluginProduct";
 import { kitProductRouter } from "./routers/kitProduct";
 import { productRouter } from "./routers/product";
 import { battleRouter } from "./routers/battle";
-import { sellerProfileRouter } from "./routers/seller";
+import { sellerRouter } from "./routers/seller";
 import { blogRouter } from "./routers/blog";
 import { b2Router } from "./routers/s3";
 import { cloudinaryRouter } from "./routers/cloudinary";
@@ -18,12 +18,12 @@ import { blobRouter } from "./routers/blob";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  user: userRouter,
+  seller: sellerRouter,
   battles: battleRouter,
   plugins: pluginProductRouter,
   kits: kitProductRouter,
   products: productRouter,
-  userprofile: userProfileRouter,
-  sellerprofile: sellerProfileRouter,
   onload: onloadRouter,
   blog: blogRouter,
   auth: authRouter,

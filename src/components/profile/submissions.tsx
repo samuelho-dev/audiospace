@@ -3,7 +3,7 @@ import { api } from "~/utils/api";
 import soundCloudUrl from "~/utils/soundcloudUrl";
 
 function Submissions() {
-  const submissionQuery = api.userprofile.getPastBeatSubmissions.useQuery();
+  const submissionQuery = api.user.getPastBeatSubmissions.useQuery();
 
   console.log(submissionQuery.data);
   return (

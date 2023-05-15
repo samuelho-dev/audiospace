@@ -5,12 +5,11 @@ import { api } from "~/utils/api";
 
 function Wishlist() {
   const router = useRouter();
-  const featuredInstrumentsQuery =
-    api.userprofile.getWishlistProducts.useQuery();
+  const featuredInstrumentsQuery = api.user.getWishlistProducts.useQuery();
   console.log(featuredInstrumentsQuery.data);
 
   const wishlistRemoveMutation =
-    api.userprofile.deleteProductFromWishlist.useMutation();
+    api.user.deleteProductFromWishlist.useMutation();
 
   const handleWishlistRemove = async (id: string) => {
     await wishlistRemoveMutation.mutateAsync({

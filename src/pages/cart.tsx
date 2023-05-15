@@ -3,7 +3,7 @@ import React from "react";
 import { api } from "~/utils/api";
 
 function Cart() {
-  const cartQuery = api.userprofile.getCartProducts.useQuery();
+  const cartQuery = api.user.getCartProducts.useQuery();
 
   console.log(cartQuery.data);
   return (
