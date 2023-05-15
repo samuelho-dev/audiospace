@@ -86,10 +86,11 @@ model Blob {
 }
 
 model Seller {
-  id       Int       @id @default(autoincrement())
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String    @unique
-  products Product[]
+  id          Int       @id @default(autoincrement())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String    @unique
+  description String?
+  products    Product[]
 }
 
 model VerificationToken {
@@ -167,7 +168,7 @@ model Rating {
   productId String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  rating    Int     @default(0)
+  rating    Int     
   review    String? @db.Text
 
   @@index([productId])
@@ -218,6 +219,7 @@ model Transaction {
   userId           String
   items            TransactionItem[]
   total            Int
+  balance Int
   createdAt        DateTime          @default(now())
   product          Product[]
 

@@ -3,6 +3,7 @@ import { GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+
 import React from "react";
 import FilterModule from "~/components/products/FilterModule";
 import ProductCard from "~/components/products/ProductCard";
@@ -81,7 +82,7 @@ function SellerProfile({
           </h5>
         </div>
         <div className="w-full">
-          <div>
+          <div className="grid grid-cols-3 lg:grid-cols-4">
             {!products || products.length === 0 ? (
               <h5>There are no products to display.</h5>
             ) : (
@@ -120,7 +121,6 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
           },
         },
       },
-      description: true,
       category: true,
       subcategory: true,
       name: true,
