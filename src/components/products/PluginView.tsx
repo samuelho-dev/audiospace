@@ -3,8 +3,12 @@ import { api } from "~/utils/api";
 import ProductCard from "./ProductCard";
 
 function PluginView({}) {
-  const featuredInstrumentsQuery = api.plugins.getPopularInstruments.useQuery();
-  const featuredEffectsQuery = api.plugins.getPopularEffects.useQuery();
+  const featuredInstrumentsQuery = api.products.getFeaturedProducts.useQuery({
+    category: "Instruments",
+  });
+  const featuredEffectsQuery = api.products.getFeaturedProducts.useQuery({
+    category: "Effects",
+  });
 
   return (
     <div className="w-full px-2 py-4">
