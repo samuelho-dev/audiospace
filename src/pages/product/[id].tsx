@@ -69,7 +69,9 @@ function ProductPage({ product }: ProductPageProps) {
             </h4>
             <h4 className="h-full border px-2">Total Rating</h4>
           </div>
-          <RenderEditor content={product.description} />
+          {product.description && (
+            <RenderEditor content={product.description} />
+          )}
         </div>
         <div className="w-1/3">
           <h3>Ratings</h3>
@@ -163,7 +165,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       name: true,
       images: true,
       price: true,
-      rating: true,
+      ratings: true,
       previewUrl: true,
       discountRate: true,
       wishlistUsers: true,
