@@ -44,7 +44,6 @@ h5 {
 .ProseMirror {
   max-height: 40rem;
   min-height: 10rem;
-
   overflow: scroll;
   border-radius: 0.25rem;
   padding: 1rem;

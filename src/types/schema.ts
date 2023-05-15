@@ -12,7 +12,7 @@ export const SellerSchema = z.object({
   user: z.object({
     id: z.number().optional(),
     username: z.string(),
-    image: z.string().nullable(),
+    image: z.string().nullable().optional(),
   }),
 });
 
@@ -37,11 +37,11 @@ export const CategorySchema = z.object({
 export const ProductSchema = z.object({
   id: z.string(),
   seller: SellerSchema,
-  description: z.string(),
+  description: z.string().optional(),
   name: z.string(),
   images: ProductImageSchema,
   price: z.number(),
-  rating: z.number(),
+  rating: z.number().optional(),
   category: CategorySchema,
   subcategory: z.array(SubcategorySchema),
   wishlistUsers: z.array(z.unknown()).optional(),
