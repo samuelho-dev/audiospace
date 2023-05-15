@@ -130,7 +130,6 @@ model Product {
   description     Blob                 @relation(fields: [descriptionId], references: [id])
   descriptionId   Int                  @unique
   price           Int
-  rating          Int                  @default(0)
   previewUrl      String?
   downloadUrl     String
   isPromoted      ProductPromoteStatus @default(NONE)
@@ -142,7 +141,7 @@ model Product {
   transactions    Transaction[]
   transactionItem TransactionItem[]
   ratings         Rating[]
-
+  popularity      Int?
   @@index([sellerId])
   @@index([categoryId])
 }
