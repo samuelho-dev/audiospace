@@ -1,28 +1,28 @@
+import { PrismaClient } from "@prisma/client";
+import { type GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import React from "react";
 import PostPreview from "~/components/blog/PostPreview";
 import Sidebar from "~/components/blog/Sidebar";
-import { api } from "~/utils/api";
+import { type PostSchema } from "~/types/schema";
 
-function BlogFilteredByTag() {
+interface BlogFilteredByTagProps {
+  blogPosts: PostSchema[];
+}
+
+function BlogFilteredByTag({ blogPosts }: BlogFilteredByTagProps) {
   const router = useRouter();
   const { tag } = router.query;
-  const filteredBlogPostQuery = api.blog.getFilteredBlogPostsByTag.useQuery(
-    {
-      tag: tag as string,
-    },
-    { enabled: !!tag }
-  );
+
   return (
     <div className="flex w-full max-w-3xl flex-grow justify-center gap-8 lg:max-w-6xl">
       <Sidebar />
       <div className="w-full">
-        <h3>{tag}</h3>
+        <h3>{tag?.toString().toUpperCase()}</h3>
         <div>
-          {filteredBlogPostQuery.data &&
-            filteredBlogPostQuery.data.map((post) => (
-              <PostPreview post={post} key={post.id} />
-            ))}
+          {blogPosts.map((post) => (
+            <PostPreview post={post} key={post.id} />
+          ))}
         </div>
       </div>
     </div>
@@ -30,3 +30,35 @@ function BlogFilteredByTag() {
 }
 
 export default BlogFilteredByTag;
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const tag = params?.tag as string;
+  const prisma = new PrismaClient();
+  const data = await prisma.post.findMany({
+    where: {
+      tag: {
+        name: tag,
+      },
+    },
+    select: {
+      id: true,
+      title: true,
+      author: true,
+      description: true,
+      createdAt: true,
+      image: true,
+      tag: true,
+    },
+  });
+  await prisma.$disconnect();
+
+  const mutatePosts = data.map((post) => {
+    return { ...post, createdAt: JSON.stringify(post.createdAt) };
+  });
+
+  return {
+    props: {
+      blogPosts: mutatePosts,
+    },
+  };
+};
