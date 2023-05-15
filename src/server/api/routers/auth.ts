@@ -1,4 +1,3 @@
-import { createTransport } from "nodemailer";
 import { z } from "zod";
 import crypto from "crypto";
 import bcrypt from "bcrypt";
@@ -8,6 +7,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { getProviders } from "next-auth/react";
 
 export const authRouter = createTRPCRouter({
   getProviders: publicProcedure.query(async () => {
