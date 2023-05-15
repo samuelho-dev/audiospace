@@ -1,12 +1,19 @@
 import { z } from "zod";
 
-export const ProductImageSchema = z.object({
-  id: z.number(),
-  imageUrl: z.string(),
-});
+export const ProductImageSchema = z.array(
+  z.object({
+    id: z.number(),
+    imageUrl: z.string().url(),
+    productId: z.string().optional(),
+  })
+);
 
 export const SellerSchema = z.object({
-  user: z.object({ id: z.number().optional(), username: z.string() }),
+  user: z.object({
+    id: z.number().optional(),
+    username: z.string(),
+    image: z.string().nullable(),
+  }),
 });
 
 export const SubcategorySchema = z.object({
@@ -32,8 +39,9 @@ export const ProductSchema = z.object({
   seller: SellerSchema,
   description: z.string(),
   name: z.string(),
-  images: z.array(z.unknown()),
+  images: ProductImageSchema,
   price: z.number(),
+  rating: z.number(),
   category: CategorySchema,
   subcategory: z.array(SubcategorySchema),
   wishlistUsers: z.array(z.unknown()).optional(),
@@ -72,12 +80,17 @@ export const BattleSchema = z.object({
   isActive: z.enum(["ACTIVE", "ENDED", "VOTING"]),
 });
 
+export const Blob = z.object({
+  id: z.number().optional(),
+  data: z.string(),
+});
+
 export const PostSchema = z.object({
   id: z.string(),
   title: z.string(),
   description: z.string(),
-  contentUrl: z.string(),
-  imageUrl: z.string().url(),
+  content: z.string().optional(),
+  image: z.string().url(),
   author: z.string(),
   tagId: z.number().optional(),
   tag: z.object({
@@ -93,6 +106,30 @@ export const TagSchema = z.object({
   posts: z.array(PostSchema).optional(),
 });
 
+const TextMarkSchema = z.object({
+  type: z.string(),
+});
+
+const TextContentSchema = z.object({
+  type: z.string(),
+  text: z.string().optional(),
+  marks: z.array(TextMarkSchema).optional(),
+});
+
+const ContentSchema = z.object({
+  type: z.string(),
+  attrs: z.record(z.any()).optional(),
+  content: z.array(TextContentSchema).optional(),
+});
+
+const TiptapSchema = z.object({
+  type: z.string(),
+  attrs: z.record(z.any()).optional(),
+  content: z.array(ContentSchema).optional(),
+});
+
+const TiptapOutputSchema = z.array(TiptapSchema);
+
 export type SellerSchema = z.infer<typeof SellerSchema>;
 export type SubcategorySchema = z.infer<typeof SubcategorySchema>;
 export type CategorySchema = z.infer<typeof CategorySchema>;
@@ -102,3 +139,4 @@ export type BattleEntrySchema = z.infer<typeof BattleEntrySchema>;
 export type BattleSchema = z.infer<typeof BattleSchema>;
 export type PostSchema = z.infer<typeof PostSchema>;
 export type TagSchema = z.infer<typeof TagSchema>;
+export type TiptapOutputSchema = z.infer<typeof TiptapOutputSchema>;
