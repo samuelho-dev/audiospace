@@ -31,6 +31,8 @@ const server = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  PAYPAL_CLIENT_SECRET: z.string(),
+  PAYPAL_CLIENT_ID: z.string(),
 });
 
 /**
@@ -63,6 +65,8 @@ const processEnv = {
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
+  PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
   // process.env.NEXTAUTH_URLnv.NEXT_PUBLIC_CLIENTVAR,
 };
 
