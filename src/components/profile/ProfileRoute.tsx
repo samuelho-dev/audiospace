@@ -4,6 +4,7 @@ import Wishlist from "./wishlist";
 import PurchaseHistory from "./purchase-history";
 import Submissions from "./submissions";
 import Settings from "./settings";
+import Payments from "./payments";
 
 interface ProfileRouteProps {
   route?: string;
@@ -28,6 +29,8 @@ function ProfileRoute({ route, user }: ProfileRouteProps) {
       return <Submissions />;
     case "settings":
       return <Settings />;
+    case "payments":
+      return <Payments />;
 
     default:
       return <BasicInfo user={user} />;
