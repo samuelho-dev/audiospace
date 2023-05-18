@@ -10,10 +10,7 @@ interface FilterProps {
 export default function FilterModule({ categories, handleRoute }: FilterProps) {
   const router = useRouter();
   const { category, tag } = router.query;
-  const handleFilterClick = (
-    categoryName: string,
-    subcategoryName?: string
-  ) => {
+  const handleFilterClick = (categoryName: string, subcategoryName: string) => {
     handleRoute(categoryName, subcategoryName);
   };
   return (
@@ -34,7 +31,7 @@ export default function FilterModule({ categories, handleRoute }: FilterProps) {
                   : false
               }
             >
-              <p onClick={() => handleFilterClick(filterCategory.name)}>
+              <p onClick={() => handleFilterClick(filterCategory.name, "")}>
                 {filterCategory.name}
               </p>
             </FilterBtn>
