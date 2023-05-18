@@ -103,9 +103,8 @@ function ProductCard({ product }: ProductCardProps) {
       <div className="scrollbar-hide flex gap-1 overflow-scroll whitespace-nowrap">
         {product?.subcategory.map((subcategory, i) => (
           <p
-            className=" text-xs font-light tracking-tight text-gray-400 hover:cursor-pointer hover:underline hover:underline-offset-2"
             key={subcategory.id}
-            onClick={() => handleRoute(product.category.name, subcategory.name)}
+            className=" text-xs font-light tracking-tight text-gray-400"
           >
             {subcategory.name}
             {i !== product.subcategory.length - 1 && ","}
