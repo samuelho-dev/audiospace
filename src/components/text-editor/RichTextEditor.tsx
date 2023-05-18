@@ -146,7 +146,9 @@ const RichTextEditor = ({ editor }: RichTextEditorProps) => {
   return (
     <div className="flex flex-col gap-1">
       <MenuBar editor={editor} />
-      <EditorContent editor={editor} />
+      <div className="rounded-md border border-zinc-200">
+        <EditorContent editor={editor} />
+      </div>
     </div>
   );
 };

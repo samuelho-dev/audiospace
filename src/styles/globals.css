@@ -47,7 +47,6 @@ h5 {
   overflow: scroll;
   border-radius: 0.25rem;
   padding: 1rem;
-  border: 1px solid white;
 }
 
 .ProseMirror p:empty::before {
