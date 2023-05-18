@@ -4,17 +4,12 @@ import { encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
 import { type PostSchema } from "~/types/schema";
 import dynamic from "next/dynamic";
+import useCustomEditor from "~/components/text-editor/useCustomEditor";
+import RenderEditor from "~/components/text-editor/RenderEditor";
 
 interface PostProps {
   postData: PostSchema;
 }
-
-const RenderEditor = dynamic(
-  () => import("~/components/text-editor/RenderEditor"),
-  {
-    ssr: false,
-  }
-);
 
 function Post({ postData }: PostProps) {
   return (

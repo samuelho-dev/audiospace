@@ -3,6 +3,7 @@ import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import RichTextEditor from "../text-editor/RichTextEditor";
 import useCustomEditor from "../text-editor/useCustomEditor";
+import DOMPurify from "dompurify";
 
 function BlogAdminPanel() {
   const editor = useCustomEditor();
@@ -15,7 +16,7 @@ function BlogAdminPanel() {
 
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
-  const createBlobMutation = api.blob.createBlob.useMutation();
+  const createBlobMutation = api.blob.createBlogPostBlob.useMutation();
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const handleNewBlogPost = async () => {
     try {
@@ -29,9 +30,8 @@ function BlogAdminPanel() {
         if (!images[0]) {
           throw new Error("Error uploading images");
         }
-        const contentString = JSON.stringify(editor.getJSON());
         const blob = await createBlobMutation.mutateAsync({
-          content: contentString,
+          content: DOMPurify.sanitize(editor.getHTML()),
         });
         post.blogTag = Number(post.blogTag);
 

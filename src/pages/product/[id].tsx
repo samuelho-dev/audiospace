@@ -1,27 +1,22 @@
 import { PrismaClient } from "@prisma/client";
-import DOMPurify from "isomorphic-dompurify";
-
+import { EditorContent } from "@tiptap/react";
 import { type GetServerSideProps } from "next";
-import dynamic from "next/dynamic";
+import { useSession } from "next-auth/react";
+
 import Image from "next/image";
-import { useRouter } from "next/router";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
+import RenderEditor from "~/components/text-editor/RenderEditor";
+
 import { type ProductSchema } from "~/types/schema";
 
 interface ProductPageProps {
   product: ProductSchema;
 }
 
-const RenderEditor = dynamic(
-  () => import("~/components/text-editor/RenderEditor"),
-  {
-    ssr: false,
-  }
-);
 function ProductPage({ product }: ProductPageProps) {
-  const router = useRouter();
-
   // NEED TO FETCH RATINGS FOR SELLER AND PRODUCT
+  const { data: session } = useSession();
 
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-4xl">
@@ -59,6 +54,9 @@ function ProductPage({ product }: ProductPageProps) {
             Add to Cart
           </button>
           <button className="w-full border px-2 hover:mx-3">Favorite</button>
+          {product.seller.user.username === session?.user.name && (
+            <button className="w-full border px-2 hover:mx-3">Edit</button>
+          )}
         </div>
       </div>
       <div className="flex justify-between gap-4">
