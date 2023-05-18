@@ -275,4 +275,47 @@ export const userRouter = createTRPCRouter({
     });
     return data;
   }),
+  getPurchaseHistory: protectedProcedure.query(({ ctx }) => {
+    const data = ctx.prisma.transaction.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+    });
+    return data;
+  }),
+  rateProduct: protectedProcedure
+    .input(
+      z.object({ productId: z.string(), rating: z.number().min(1).max(5) })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Check if user has purchased the item
+      await ctx.prisma.transaction.findFirstOrThrow({
+        where: {
+          userId: ctx.session.user.id,
+          products: {
+            some: {
+              productId: input.productId,
+            },
+          },
+        },
+      });
+
+      const data = ctx.prisma.rating.upsert({
+        where: {
+          productId_userId: {
+            productId: input.productId,
+            userId: ctx.session.user.id,
+          },
+        },
+        update: {
+          rating: input.rating,
+        },
+        create: {
+          productId: input.productId,
+          userId: ctx.session.user.id,
+          rating: input.rating,
+        },
+      });
+      return data;
+    }),
 });
