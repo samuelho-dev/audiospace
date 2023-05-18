@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -78,16 +75,21 @@ enum Role {
   SELLER
 }
 
-model Blob {
-  id      Int      @id @default(autoincrement())
+model ProductDescriptionBlob {
+  id      String   @id @default(cuid())
   data    Bytes
-  post    Post?
   product Product?
+}
+
+model PostContentBlob {
+  id   String @id @default(cuid())
+  data Bytes
+  post Post?
 }
 
 model Seller {
   id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id])
   userId      String    @unique
   description String?
   products    Product[]
@@ -119,33 +121,33 @@ model ProductSubcategory {
 }
 
 model Product {
-  id               String               @id @default(cuid())
-  seller           Seller               @relation(fields: [sellerId], references: [id])
+  id               String                 @id @default(cuid())
+  seller           Seller                 @relation(fields: [sellerId], references: [id])
   sellerId         Int
   name             String
   images           ProductImage[]
-  category         ProductCategory      @relation(fields: [categoryId], references: [id])
+  category         ProductCategory        @relation(fields: [categoryId], references: [id])
   categoryId       Int
   subcategory      ProductSubcategory[]
   shortDescription String?
-  description      Blob                 @relation(fields: [descriptionId], references: [id])
-  descriptionId    Int                  @unique
+  description      ProductDescriptionBlob @relation(fields: [descriptionId], references: [id])
+  descriptionId    String                 @unique
   price            Int
   previewUrl       String?
   downloadUrl      String
-  isPromoted       ProductPromoteStatus @default(NONE)
-  isOnSale         Boolean              @default(false)
+  isPromoted       ProductPromoteStatus   @default(NONE)
+  isOnSale         Boolean                @default(false)
   discountRate     Int
-  wishlistUsers    User[]               @relation("Wishlist")
-  cartUsers        User[]               @relation("Cart")
-  createdAt        DateTime             @default(now())
-  transactions     Transaction[]
+  wishlistUsers    User[]                 @relation("Wishlist")
+  cartUsers        User[]                 @relation("Cart")
+  createdAt        DateTime               @default(now())
   transactionItem  TransactionItem[]
   ratings          Rating[]
   popularity       Int?
 
   @@index([sellerId])
   @@index([categoryId])
+  @@index([descriptionId])
 }
 
 enum ProductPromoteStatus {
@@ -165,13 +167,14 @@ model ProductImage {
 
 model Rating {
   id        Int     @id @default(autoincrement())
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id])
   productId String
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id])
   userId    String
   rating    Int
   review    String? @db.Text
 
+  @@unique([productId, userId])
   @@index([productId])
   @@index([userId])
 }
@@ -209,7 +212,7 @@ enum BattleStatus {
 }
 
 model Transaction {
-  id               Int               @id @default(autoincrement())
+  id               String            @id @default(cuid())
   paypalChargeId   String?           @unique
   paypalReceiptUrl String?
   paymentId        String?
@@ -218,21 +221,19 @@ model Transaction {
   paypalEmail      String
   user             User              @relation(fields: [userId], references: [id])
   userId           String
-  items            TransactionItem[]
+  products         TransactionItem[]
   total            Int
-  balance          Int
   createdAt        DateTime          @default(now())
-  product          Product[]
 
   @@index([userId])
 }
 
 model TransactionItem {
-  id            Int         @id @default(autoincrement())
+  id            String      @id @default(cuid())
   product       Product     @relation(fields: [productId], references: [id])
   productId     String
   transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId Int
+  transactionId String
   quantity      Int
   price         Int
 
@@ -241,18 +242,19 @@ model TransactionItem {
 }
 
 model Post {
-  id          String   @unique
+  id          String          @unique
   title       String
   image       String
   description String
-  content     Blob     @relation(fields: [contentId], references: [id])
-  contentId   Int      @unique
-  author      String   @default("Audiospace Team")
-  tag         Tag      @relation(fields: [tagId], references: [id])
+  content     PostContentBlob @relation(fields: [contentId], references: [id])
+  contentId   String          @unique
+  author      String          @default("Audiospace Team")
+  tag         Tag             @relation(fields: [tagId], references: [id])
   tagId       Int
-  createdAt   DateTime @default(now())
+  createdAt   DateTime        @default(now())
 
   @@index([tagId])
+  @@index([contentId])
 }
 
 model Tag {
