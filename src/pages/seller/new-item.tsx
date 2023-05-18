@@ -13,7 +13,6 @@ function NewItem() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const editor = useCustomEditor();
-
   const [categoryId, setCategoryId] = useState<number>(1);
   const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
     string | null
@@ -31,17 +30,14 @@ function NewItem() {
     subcategories: [] as number[],
   });
 
-  // if (session?.user.role !== "ADMIN") {
-  //   void router.push("/");
-  // }
-
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const categories = api.onload.getAllCategories.useQuery();
   const subcategories = api.onload.getSelectedSubcategories.useQuery({
     categoryId,
   });
   const productMutation = api.seller.uploadProduct.useMutation();
-  const createBlobMutation = api.blob.createBlob.useMutation();
+  const createBlobMutation =
+    api.blob.createProductDescriptionBlob.useMutation();
   if (!session) {
     return null;
   }
@@ -126,7 +122,7 @@ function NewItem() {
         });
         // UPLOAD BLOB FOR DESCRIPTION
         const blob = await createBlobMutation.mutateAsync({
-          content: DOMPurify.sanitize(JSON.stringify(editor.getJSON())),
+          content: DOMPurify.sanitize(editor.getHTML()),
         });
         const sanitizedForm = { ...form };
 
