@@ -1,19 +1,18 @@
 import Underline from "@tiptap/extension-underline";
-import { generateHTML } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import DOMPurify from "isomorphic-dompurify";
-import React, { useMemo } from "react";
-import { type TiptapOutputSchema } from "~/types/schema";
+import React from "react";
 
 interface RenderEditorProps {
   content: string;
 }
 function RenderEditor({ content }: RenderEditorProps) {
   const sanitize = DOMPurify.sanitize(content);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const json: TiptapOutputSchema = JSON.parse(sanitize);
-  const output = useMemo(() => {
-    return generateHTML(json, [
+  const editor = useEditor({
+    editable: false,
+    content: sanitize,
+    extensions: [
       StarterKit.configure({
         paragraph: {
           HTMLAttributes: {
@@ -22,10 +21,10 @@ function RenderEditor({ content }: RenderEditorProps) {
         },
       }),
       Underline,
-    ]);
-  }, [json]);
+    ],
+  });
 
-  return <div className="p-2" dangerouslySetInnerHTML={{ __html: output }} />;
+  return <EditorContent editor={editor} />;
 }
 
 export default RenderEditor;
