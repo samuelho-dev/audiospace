@@ -28,8 +28,7 @@ export const UseRouterFilter = () => {
         pathname,
         query: newQuery,
       },
-      undefined,
-      { shallow: true }
+      undefined
     );
   };
 
