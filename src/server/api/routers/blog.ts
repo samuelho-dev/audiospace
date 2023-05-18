@@ -67,7 +67,7 @@ export const blogRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         description: z.string(),
-        contentId: z.number(),
+        contentId: z.string(),
         image: z.string().url(),
         blogTag: z.number(),
       })

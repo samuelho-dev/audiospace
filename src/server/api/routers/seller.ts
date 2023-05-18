@@ -14,7 +14,7 @@ export const sellerRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        description: z.number(),
+        description: z.string(),
         price: z.number(),
         images: z.array(z.string()),
         previewTrack: z.string(),
@@ -158,7 +158,7 @@ export const sellerRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().min(1),
-        descriptionId: z.number(),
+        descriptionId: z.string(),
         price: z.number(),
       })
     )
