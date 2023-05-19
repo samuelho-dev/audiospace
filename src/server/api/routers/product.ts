@@ -174,7 +174,7 @@ export const productRouter = createTRPCRouter({
         },
         take: 5,
         orderBy: {
-          transactions: {
+          transactionItem: {
             _count: "desc",
           },
         },
