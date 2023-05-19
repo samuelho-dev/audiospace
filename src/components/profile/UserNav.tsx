@@ -30,7 +30,6 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           className={`z-50 rounded-full ${
             !session.user.image ? "bg-pink-300 px-2 " : "w-fit"
           }`}
-          // onClick={() => void signOut()}
         >
           {session.user.image ? (
             <Image
@@ -88,7 +87,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               Wishlist
             </li>
           </Link>
-          {session?.user.role !== "SELLER" && (
+          {session?.user.role === "SELLER" && (
             <Link
               href={{
                 pathname: `/seller/${session?.user.name}`,

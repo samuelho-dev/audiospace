@@ -5,30 +5,21 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import ProductCard from "~/components/products/ProductCard";
-import {
-  type CategorySchema,
-  type ProductSchema,
-  type SubcategorySchema,
-} from "~/types/schema";
+import { type ProductSchema } from "~/types/schema";
 
 interface sellerProfileProps {
   products: ProductSchema[];
-  categories: CategorySchema;
-  subcategories: SubcategorySchema;
 }
 
-function SellerProfile({
-  products,
-  categories,
-  subcategories,
-}: sellerProfileProps) {
+function SellerProfile({ products }: sellerProfileProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const { user } = router.query;
+
   if (!user) {
     return null;
   }
-  console.log({ products, categories, subcategories });
+
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col justify-start gap-8 lg:max-w-6xl">
       <div className="z-10 flex justify-between border-b border-zinc-800 p-4">
@@ -47,15 +38,14 @@ function SellerProfile({
 
         <div className="flex  flex-col justify-end gap-2">
           <div className="flex items-center gap-2">
-            {session?.user.id === user ||
-              (session?.user.role === "ADMIN" && (
-                <Link
-                  href={"/seller/new-item"}
-                  className="h-fit whitespace-nowrap rounded-lg border bg-zinc-900 p-2"
-                >
-                  Add Product
-                </Link>
-              ))}
+            {session?.user.name === user && (
+              <Link
+                href={"/seller/new-item"}
+                className="h-fit whitespace-nowrap rounded-lg border bg-zinc-900 p-2"
+              >
+                Add Product
+              </Link>
+            )}
             <div className="rounded-md bg-zinc-100 px-2 py-1 text-black">
               Share
             </div>

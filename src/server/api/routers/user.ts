@@ -11,7 +11,6 @@ export const userRouter = createTRPCRouter({
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(input);
       if (ctx.session.user.image) {
         await ctx.cloudinary.uploader.destroy(ctx.session.user.image);
       }
@@ -275,14 +274,56 @@ export const userRouter = createTRPCRouter({
     });
     return data;
   }),
-  getPurchaseHistory: protectedProcedure.query(({ ctx }) => {
-    const data = ctx.prisma.transaction.findMany({
+  getPurchaseHistory: protectedProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.transaction.findMany({
       where: {
         userId: ctx.session.user.id,
       },
+      select: {
+        id: true,
+        paymentStatus: true,
+        total: true,
+        createdAt: true,
+        products: {
+          select: {
+            quantity: true,
+            price: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                images: true,
+                seller: {
+                  select: {
+                    user: {
+                      select: {
+                        username: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
+
+    console.log(data[0]);
     return data;
   }),
+  getRatingForItem: protectedProcedure
+    .input(z.object({ productId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.rating.findFirst({
+        where: {
+          productId: input.productId,
+          userId: ctx.session.user.id,
+        },
+      });
+
+      return data;
+    }),
   rateProduct: protectedProcedure
     .input(
       z.object({ productId: z.string(), rating: z.number().min(1).max(5) })
