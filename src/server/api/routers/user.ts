@@ -315,7 +315,7 @@ export const userRouter = createTRPCRouter({
   getRatingForItem: protectedProcedure
     .input(z.object({ productId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const data = await ctx.prisma.rating.findFirst({
+      const data = await ctx.prisma.rating.findFirstOrThrow({
         where: {
           productId: input.productId,
           userId: ctx.session.user.id,
