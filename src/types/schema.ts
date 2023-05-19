@@ -47,6 +47,13 @@ export const ProductSchema = z.object({
   wishlistUsers: z.array(z.unknown()).optional(),
 });
 
+export const TransactionProductSchema = z.object({
+  id: z.string(),
+  seller: SellerSchema,
+  name: z.string(),
+  images: ProductImageSchema,
+});
+
 export const UserSchema = z.object({
   id: z.string(),
   stripeCustomerId: z.string().optional(),
@@ -134,6 +141,7 @@ export type SellerSchema = z.infer<typeof SellerSchema>;
 export type SubcategorySchema = z.infer<typeof SubcategorySchema>;
 export type CategorySchema = z.infer<typeof CategorySchema>;
 export type ProductSchema = z.infer<typeof ProductSchema>;
+export type TransactionProductSchema = z.infer<typeof TransactionProductSchema>;
 export type UserSchema = z.infer<typeof UserSchema>;
 export type BattleEntrySchema = z.infer<typeof BattleEntrySchema>;
 export type BattleSchema = z.infer<typeof BattleSchema>;
