@@ -48,6 +48,33 @@ function Community() {
   const battleQuery = api.battles.fetchCurrentBattle.useQuery();
   const battleEntriesQuery = api.battles.fetchCurrentEntries.useQuery();
   const submitEntryMutation = api.battles.submitBattleEntry.useMutation();
+  const toggleBattleVotingMutation =
+    api.battles.toggleBattleVoting.useMutation();
+  const endBattleMutation = api.battles.endCurrentBattle.useMutation();
+
+  const handleBattleToggle = async () => {
+    try {
+      if (battleQuery.data) {
+        await toggleBattleVotingMutation.mutateAsync({
+          id: battleQuery.data.id,
+        });
+      }
+    } catch (err) {
+      console.error("Error occured during voting toggle", err);
+    }
+  };
+
+  const handleBattleEnd = async () => {
+    try {
+      if (battleQuery.data) {
+        await endBattleMutation.mutateAsync({
+          id: battleQuery.data.id,
+        });
+      }
+    } catch (err) {
+      console.error("Error occured during ending battle", err);
+    }
+  };
 
   const submitTrack = async (submitUrl: string) => {
     try {
@@ -106,9 +133,23 @@ function Community() {
           </div>
           <div className="flex gap-2">
             {session.data?.user.role === "ADMIN" && (
-              <button className="rounded-sm bg-yellow-300 px-2 text-black">
-                Toggle Voting
-              </button>
+              <div className="flex gap-2">
+                {battleQuery.data && battleQuery.data.isActive === "VOTING" ? (
+                  <button
+                    onClick={() => void handleBattleEnd()}
+                    className="rounded-sm bg-rose-600 px-2 text-white"
+                  >
+                    END BATTLE
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => void handleBattleToggle()}
+                    className="rounded-sm bg-yellow-300 px-2 text-black"
+                  >
+                    Toggle Voting
+                  </button>
+                )}
+              </div>
             )}
             {submitted ? (
               <h5 className="rounded-lg border border-zinc-100 px-2">
@@ -127,8 +168,13 @@ function Community() {
         </div>
         <div>
           {battleEntriesQuery.data &&
+            battleQuery.data &&
             battleEntriesQuery.data.map((entry: BattleEntrySchema) => (
-              <BattleEntry key={entry.id} entry={entry} />
+              <BattleEntry
+                key={entry.id}
+                entry={entry}
+                votingPhase={battleQuery.data.isActive === "ACTIVE"}
+              />
             ))}
         </div>
         <div className="flex justify-between border-t border-t-zinc-500 px-1 py-2">
