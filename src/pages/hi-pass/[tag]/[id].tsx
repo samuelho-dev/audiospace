@@ -3,8 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
 import { type PostSchema } from "~/types/schema";
-import dynamic from "next/dynamic";
-import useCustomEditor from "~/components/text-editor/useCustomEditor";
 import RenderEditor from "~/components/text-editor/RenderEditor";
 
 interface PostProps {

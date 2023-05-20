@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import StarRating from "./StarRating";
 import { api } from "~/utils/api";
-import { type ProductSchema } from "~/types/schema";
+import { type TransactionProductSchema } from "~/types/schema";
 import Image from "next/image";
 
 interface PurchaseHistoryItemProps {
-  product: ProductSchema;
+  product: TransactionProductSchema;
   quantity: number;
   price: number;
 }
@@ -22,7 +22,6 @@ function PurchaseHistoryItem({
     await ratingMutation.mutateAsync({ rating, productId: product.id });
   };
 
-  console.log(ratingQuery.data);
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -35,7 +34,7 @@ function PurchaseHistoryItem({
           />
         )}
         <div className="flex flex-col gap-1">
-          <h3>{product.name}</h3>
+          <h4>{product.name}</h4>
           <p>{product.seller.user.username}</p>
         </div>
       </div>
