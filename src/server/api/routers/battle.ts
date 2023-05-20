@@ -58,7 +58,7 @@ export const battleRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const data = ctx.prisma.battle.findFirstOrThrow({
         where: {
-          isActive: "ACTIVE",
+          OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
         },
       });
       return data;
@@ -68,7 +68,7 @@ export const battleRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const currBattle = await ctx.prisma.battle.findFirstOrThrow({
         where: {
-          isActive: "ACTIVE",
+          OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
         },
       });
 
@@ -136,7 +136,7 @@ export const battleRouter = createTRPCRouter({
     }),
   toggleBattleVoting: protectedProcedure
     .input(z.object({ id: z.number() }))
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const data = await ctx.prisma.battle.update({
         where: {
           id: input.id,
@@ -147,6 +147,44 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
+  endCurrentBattle: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const currBattle = await ctx.prisma.battle.findFirst({
+        where: {
+          isActive: "VOTING",
+        },
+        select: {
+          id: true,
+          entries: {
+            orderBy: [
+              {
+                rating: "desc",
+              },
+            ],
+            take: 5,
+          },
+        },
+      });
+      console.log(currBattle);
+      if (!currBattle) {
+        throw new Error("There is no active battle");
+      }
+
+      const data = await ctx.prisma.battle.update({
+        where: {
+          id: currBattle.id,
+        },
+        data: {
+          isActive: "ENDED",
+          winnerId: currBattle.entries[0]?.userId,
+          endedAt: new Date(),
+        },
+      });
+
+      return data;
+    }),
+
   endBattleandCreate: protectedProcedure
     .input(
       z.object({
