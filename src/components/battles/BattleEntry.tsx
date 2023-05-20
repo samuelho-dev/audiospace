@@ -5,9 +5,10 @@ import soundCloudUrl from "~/utils/soundcloudUrl";
 
 interface BattleEntryProps {
   entry: BattleEntrySchema;
+  votingPhase: boolean;
 }
 
-function BattleEntry({ entry }: BattleEntryProps) {
+function BattleEntry({ entry, votingPhase }: BattleEntryProps) {
   const [voted, setVoted] = useState(false);
   const voteMutation = api.battles.voteEntry.useMutation();
 
@@ -31,7 +32,7 @@ function BattleEntry({ entry }: BattleEntryProps) {
       <input
         type="checkbox"
         onClick={() => void handleVote()}
-        disabled={voted}
+        disabled={voted || votingPhase}
         className="flex text-sm"
       />
     </div>
