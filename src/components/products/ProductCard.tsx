@@ -15,12 +15,9 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
-  const { data: session } = useSession();
-  const { asPath, query } = useRouter();
   const [previewHover, setPreviewHover] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [cart, setCart] = useState(false);
-  const { handleRoute } = UseRouterFilter();
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   // useEffect(() => (setAudio(new Audio(product.preview_url));), [product.preview_url]);
 
