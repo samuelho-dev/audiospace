@@ -5,20 +5,67 @@ import BattleEntry from "~/components/battles/BattleEntry";
 import { type BattleEntrySchema } from "~/types/schema";
 import { api } from "~/utils/api";
 
-function Community() {
-  const [submitActive, setSubmitActive] = useState(false);
-  const [submitUrl, setSubmitUrl] = useState("");
-  const session = useSession();
-  const battleQuery = api.battles.fetchCurrentBattle.useQuery();
+interface SubmitTrackProps {
+  submitTrack: (submitUrl: string) => Promise<void>;
+}
 
+function SubmitTrackForm({ submitTrack }: SubmitTrackProps) {
+  const [submitUrl, setSubmitUrl] = useState("");
+  const [submitInputActive, setSubmitInputActive] = useState(false);
+
+  if (submitInputActive) {
+    return (
+      <div className="flex gap-2">
+        <input
+          type="text"
+          onChange={(e) => setSubmitUrl(e.target.value)}
+          placeholder="Enter your soundcloud url"
+          className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
+        />
+        <button
+          onClick={() => void submitTrack(submitUrl)}
+          className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
+        >
+          Submit
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setSubmitInputActive(true)}
+      className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
+    >
+      Submit A Track
+    </button>
+  );
+}
+
+function Community() {
+  const session = useSession();
+  const [submitted, setSubmitted] = useState(false);
+  const battleQuery = api.battles.fetchCurrentBattle.useQuery();
   const battleEntriesQuery = api.battles.fetchCurrentEntries.useQuery();
   const submitEntryMutation = api.battles.submitBattleEntry.useMutation();
-  const submitTrack = async () => {
-    if (battleQuery.data) {
-      await submitEntryMutation.mutateAsync({
-        trackUrl: submitUrl,
-        battleId: battleQuery.data.id,
-      });
+
+  const submitTrack = async (submitUrl: string) => {
+    try {
+      const soundcloudUrlValidation =
+        /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
+      if (!soundcloudUrlValidation.test(submitUrl)) {
+        throw new Error("Invalid Url");
+      }
+
+      if (battleQuery.data) {
+        await submitEntryMutation.mutateAsync({
+          trackUrl: submitUrl,
+          battleId: battleQuery.data.id,
+        });
+        setSubmitted(true);
+      }
+    } catch (err) {
+      console.error("Error occured during submission. Please try again", err);
     }
   };
 
@@ -63,28 +110,12 @@ function Community() {
                 Toggle Voting
               </button>
             )}
-            {submitActive ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  onChange={(e) => setSubmitUrl(e.target.value)}
-                  placeholder="Enter your soundcloud url"
-                  className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
-                />
-                <button
-                  onClick={() => void submitTrack()}
-                  className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
-                >
-                  Submit
-                </button>
-              </div>
+            {submitted ? (
+              <h5 className="rounded-lg border border-zinc-100 px-2">
+                Submitted
+              </h5>
             ) : (
-              <button
-                onClick={() => setSubmitActive(true)}
-                className="h-6 rounded-md px-2 outline outline-1 outline-zinc-400"
-              >
-                Submit A Track
-              </button>
+              <SubmitTrackForm submitTrack={submitTrack} />
             )}
           </div>
         </div>
