@@ -17,7 +17,6 @@ function BattleEntry({ entry }: BattleEntryProps) {
       setVoted(true);
     } catch (err) {
       console.error(err);
-      setVoted(true);
     }
   };
 
@@ -29,16 +28,12 @@ function BattleEntry({ entry }: BattleEntryProps) {
         src={soundCloudUrl(entry.trackUrl)}
         height="20"
       ></iframe>
-      {voted ? (
-        <p className="w-20 text-right text-sm">Voted</p>
-      ) : (
-        <button
-          onClick={() => void handleVote()}
-          className="w-20 text-right text-sm"
-        >
-          Vote
-        </button>
-      )}
+      <input
+        type="checkbox"
+        onClick={() => void handleVote()}
+        disabled={voted}
+        className="flex text-sm"
+      />
     </div>
   );
 }
