@@ -1,12 +1,6 @@
-import type { Session } from "next-auth";
 import React, { useState } from "react";
-import StarRating from "../rating/StarRating";
 import { api } from "~/utils/api";
 import PurchaseHistoryItem from "../rating/PurchaseHistoryItem";
-
-interface PurchaseHistoryProps {
-  session: Session;
-}
 
 function PurchaseHistory() {
   const [detailView, setDetailView] = useState(false);
@@ -65,7 +59,7 @@ function PurchaseHistory() {
               </button>
 
               {detailView && (
-                <div className="flex flex-col gap-2 px-5 py-4 transition-transform duration-200 ease-in-out">
+                <div className="flex flex-col gap-4 px-5 py-4 transition-transform duration-200 ease-in-out">
                   {transaction.products.map((product) => (
                     <PurchaseHistoryItem
                       price={product.price}
