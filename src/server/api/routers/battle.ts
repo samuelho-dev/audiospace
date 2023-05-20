@@ -97,7 +97,7 @@ export const battleRouter = createTRPCRouter({
       if (data.length === 0) {
         throw new Error("No entries yet.");
       }
-      console.log(data);
+      // console.log(data);
       const result = shuffle(data) as BattleEntrySchema[];
       return result;
     }),
@@ -106,12 +106,15 @@ export const battleRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const voteExists = await ctx.prisma.battleEntry.findFirst({
         where: {
-          user: {
-            id: ctx.session.user.id,
+          id: input.entryId,
+          likedBy: {
+            every: {
+              id: ctx.session.user.id,
+            },
           },
         },
       });
-
+      console.log(voteExists, "vote exists");
       if (voteExists) {
         throw new Error("You have already voted");
       }
