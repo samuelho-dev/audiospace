@@ -53,54 +53,75 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
-  fetchCurrentBattle: publicProcedure
-    .output(BattleSchema)
-    .query(async ({ ctx }) => {
-      const data = ctx.prisma.battle.findFirstOrThrow({
-        where: {
-          OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
-        },
-      });
-      return data;
-    }),
-  fetchCurrentEntries: publicProcedure
-    .output(z.array(BattleEntrySchema))
-    .query(async ({ ctx }) => {
-      const currBattle = await ctx.prisma.battle.findFirstOrThrow({
-        where: {
-          OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
-        },
-      });
+  fetchCurrentBattle: publicProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.battle.findFirstOrThrow({
+      where: {
+        OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
+      },
+    });
+    return data;
+  }),
+  fetchCurrentEntries: publicProcedure.query(async ({ ctx }) => {
+    const currBattle = await ctx.prisma.battle.findFirstOrThrow({
+      where: {
+        OR: [{ isActive: "ACTIVE" }, { isActive: "VOTING" }],
+      },
+    });
 
-      if (!currBattle) {
-        throw new Error("No active battle found.");
-      }
+    if (!currBattle) {
+      throw new Error("No active battle found.");
+    }
 
-      const data = await ctx.prisma.battleEntry.findMany({
-        where: {
-          battleId: currBattle.id,
-        },
-        select: {
-          battleId: true,
-          id: true,
-          rating: true,
-          trackUrl: true,
-          userId: true,
-          user: {
-            select: {
-              username: true,
-            },
+    const data = await ctx.prisma.battleEntry.findMany({
+      where: {
+        battleId: currBattle.id,
+      },
+      select: {
+        battleId: true,
+        id: true,
+        rating: true,
+        trackUrl: true,
+        userId: true,
+        user: {
+          select: {
+            username: true,
           },
         },
-      });
+      },
+    });
 
-      if (data.length === 0) {
-        throw new Error("No entries yet.");
-      }
-      // console.log(data);
-      const result = shuffle(data) as BattleEntrySchema[];
-      return result;
-    }),
+    if (data.length === 0) {
+      throw new Error("No entries yet.");
+    }
+    // console.log(data);
+    const result = shuffle(data) as BattleEntrySchema[];
+    return result;
+  }),
+  fetchPastBattles: publicProcedure.query(async ({ ctx }) => {
+    const data = await ctx.prisma.battle.findMany({
+      where: {
+        isActive: "ENDED",
+      },
+      select: {
+        id: true,
+        winner: {
+          select: {
+            id: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
+            trackUrl: true,
+            rating: true,
+            subimittedAt: true,
+          },
+        },
+      },
+    });
+
+    return data;
+  }),
   voteEntry: protectedProcedure
     .input(z.object({ entryId: z.number() }))
     .mutation(async ({ ctx, input }) => {
@@ -184,7 +205,6 @@ export const battleRouter = createTRPCRouter({
 
       return data;
     }),
-
   endBattleandCreate: protectedProcedure
     .input(
       z.object({
@@ -217,7 +237,11 @@ export const battleRouter = createTRPCRouter({
           },
           data: {
             isActive: "ENDED",
-            winnerId: currBattle.entries[0]?.userId,
+            winner: {
+              connect: {
+                id: currBattle.entries[0]?.id,
+              },
+            },
             endedAt: new Date(),
           },
         });
