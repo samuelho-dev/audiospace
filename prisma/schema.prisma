@@ -180,14 +180,15 @@ model Rating {
 }
 
 model Battle {
-  id          Int           @id @default(autoincrement())
-  description String
-  entries     BattleEntry[]
-  winnerId    String?
-  sample      String?
-  createdAt   DateTime      @default(now())
-  endedAt     DateTime?
-  isActive    BattleStatus  @default(ACTIVE)
+  id            Int           @id @default(autoincrement())
+  description   String
+  entries       BattleEntry[] @relation("BattleEntry")
+  sample        String?
+  createdAt     DateTime      @default(now())
+  endedAt       DateTime?
+  isActive      BattleStatus  @default(ACTIVE)
+  winner        BattleEntry?  @relation("Winner", fields: [winnerEntryId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  winnerEntryId Int?          @unique
 }
 
 model BattleEntry {
@@ -196,10 +197,11 @@ model BattleEntry {
   userId       String
   trackUrl     String
   rating       Int      @default(0)
-  battle       Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  battle       Battle   @relation("BattleEntry", fields: [battleId], references: [id])
   battleId     Int
   likedBy      User[]   @relation("Liked")
   subimittedAt DateTime @default(now())
+  winner       Battle?  @relation("Winner")
 
   @@unique([userId])
   @@index([battleId])
