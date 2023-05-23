@@ -37,17 +37,21 @@ export const b2Router = createTRPCRouter({
     }),
 
   getStandardDownloadPresignedUrl: publicProcedure
-    .input(z.object({ bucket: z.string(), key: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .input(
+      z.object({ bucket: z.string(), key: z.string().nullable().optional() })
+    )
+    .query(async ({ ctx, input }) => {
       const { key } = input;
       const { b2 } = ctx;
-
+      if (!key) {
+        throw new Error("Sample does not exist.");
+      }
       const putObjectCommand = new GetObjectCommand({
         Bucket: input.bucket,
         Key: key,
       });
-
-      return await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
+      const url = await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
+      return url;
     }),
 
   getMultipartUploadPresignedUrl: publicProcedure
