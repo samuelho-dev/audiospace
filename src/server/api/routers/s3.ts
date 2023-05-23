@@ -37,9 +37,7 @@ export const b2Router = createTRPCRouter({
     }),
 
   getStandardDownloadPresignedUrl: publicProcedure
-    .input(
-      z.object({ bucket: z.string(), key: z.string().nullable().optional() })
-    )
+    .input(z.object({ bucket: z.string(), key: z.string().nullable() }))
     .query(async ({ ctx, input }) => {
       const { key } = input;
       const { b2 } = ctx;
