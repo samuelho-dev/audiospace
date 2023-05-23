@@ -5,7 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
-import { BattleEntrySchema, BattleSchema } from "~/types/schema";
+import { type BattleEntrySchema } from "~/types/schema";
 import { shuffle } from "~/utils/randomArray";
 
 export const battleRouter = createTRPCRouter({
@@ -123,33 +123,37 @@ export const battleRouter = createTRPCRouter({
     return data;
   }),
   voteEntry: protectedProcedure
-    .input(z.object({ entryId: z.number() }))
+    .input(
+      z.object({
+        entryId: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      const voteExists = await ctx.prisma.battleEntry.findFirst({
+      const voteExists = await ctx.prisma.battleVote.findFirst({
         where: {
-          id: input.entryId,
-          likedBy: {
-            every: {
-              id: ctx.session.user.id,
-            },
-          },
+          battleEntryId: input.entryId,
+          userId: ctx.session.user.id,
         },
       });
-      console.log(voteExists, "vote exists");
+
       if (voteExists) {
         throw new Error("You have already voted");
       }
+
+      await ctx.prisma.battleVote.create({
+        data: {
+          battleEntryId: input.entryId,
+          userId: ctx.session.user.id,
+        },
+      });
 
       const data = await ctx.prisma.battleEntry.update({
         where: {
           id: input.entryId,
         },
         data: {
-          rating: { increment: 1 },
-          user: {
-            connect: {
-              id: ctx.session.user.id,
-            },
+          rating: {
+            increment: 1,
           },
         },
       });
@@ -169,36 +173,34 @@ export const battleRouter = createTRPCRouter({
       return data;
     }),
   endCurrentBattle: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({ battleId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      const currBattle = await ctx.prisma.battle.findFirst({
+      const curBattle = await ctx.prisma.battle.findFirstOrThrow({
         where: {
           isActive: "VOTING",
         },
-        select: {
-          id: true,
-          entries: {
-            orderBy: [
-              {
-                rating: "desc",
-              },
-            ],
-            take: 5,
-          },
-        },
       });
-      console.log(currBattle);
-      if (!currBattle) {
-        throw new Error("There is no active battle");
-      }
+
+      const curBattleEntries = await ctx.prisma.battleEntry.findMany({
+        where: {
+          battleId: curBattle.id,
+        },
+        orderBy: [
+          {
+            votes: {
+              _count: "desc",
+            },
+          },
+        ],
+      });
 
       const data = await ctx.prisma.battle.update({
         where: {
-          id: currBattle.id,
+          id: curBattle.id,
         },
         data: {
           isActive: "ENDED",
-          winnerId: currBattle.entries[0]?.userId,
+          winnerEntryId: curBattleEntries[0]?.id,
           endedAt: new Date(),
         },
       });
