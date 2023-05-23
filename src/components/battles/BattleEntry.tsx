@@ -14,7 +14,9 @@ function BattleEntry({ entry, votingPhase }: BattleEntryProps) {
 
   const handleVote = async () => {
     try {
-      await voteMutation.mutateAsync({ entryId: entry.id });
+      await voteMutation.mutateAsync({
+        entryId: entry.id,
+      });
       setVoted(true);
     } catch (err) {
       console.error(err);

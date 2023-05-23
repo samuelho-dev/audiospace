@@ -70,8 +70,8 @@ export const UserSchema = z.object({
 });
 
 export const BattleEntrySchema = z.object({
+  id: z.string(),
   battleId: z.number(),
-  id: z.number(),
   rating: z.number(),
   trackUrl: z.string().url(),
   userId: z.string(),

@@ -35,10 +35,11 @@ function BattleAdminPanel() {
       }
       await endAndCreateBattleMutation.mutateAsync({
         description: newBattle.description,
+        sample: newBattle.file.length === 0 ? undefined : newBattle.file,
       });
       setSubmitted(true);
     } catch (err) {
-      console.error("Error with battle", err);
+      console.error("Error with starting battle", err);
     }
   };
   return (
