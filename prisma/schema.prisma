@@ -53,7 +53,6 @@ model User {
   role          Role               @default(USER)
   username      String             @unique
   email         String             @unique
-  password      String?
   emailVerified EmailVerification?
   image         String?
   wishlist      Product[]          @relation("Wishlist")
@@ -197,7 +196,7 @@ model BattleEntry {
   userId       String
   trackUrl     String
   rating       Int          @default(0)
-  battle       Battle       @relation("BattleEntry", fields: [battleId], references: [id])
+  battle       Battle       @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
   battleId     Int
   subimittedAt DateTime     @default(now())
   winner       Battle?      @relation("Winner")

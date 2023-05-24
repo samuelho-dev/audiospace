@@ -194,13 +194,16 @@ export const battleRouter = createTRPCRouter({
         ],
       });
 
+      if (!curBattleEntries[0]) {
+        throw new Error("No entries");
+      }
       const data = await ctx.prisma.battle.update({
         where: {
           id: curBattle.id,
         },
         data: {
           isActive: "ENDED",
-          winnerEntryId: curBattleEntries[0]?.id,
+          winnerEntryId: curBattleEntries[0].id,
           endedAt: new Date(),
         },
       });
