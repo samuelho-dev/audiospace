@@ -4,7 +4,11 @@ import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import BattleAdminPanel from "~/components/battles/BattleAdminPanel";
 import BattleEntry from "~/components/battles/BattleEntry";
-import { type BattleSchema, type BattleEntrySchema } from "~/types/schema";
+import {
+  type BattleSchema,
+  type BattleEntrySchema,
+  type PastBattleSchema,
+} from "~/types/schema";
 import { api } from "~/utils/api";
 import soundCloudUrl from "~/utils/soundcloudUrl";
 
@@ -47,7 +51,7 @@ function SubmitTrackForm({ submitTrack }: SubmitTrackProps) {
 
 interface CommunityProps {
   curBattle: BattleSchema | null;
-  pastEntries: any[];
+  pastEntries: PastBattleSchema[];
 }
 
 function Community({ curBattle, pastEntries }: CommunityProps) {
@@ -114,7 +118,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
       console.error("Error occured during submission. Please try again", err);
     }
   };
-  console.log(pastEntries);
+  console.log(typeof pastEntries[0]?.winner.submittedAt);
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-6xl">
       <h1>{`Love that you're here...`}</h1>
@@ -137,10 +141,10 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
         <div className="flex w-full flex-col justify-between p-2">
           <h4>Past Winners</h4>
           <div className="flex w-full justify-between border-b border-zinc-400 px-4 py-2">
-            <p className="text-xs">Submitted</p>
-            <p className="text-xs">Artist Name</p>
-            <p className="text-xs">Track</p>
-            <p className="text-xs">Rating</p>
+            <p className="w-1/4 text-center text-xs ">Submitted</p>
+            <p className="w-1/4 text-center text-xs ">Artist Name</p>
+            <p className="w-1/4 text-center text-xs ">Track</p>
+            <p className="w-1/4 text-center text-xs ">Rating</p>
           </div>
           <div className="m-2 h-40 overflow-scroll rounded-sm bg-zinc-900">
             {pastEntries.length === 0 ? (
@@ -151,18 +155,21 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   key={entry.id}
                   className="flex w-full justify-between border-zinc-400 px-4 py-4"
                 >
-                  <h5 className=" overflow-hidden text-sm">
-                    {entry.winner.subimittedAt.toLocaleString()}
+                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
+                    {entry.winner.submittedAt.toLocaleDateString()}
                   </h5>
-                  <h5 className="w-32 overflow-hidden text-sm">
+                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
                     {entry.winner.user.username}
                   </h5>
                   <iframe
                     allow="autoplay"
+                    className="flex w-1/4 justify-center  overflow-x-hidden"
                     src={soundCloudUrl(entry.winner.trackUrl)}
                     height="20"
                   ></iframe>
-                  <h5>{entry.winner.rating}</h5>
+                  <h5 className="flex w-1/4 justify-center">
+                    {entry.winner.rating}
+                  </h5>
                 </div>
               ))
             )}
@@ -174,7 +181,9 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
               <div className="flex flex-col">
                 <h3>Beat Battle</h3>
                 <p>{curBattle?.description}</p>
-                <p>Status: {curBattle?.isActive || "Closed"}</p>
+                <p className="text-sm">
+                  Status: {curBattle?.isActive || "Closed"}
+                </p>
               </div>
 
               {curBattle && curBattle.sample && (
@@ -279,7 +288,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
             },
           },
           trackUrl: true,
-          subimittedAt: true,
+          submittedAt: true,
           rating: true,
         },
       },

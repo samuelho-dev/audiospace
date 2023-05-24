@@ -30,13 +30,13 @@ export const battleRouter = createTRPCRouter({
         battleStatus?.isActive === "VOTING" ||
         battleStatus?.isActive === "ENDED"
       ) {
-        throw new Error(`Submissions are now closed, we'll see you next week`);
+        throw new Error(`Submissions Closed`);
       }
 
       const entryExists = await ctx.prisma.battleEntry.findFirst({
         where: {
-          userId: ctx.session?.user.id,
           battleId: input.battleId,
+          userId: ctx.session.user.id,
         },
       });
 
@@ -46,7 +46,7 @@ export const battleRouter = createTRPCRouter({
 
       const data = ctx.prisma.battleEntry.create({
         data: {
-          userId: ctx.session?.user.id,
+          userId: ctx.session.user.id,
           trackUrl: input.trackUrl,
           battleId: input.battleId,
         },
@@ -114,7 +114,7 @@ export const battleRouter = createTRPCRouter({
             },
             trackUrl: true,
             rating: true,
-            subimittedAt: true,
+            submittedAt: true,
           },
         },
       },
