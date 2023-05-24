@@ -11,11 +11,9 @@ function CredentialLogin({ loginToggle }: CredentialLoginProps) {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
-    const username = (form.username as HTMLInputElement).value;
-    const password = (form.password as HTMLInputElement).value;
-    await signIn("credentials", {
-      username,
-      password,
+    const email = (form.email as HTMLInputElement).value;
+    await signIn("email", {
+      email,
       redirect: false,
     })
       .then((response: SignInResponse | undefined) => {
@@ -47,18 +45,10 @@ function CredentialLogin({ loginToggle }: CredentialLoginProps) {
           className="rounded-lg text-center text-black"
         />
       </div>
-      <div className="flex flex-col">
-        <label>Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className="rounded-lg text-center text-black"
-        />
-      </div>
       <div className="flex flex-col py-4">
-        <button className="border border-zinc-700 bg-zinc-800">LOG IN</button>
-        <button className="text-sm">Forgot your password?</button>
+        <button className="rounded-md border border-zinc-700 bg-zinc-800">
+          LOG IN
+        </button>
       </div>
     </form>
   );

@@ -14,21 +14,17 @@ function CredentialSignUp({ setErrorState }: CredentialSignUpProps) {
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
-    const username = (form.username as HTMLInputElement).value;
-    const password = (form.password as HTMLInputElement).value;
+
     const email = (form.email as HTMLInputElement).value;
     await signUpMutation
       .mutateAsync({
         user: {
-          username,
           email,
-          password,
         },
       })
       .then(() =>
-        signIn("credentials", {
+        signIn("email", {
           email,
-          password,
           redirect: false,
         }).then((response: SignInResponse | undefined) => {
           if (!response) {
@@ -51,42 +47,24 @@ function CredentialSignUp({ setErrorState }: CredentialSignUpProps) {
   return (
     <form
       onSubmit={(e) => void handleSubmit(e)}
-      className="flex flex-col gap-4 py-2"
+      className="flex w-full flex-col items-center gap-4"
     >
-      <h5>Sign Up with Email</h5>
-      <label className="flex flex-row justify-between gap-10">
-        Username:
-        <input
-          type="text"
-          id="username"
-          name="username"
-          className="rounded-lg text-center text-black"
-        />
-      </label>
-      <label className="flex flex-row justify-between gap-10">
-        Email:
+      <h5 className="w-full items-start gap-2">Sign Up with Email</h5>
+
+      <div className="flex w-full flex-col items-start justify-between">
+        <label>Email:</label>
         <input
           type="text"
           id="email"
           name="email"
           className="rounded-lg text-center text-black"
         />
-      </label>
-
-      <label className="flex flex-row justify-between gap-10">
-        Password:
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className="rounded-lg text-center text-black"
-        />
-      </label>
+      </div>
       <button
         type="submit"
-        className="h-8 w-1/2 rounded-lg bg-yellow-400 text-lg text-black"
+        className="text-md h-8 whitespace-nowrap rounded-lg bg-yellow-400 px-2 font-semibold text-black"
       >
-        Create An Account
+        CREATE ACCOUNT
       </button>
     </form>
   );

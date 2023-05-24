@@ -40,7 +40,7 @@ export default function AuthModal({ handleDropdown }: AuthModalProps) {
         onClick={() => handleDropdown(null)}
       />
       <div className="absolute left-1/2 top-1/2 z-50 w-fit -translate-x-1/2 -translate-y-1/2 transform flex-col items-center rounded-lg bg-zinc-900 p-8 outline outline-1 outline-zinc-700">
-        <h1>audio.space</h1>
+        <h1>audiospace</h1>
         {errorState && <h5>{errorState}</h5>}
         <LoginRoute
           route={route}

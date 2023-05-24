@@ -56,7 +56,12 @@ function SignInOAuth({ setRoute, loginToggle }: SignInOAuthProps) {
             <button
               onClick={() => setRoute("sign-up-oauth")}
               className="text-sm"
-            >{`Don't have an account? Sign Up`}</button>
+            >
+              {`Don't have an account? `}
+              <span className="hover:underline hover:underline-offset-4">
+                Sign Up
+              </span>
+            </button>
           </div>
         ) : (
           <div className="flex flex-col gap-2 py-2">
@@ -69,7 +74,12 @@ function SignInOAuth({ setRoute, loginToggle }: SignInOAuthProps) {
             <button
               onClick={() => setRoute("sign-in-oauth")}
               className="text-sm"
-            >{`Already have an account? Log In`}</button>
+            >
+              {`Already have an account? `}
+              <span className="hover:underline hover:underline-offset-4">
+                Log In
+              </span>
+            </button>
           </div>
         )}
       </div>
