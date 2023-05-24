@@ -78,6 +78,17 @@ export const BattleEntrySchema = z.object({
   user: z.object({ username: z.string() }),
 });
 
+export const PastBattleSchema = z.object({
+  id: z.number(),
+  winner: z.object({
+    id: z.string(),
+    rating: z.number(),
+    submittedAt: z.date(),
+    user: z.object({ username: z.string() }),
+    trackUrl: z.string().url(),
+  }),
+});
+
 export const BattleSchema = z.object({
   id: z.number(),
   description: z.string(),
@@ -145,6 +156,7 @@ export type TransactionProductSchema = z.infer<typeof TransactionProductSchema>;
 export type UserSchema = z.infer<typeof UserSchema>;
 export type BattleEntrySchema = z.infer<typeof BattleEntrySchema>;
 export type BattleSchema = z.infer<typeof BattleSchema>;
+export type PastBattleSchema = z.infer<typeof PastBattleSchema>;
 export type PostSchema = z.infer<typeof PostSchema>;
 export type TagSchema = z.infer<typeof TagSchema>;
 export type TiptapOutputSchema = z.infer<typeof TiptapOutputSchema>;
