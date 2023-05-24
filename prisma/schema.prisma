@@ -191,20 +191,20 @@ model Battle {
 }
 
 model BattleEntry {
-  id           String       @id @default(cuid())
-  user         User         @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
-  userId       String
-  trackUrl     String
-  rating       Int          @default(0)
-  battle       Battle       @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
-  battleId     Int
-  subimittedAt DateTime     @default(now())
-  winner       Battle?      @relation("Winner")
-  votes        BattleVote[]
+  id          String       @id @default(cuid())
+  user        User         @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
+  userId      String       
+  trackUrl    String
+  rating      Int          @default(0)
+  battle      Battle       @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
+  battleId    Int          
+  submittedAt DateTime     @default(now())
+  winner      Battle?      @relation("Winner")
+  votes       BattleVote[]
 
   @@unique([battleId, userId])
-  @@unique([userId])
   @@index([battleId])
+  @@index([userId])
 }
 
 enum BattleStatus {
