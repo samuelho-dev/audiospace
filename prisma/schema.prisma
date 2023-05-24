@@ -199,6 +199,8 @@ model BattleEntry {
   battle      Battle       @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
   battleId    Int          
   submittedAt DateTime     @default(now())
+  
+  
   winner      Battle?      @relation("Winner")
   votes       BattleVote[]
 
