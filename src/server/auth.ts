@@ -9,6 +9,7 @@ import { type GetServerSidePropsContext } from "next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
+import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import {
@@ -127,42 +128,53 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
     }),
-    CredentialsProvider({
-      name: "Sign In with..",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-      async authorize(credentials, req) {
-        if (credentials && credentials.password && credentials.email) {
-          try {
-            const user = await prisma.user.findFirstOrThrow({
-              where: {
-                email: credentials?.email,
-              },
-              select: {
-                id: true,
-                username: true,
-                email: true,
-                password: true,
-                role: true,
-              },
-            });
+    // CredentialsProvider({
+    //   name: "Sign In with..",
+    //   credentials: {
+    //     email: { label: "Email", type: "email" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    //   async authorize(credentials, req) {
+    //     if (credentials && credentials.password && credentials.email) {
+    //       try {
+    //         const user = await prisma.user.findFirstOrThrow({
+    //           where: {
+    //             email: credentials?.email,
+    //           },
+    //           select: {
+    //             id: true,
+    //             username: true,
+    //             email: true,
+    //             password: true,
+    //             role: true,
+    //           },
+    //         });
 
-            if (user && user.password) {
-              const passwordMatch = await bcrypt.compare(
-                credentials.password,
-                user.password
-              );
-              if (passwordMatch) {
-                return user;
-              }
-            }
-          } catch (err) {
-            throw err;
-          }
-        }
-        return null;
+    //         if (user && user.password) {
+    //           const passwordMatch = await bcrypt.compare(
+    //             credentials.password,
+    //             user.password
+    //           );
+    //           if (passwordMatch) {
+    //             return user;
+    //           }
+    //         }
+    //       } catch (err) {
+    //         throw err;
+    //       }
+    //     }
+    //     return null;
+    //   },
+    // }),
+    EmailProvider({
+      server: process.env.EMAIL_SERVER,
+      from: process.env.EMAIL_FROM,
+      sendVerificationRequest({
+        identifier: email,
+        url,
+        provider: { server, from },
+      }) {
+        /* your function */
       },
     }),
   ],

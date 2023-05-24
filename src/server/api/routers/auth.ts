@@ -19,39 +19,27 @@ export const authRouter = createTRPCRouter({
       z.object({
         user: z.object({
           email: z.string(),
-          username: z.string(),
-          password: z.string(),
         }),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const userCheck = await ctx.prisma.user.findFirst({
         where: {
-          OR: [
-            {
-              email: input.user.email,
-            },
-            {
-              username: input.user.username,
-            },
-          ],
+          email: input.user.email,
         },
       });
 
       if (userCheck) {
         throw new Error("User already exists, please sign in");
       } else if (!userCheck) {
-        const password = await bcrypt.hash(input.user.password, 10);
-
         const token = crypto.randomBytes(32).toString("hex");
         const expires = new Date();
         expires.setHours(expires.getHours() + 24);
-
+        const username = input.user.email.split("@")[0] as string;
         const user = await ctx.prisma.user.create({
           data: {
-            username: input.user.username,
+            username: username.replace(".", "-"),
             email: input.user.email,
-            password: password,
             emailVerified: {
               create: {
                 token: token,
