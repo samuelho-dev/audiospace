@@ -6,18 +6,18 @@
 // @ts-nocheck
 
 import { type GetServerSidePropsContext } from "next";
-import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
 import GoogleProvider from "next-auth/providers/google";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import bcrypt from "bcrypt";
 import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
 } from "next-auth";
 import { prisma } from "./db";
+import { env } from "~/env.mjs";
+import sgMail from "./sendgrid/sendgrid";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -114,73 +114,43 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET,
+      clientId: env.DISCORD_CLIENT_ID,
+      clientSecret: env.DISCORD_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
     }),
     // AppleProvider({
-    //   clientId: process.env.APPLE_ID,
-    //   clientSecret: process.env.APPLE_SECRET,
+    //   clientId: env.APPLE_ID,
+    //   clientSecret: env.APPLE_SECRET,
     //   allowDangerousEmailAccountLinking: true,
     // }),
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
       allowDangerousEmailAccountLinking: true,
     }),
-    // CredentialsProvider({
-    //   name: "Sign In with..",
-    //   credentials: {
-    //     email: { label: "Email", type: "email" },
-    //     password: { label: "Password", type: "password" },
-    //   },
-    //   async authorize(credentials, req) {
-    //     if (credentials && credentials.password && credentials.email) {
-    //       try {
-    //         const user = await prisma.user.findFirstOrThrow({
-    //           where: {
-    //             email: credentials?.email,
-    //           },
-    //           select: {
-    //             id: true,
-    //             username: true,
-    //             email: true,
-    //             password: true,
-    //             role: true,
-    //           },
-    //         });
-
-    //         if (user && user.password) {
-    //           const passwordMatch = await bcrypt.compare(
-    //             credentials.password,
-    //             user.password
-    //           );
-    //           if (passwordMatch) {
-    //             return user;
-    //           }
-    //         }
-    //       } catch (err) {
-    //         throw err;
-    //       }
-    //     }
-    //     return null;
-    //   },
-    // }),
     EmailProvider({
-      server: process.env.EMAIL_SERVER,
-      from: process.env.EMAIL_FROM,
-      sendVerificationRequest({
+      server: env.EMAIL_SERVER,
+      from: env.EMAIL_FROM,
+      async sendVerificationRequest({
         identifier: email,
         url,
         provider: { server, from },
       }) {
-        /* your function */
+        const msg = {
+          to: email,
+          from: env.EMAIL_FROM,
+          subject: "Verification Request - Audiospace",
+          text: `Please verify your email by clicking this link ${url}`,
+          html: `<p>Please verify your email by clicking this link: <a href="${url}">${url}</a></p>`,
+        };
+
+        await sgMail.send(msg);
       },
     }),
   ],
 };
 
-/**
+/**s
  * Wrapper for `getServerSession` so that you don't need to import the `authOptions` in every file.
  *
  * @see https://next-auth.js.org/configuration/nextjs
