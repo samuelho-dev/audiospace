@@ -33,6 +33,7 @@ const server = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   PAYPAL_CLIENT_SECRET: z.string(),
   PAYPAL_CLIENT_ID: z.string(),
+  SENDGRID_API_KEY: z.string(),
 });
 
 /**
@@ -67,6 +68,7 @@ const processEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   PAYPAL_CLIENT_SECRET: process.env.PAYPAL_CLIENT_SECRET,
   PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
+  SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
   // process.env.NEXTAUTH_URLnv.NEXT_PUBLIC_CLIENTVAR,
 };
 
