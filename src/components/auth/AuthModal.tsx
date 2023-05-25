@@ -1,7 +1,7 @@
 import { useState } from "react";
 import SignInOAuth from "./SignInOAuth";
-import CredentialLogin from "./CredentialSignIn";
-import CredentialSignUp from "./CredentialSignUp";
+import EmailLogin from "./EmailSignIn";
+import EmailSignUp from "./EmailSignUp";
 
 interface AuthModalProps {
   handleDropdown: (dropdownName: string | null) => void;
@@ -15,10 +15,10 @@ interface LoginRouteProps {
 
 function LoginRoute({ route, setRoute, setErrorState }: LoginRouteProps) {
   switch (route) {
-    case "sign-in-credential":
-      return <CredentialLogin loginToggle={true} />;
-    case "sign-up-credential":
-      return <CredentialSignUp setErrorState={setErrorState} />;
+    case "sign-in-Email":
+      return <EmailLogin loginToggle={true} />;
+    case "sign-up-Email":
+      return <EmailSignUp setErrorState={setErrorState} />;
     case "sign-in-oauth":
       return <SignInOAuth setRoute={setRoute} loginToggle={true} />;
     case "sign-up-oauth":

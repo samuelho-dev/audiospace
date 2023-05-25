@@ -3,11 +3,11 @@ import { useRouter } from "next/router";
 import React, { useState } from "react";
 import { api } from "~/utils/api";
 
-interface CredentialSignUpProps {
+interface EmailSignUpProps {
   setErrorState: (error: string | null) => void;
 }
 
-function CredentialSignUp({ setErrorState }: CredentialSignUpProps) {
+function EmailSignUp({ setErrorState }: EmailSignUpProps) {
   const signUpMutation = api.auth.signUp.useMutation();
   const router = useRouter();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -70,4 +70,4 @@ function CredentialSignUp({ setErrorState }: CredentialSignUpProps) {
   );
 }
 
-export default CredentialSignUp;
+export default EmailSignUp;

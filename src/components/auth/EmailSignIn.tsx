@@ -1,11 +1,11 @@
 import { type SignInResponse, signIn } from "next-auth/react";
 import React, { useState } from "react";
 
-interface CredentialLoginProps {
+interface EmailLoginProps {
   loginToggle: boolean;
 }
 
-function CredentialLogin({ loginToggle }: CredentialLoginProps) {
+function EmailLogin({ loginToggle }: EmailLoginProps) {
   const [errorState, setErrorState] = useState<string | null>(null);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,4 +54,4 @@ function CredentialLogin({ loginToggle }: CredentialLoginProps) {
   );
 }
 
-export default CredentialLogin;
+export default EmailLogin;
