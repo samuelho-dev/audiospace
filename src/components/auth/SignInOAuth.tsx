@@ -1,8 +1,9 @@
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 import React, { useState } from "react";
 import { api } from "~/utils/api";
 import { AiOutlineApple, AiOutlineGoogle } from "react-icons/ai";
 import { RxDiscordLogo } from "react-icons/rx";
+import { GetServerSideProps } from "next";
 
 interface SignInOAuthProps {
   loginToggle: boolean;
@@ -10,11 +11,6 @@ interface SignInOAuthProps {
 }
 
 function SignInOAuth({ setRoute, loginToggle }: SignInOAuthProps) {
-  const authProviders = api.auth.getProviders.useQuery();
-
-  if (!authProviders.data) {
-    return null;
-  }
   return (
     <div className="flex flex-col gap-4">
       <h2 className="py-2">{loginToggle ? "Log in" : "Sign Up"}</h2>
@@ -24,9 +20,7 @@ function SignInOAuth({ setRoute, loginToggle }: SignInOAuthProps) {
           className="flex h-10 items-center gap-4 rounded-lg bg-blue-500 px-4 "
         >
           <AiOutlineGoogle size={20} />
-          <h5 className="text-lg font-medium">
-            Continue with {authProviders.data.google.name}
-          </h5>
+          <h5 className="text-lg font-medium">Continue with Google</h5>
         </button>
         {/* <button
           onClick={() => void signIn("apple")}

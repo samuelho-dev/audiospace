@@ -15,9 +15,9 @@ interface LoginRouteProps {
 
 function LoginRoute({ route, setRoute, setErrorState }: LoginRouteProps) {
   switch (route) {
-    case "sign-in-Email":
+    case "sign-in-email":
       return <EmailLogin loginToggle={true} />;
-    case "sign-up-Email":
+    case "sign-up-email":
       return <EmailSignUp setErrorState={setErrorState} />;
     case "sign-in-oauth":
       return <SignInOAuth setRoute={setRoute} loginToggle={true} />;
