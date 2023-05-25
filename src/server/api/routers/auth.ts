@@ -36,12 +36,6 @@ export const authRouter = createTRPCRouter({
           data: {
             username: username.replace(".", "-"),
             email: input.user.email,
-            emailVerified: {
-              create: {
-                token: token,
-                expires: expires,
-              },
-            },
           },
         });
 
