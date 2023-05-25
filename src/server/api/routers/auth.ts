@@ -10,10 +10,6 @@ import {
 import { getProviders } from "next-auth/react";
 
 export const authRouter = createTRPCRouter({
-  getProviders: publicProcedure.query(async () => {
-    const data = await getProviders();
-    return data;
-  }),
   signUp: publicProcedure
     .input(
       z.object({
