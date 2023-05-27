@@ -11,22 +11,19 @@ function Profile() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { section } = router.query;
-
+  if (status === "unauthenticated") {
+    void router.push("/");
+  }
   const profileNavigation = (section: string) => {
     router
       .push(`/profile?section=${section}`, undefined, { shallow: true })
       .catch((err) => console.error(err));
   };
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      void router.push("/");
-    }
-  }, [status, session, router]);
 
   if (status === "authenticated") {
     return (
       <div className="flex h-full w-full max-w-3xl flex-grow justify-between gap-8 py-10 lg:max-w-6xl">
-        <div className="h-full w-1/5">
+        <div className="h-full w-1/5 border-r border-zinc-900">
           <h3 className="py-2 font-bold">PROFILE ⬇️</h3>
           <ul className="flex flex-col gap-1">
             <li
