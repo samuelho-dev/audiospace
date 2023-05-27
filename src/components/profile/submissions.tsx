@@ -8,12 +8,15 @@ function Submissions() {
   console.log(submissionQuery.data);
   return (
     <div>
-      <h2>Submissions</h2>
-      <div className="h-40">
+      <h2 className="py-4">SUBMISSIONS</h2>
+      <div className="flex flex-col gap-4 p-2">
         {submissionQuery.data &&
           submissionQuery.data.map((submission) => (
-            <div key={submission.id} className="flex justify-between">
-              {/* <p>{submission.subimittedAt.toLocaleString()}</p> */}
+            <div
+              key={submission.id}
+              className="flex items-center justify-between"
+            >
+              <p>{submission.submittedAt.toLocaleDateString()}</p>
               <iframe
                 allow="autoplay"
                 src={soundCloudUrl(submission.trackUrl)}

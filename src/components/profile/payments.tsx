@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 function Payments() {
   return (
     <div>
-      <h2>Payments</h2>
+      <h3 className="py-4">PAYMENTS</h3>
     </div>
   );
 }

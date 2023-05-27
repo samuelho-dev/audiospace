@@ -9,9 +9,9 @@ function PurchaseHistory() {
 
   return (
     <div>
-      <h2>Purchase History</h2>
+      <h3 className="py-4">PURCHASE HISTORY</h3>
 
-      <div>
+      <div className="p-2">
         {purchaseHistoryQuery.data &&
           purchaseHistoryQuery.data.map((transaction) => (
             <div

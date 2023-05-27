@@ -62,8 +62,8 @@ function BasicInfo({ user }: BasicInfoProps) {
 
   return (
     <div>
-      <h2>Basic Info</h2>
-      <div className="flex justify-between gap-2">
+      <h3 className="py-4 font-bold">BASIC INFO</h3>
+      <div className="flex justify-between p-2">
         <div className="flex w-full flex-col gap-2">
           <div className="flex flex-row justify-between gap-2">
             {formSubmission.email ? (
@@ -75,7 +75,7 @@ function BasicInfo({ user }: BasicInfoProps) {
                 <label htmlFor="email" className="text-sm">
                   Email Address:
                 </label>
-                <div>
+                <div className="flex gap-2">
                   <input
                     type="email"
                     id="email"
@@ -83,10 +83,10 @@ function BasicInfo({ user }: BasicInfoProps) {
                     value={form.email}
                     placeholder={user?.email || ""}
                     onChange={handleForm}
-                    className="rounded-lg px-2 text-center text-black"
+                    className="rounded-sm px-2 text-center text-black"
                   />
                   <button
-                    className="px-2 hover:bg-zinc-600"
+                    className="rounded-sm bg-zinc-800 px-2 hover:bg-zinc-700"
                     onClick={handleEmailUpdate}
                   >
                     Submit
@@ -105,7 +105,7 @@ function BasicInfo({ user }: BasicInfoProps) {
                 <label htmlFor="name" className="text-sm">
                   Display Name:
                 </label>
-                <div>
+                <div className="flex gap-2">
                   <input
                     type="text"
                     id="name"
@@ -113,10 +113,10 @@ function BasicInfo({ user }: BasicInfoProps) {
                     value={form.name}
                     placeholder={user?.name || ""}
                     onChange={handleForm}
-                    className="rounded-lg px-2 text-center text-black"
+                    className="rounded-sm px-2 text-center text-black"
                   />
                   <button
-                    className="px-2 hover:bg-zinc-600"
+                    className="rounded-sm bg-zinc-800 px-2 hover:bg-zinc-700"
                     onClick={handleUsernameUpdate}
                   >
                     Submit
@@ -135,7 +135,7 @@ function BasicInfo({ user }: BasicInfoProps) {
                 <div className="flex w-full flex-col">
                   <label
                     htmlFor="profileImg"
-                    className="mb-2 block whitespace-nowrap text-sm font-medium text-white"
+                    className="mb-2 whitespace-nowrap text-sm text-white"
                   >
                     Upload Profile Picture:
                   </label>
@@ -146,11 +146,11 @@ function BasicInfo({ user }: BasicInfoProps) {
                     multiple={false}
                     onChange={(e) => void handleFileInput(e)}
                     accept="image/png, image/jpeg, image/jpg"
-                    className="w-full cursor-pointer rounded-lg border border-gray-600 bg-gray-700 text-sm text-gray-400 placeholder-gray-400 focus:outline-none "
+                    className="w-full cursor-pointer rounded-lg border border-zinc-700 text-sm text-zinc-700 placeholder-zinc-100 focus:outline-none "
                   />
                 </div>
                 <button
-                  className="px-2 hover:bg-zinc-600"
+                  className="rounded-sm bg-zinc-800 px-2 hover:bg-zinc-700"
                   onClick={() => void handleProfilePictureUpdate()}
                 >
                   Submit

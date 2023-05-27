@@ -19,8 +19,8 @@ function Wishlist() {
   };
   return (
     <div>
-      <h2>Wishlist</h2>
-      <div className="flex flex-col items-start gap-4">
+      <h2 className="py-4">Wishlist</h2>
+      <div className="flex flex-col items-start gap-4 p-2">
         {featuredInstrumentsQuery.data &&
           featuredInstrumentsQuery.data.wishlist.map((product) => (
             <div

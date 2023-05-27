@@ -231,7 +231,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
             <h5 className="text-xs">Track</h5>
             <h5 className="text-xs">Vote</h5>
           </div>
-          <div className="m-2 h-96 rounded-sm bg-zinc-900">
+          <div className="m-2 h-96 overflow-scroll rounded-sm bg-zinc-900">
             {curBattle ? (
               battleEntriesQuery.data ? (
                 battleEntriesQuery.data.map((entry: BattleEntrySchema) => (
@@ -250,7 +250,6 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
           </div>
           <div className="flex justify-between border-t border-t-zinc-500 px-1 py-2">
             <h5>{battleEntriesQuery.data?.length || 0} Entries</h5>
-            <button>Next</button>
           </div>
         </div>
       </div>

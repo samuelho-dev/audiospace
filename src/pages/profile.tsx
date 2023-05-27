@@ -27,41 +27,39 @@ function Profile() {
     return (
       <div className="flex h-full w-full max-w-3xl flex-grow justify-between gap-8 py-10 lg:max-w-6xl">
         <div className="h-full w-1/5">
-          <div>
-            <h3>PROFILE ⬇️</h3>
-            <div className="flex flex-col pl-4">
-              <h5
-                className="cursor-pointer hover:bg-gray-900"
-                onClick={() => profileNavigation("basic-info")}
-              >
-                Basic Info
-              </h5>
-              <h5
-                className="cursor-pointer hover:bg-gray-900"
-                onClick={() => profileNavigation("wishlist")}
-              >
-                Wishlist
-              </h5>
-              <h5
-                className="cursor-pointer hover:bg-gray-900"
-                onClick={() => profileNavigation("purchase-history")}
-              >
-                Purchase History
-              </h5>
-              <h5
-                className="cursor-pointer hover:bg-gray-900"
-                onClick={() => profileNavigation("submissions")}
-              >
-                Past Submissions
-              </h5>
-              <h5
-                className="cursor-pointer hover:bg-gray-900"
-                onClick={() => profileNavigation("settings")}
-              >
-                Settings
-              </h5>
-            </div>
-          </div>
+          <h3 className="py-2 font-bold">PROFILE ⬇️</h3>
+          <ul className="flex flex-col gap-1">
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
+              onClick={() => profileNavigation("basic-info")}
+            >
+              Basic Info
+            </li>
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
+              onClick={() => profileNavigation("wishlist")}
+            >
+              Wishlist
+            </li>
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold  text-zinc-100 hover:bg-zinc-800"
+              onClick={() => profileNavigation("purchase-history")}
+            >
+              Purchase History
+            </li>
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
+              onClick={() => profileNavigation("submissions")}
+            >
+              Past Submissions
+            </li>
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
+              onClick={() => profileNavigation("settings")}
+            >
+              Settings
+            </li>
+          </ul>
         </div>
         <div className="w-4/5">
           <ProfileRoute route={getRoute(section)} user={session.user} />

@@ -20,7 +20,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
         onClick={() => handleDropdown("ProfileDropdown")}
       >
         <h5
-          className={`mr-[-10%] h-6 w-36 overflow-clip bg-white px-6 text-center text-sm font-medium text-black ${
+          className={`mr-[-10%] h-6 w-36 overflow-clip bg-white px-6 text-center text-sm font-bold text-zinc-800 ${
             activeDropdown === "ProfileDropdown" ? "rounded-t-lg" : "rounded-lg"
           }`}
         >
@@ -55,7 +55,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
       {activeDropdown === "ProfileDropdown" && (
         <ul
           onMouseLeave={() => handleDropdown(null)}
-          className="absolute z-20 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white px-4 py-2"
+          className="absolute z-20 flex w-40 translate-y-10 flex-col gap-1 rounded-b-lg bg-white py-2"
         >
           <Link
             href={{
@@ -63,8 +63,8 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "basic-info" },
             }}
           >
-            <li className=" text-sm text-gray-700 hover:bg-slate-300">
-              Profile
+            <li className=" px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+              PROFILE
             </li>
           </Link>
           <Link
@@ -73,8 +73,8 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "submissions" },
             }}
           >
-            <li className="text-sm text-gray-700 hover:bg-slate-300">
-              Submissions
+            <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+              SUBMISSIONS
             </li>
           </Link>
           <Link
@@ -83,8 +83,8 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "wishlist" },
             }}
           >
-            <li className="text-sm text-gray-700 hover:bg-slate-300">
-              Wishlist
+            <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+              WISHLIST
             </li>
           </Link>
           {session?.user.role === "SELLER" && (
@@ -93,16 +93,16 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
                 pathname: `/seller/${session?.user.name}`,
               }}
             >
-              <li className="text-sm text-gray-700 hover:bg-slate-300">
-                Seller Dashboard
+              <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+                SELLER DASHBOARD
               </li>
             </Link>
           )}
           <li
-            className="w-full cursor-pointer text-sm text-gray-700 hover:bg-slate-300"
+            className="w-full cursor-pointer px-4 text-sm font-bold text-zinc-800 hover:bg-zinc-200"
             onClick={() => void signOut()}
           >
-            Log Out
+            LOG OUT
           </li>
         </ul>
       )}
