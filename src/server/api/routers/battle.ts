@@ -5,6 +5,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 import { type BattleEntrySchema } from "~/types/schema";
 import { shuffle } from "~/utils/randomArray";
 
@@ -20,6 +21,14 @@ export const battleRouter = createTRPCRouter({
   submitBattleEntry: protectedProcedure
     .input(z.object({ trackUrl: z.string().url(), battleId: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const battleStatus = await ctx.prisma.battle.findFirst({
         where: {
           id: input.battleId,
@@ -129,6 +138,14 @@ export const battleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const voteExists = await ctx.prisma.battleVote.findFirst({
         where: {
           battleEntryId: input.entryId,

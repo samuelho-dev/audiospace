@@ -5,12 +5,21 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 
 export const cloudinaryRouter = createTRPCRouter({
   uploadImages: protectedProcedure
     .input(z.object({ folder: z.string(), images: z.array(z.string()) }))
     .output(z.array(z.string()))
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const options = {
         unique_filename: true,
         overwrite: true,

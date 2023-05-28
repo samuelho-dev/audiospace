@@ -5,12 +5,21 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 import { ProductSchema } from "~/types/schema";
 
 export const userRouter = createTRPCRouter({
   updateProfilePicture: protectedProcedure
     .input(z.object({ image: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       if (ctx.session.user.image) {
         await ctx.cloudinary.uploader.destroy(ctx.session.user.image);
       }
@@ -41,6 +50,14 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const existingUsername = await ctx.prisma.user.findFirst({
         where: {
           username: input.name,
@@ -66,6 +83,14 @@ export const userRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const existingEmail = await ctx.prisma.user.findFirst({
         where: {
           email: input.email,
@@ -227,6 +252,14 @@ export const userRouter = createTRPCRouter({
   addProductToCart: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const data = await ctx.prisma.user.update({
         data: {
           cart: {
@@ -248,8 +281,16 @@ export const userRouter = createTRPCRouter({
     }),
   deleteProductFromCart: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .mutation(({ ctx, input }) => {
-      const data = ctx.prisma.user.update({
+    .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
+      const data = await ctx.prisma.user.update({
         data: {
           cart: {
             disconnect: {
@@ -329,7 +370,14 @@ export const userRouter = createTRPCRouter({
       z.object({ productId: z.string(), rating: z.number().min(1).max(5) })
     )
     .mutation(async ({ ctx, input }) => {
-      // Check if user has purchased the item
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       await ctx.prisma.transaction.findFirstOrThrow({
         where: {
           userId: ctx.session.user.id,

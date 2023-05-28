@@ -6,6 +6,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 import { ProductSchema } from "~/types/schema";
 import uploadB2 from "~/utils/uploadB2";
 
@@ -24,6 +25,14 @@ export const sellerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const productName = DOMPurify.sanitize(input.name);
       const sellerId = await ctx.prisma.seller.findFirstOrThrow({
         where: {
