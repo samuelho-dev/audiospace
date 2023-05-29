@@ -69,8 +69,14 @@ function PluginDropdown({
 function Navbar() {
   const { data: session } = useSession();
 
-  const pluginCategoriesQuery = api.onload.getPluginCategories.useQuery();
-  const kitCategoriesQuery = api.onload.getKitCategories.useQuery();
+  const pluginCategoriesQuery = api.onload.getPluginCategories.useQuery(
+    undefined,
+    { cacheTime: Infinity }
+  );
+  const kitCategoriesQuery = api.onload.getKitCategories.useQuery(undefined, {
+    cacheTime: Infinity,
+  });
+
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const handleDropdown = (dropdownName: string | null) => {

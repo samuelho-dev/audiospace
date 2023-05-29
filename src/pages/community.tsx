@@ -118,7 +118,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
       console.error("Error occured during submission. Please try again", err);
     }
   };
-  console.log(typeof pastEntries[0]?.winner.submittedAt);
+
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-6xl">
       <h1>{`Love that you're here...`}</h1>
