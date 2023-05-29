@@ -1,12 +1,9 @@
-import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { BsHeart, BsHeartHalf, BsHeartFill } from "react-icons/bs";
+import React, { useState } from "react";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
 import { HiOutlineShoppingCart, HiShoppingCart } from "react-icons/hi";
 import { type ProductSchema } from "~/types/schema";
 import { RiPlayMiniLine } from "react-icons/ri";
-import { UseRouterFilter } from "~/utils/useRouterFilter";
 import { api } from "~/utils/api";
 import Link from "next/link";
 
