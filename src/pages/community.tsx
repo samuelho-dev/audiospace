@@ -141,10 +141,10 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
         <div className="flex w-full flex-col justify-between p-2">
           <h4>Past Winners</h4>
           <div className="flex w-full justify-between border-b border-zinc-400 px-4 py-2">
-            <p className="w-1/4 text-center text-xs ">Submitted</p>
-            <p className="w-1/4 text-center text-xs ">Artist Name</p>
-            <p className="w-1/4 text-center text-xs ">Track</p>
-            <p className="w-1/4 text-center text-xs ">Rating</p>
+            <p className="w-1/6 text-center text-xs ">Submitted</p>
+            <p className="w-2/6 text-center text-xs ">Artist Name</p>
+            <p className="w-2/6 text-center text-xs ">Track</p>
+            <p className="w-1/6 text-center text-xs ">Rating</p>
           </div>
           <div className="m-2 h-40 overflow-scroll rounded-sm bg-zinc-900">
             {pastEntries.length === 0 ? (
@@ -155,19 +155,19 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   key={entry.id}
                   className="flex w-full justify-between border-zinc-400 px-4 py-4"
                 >
-                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
+                  <h5 className="flex w-1/6 justify-center  overflow-hidden text-sm">
                     {entry.winner.submittedAt.toLocaleDateString()}
                   </h5>
-                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
+                  <h5 className="flex w-2/6 justify-center  overflow-hidden text-sm">
                     {entry.winner.user.username}
                   </h5>
                   <iframe
                     allow="autoplay"
-                    className="flex w-1/4 justify-center  overflow-x-hidden"
+                    className="flex w-2/6 justify-center  overflow-x-hidden"
                     src={soundCloudUrl(entry.winner.trackUrl)}
                     height="20"
                   ></iframe>
-                  <h5 className="flex w-1/4 justify-center">
+                  <h5 className="flex w-1/6 justify-center">
                     {entry.winner.rating}
                   </h5>
                 </div>
@@ -226,10 +226,10 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
             </div>
           </div>
 
-          <div className="flex justify-between border-b border-zinc-400 px-4 py-2">
-            <h5 className="text-xs">Artist Name</h5>
-            <h5 className="text-xs">Track</h5>
-            <h5 className="text-xs">Vote</h5>
+          <div className="flex w-full justify-between border-b border-zinc-400 px-4 py-2">
+            <h5 className="w-1/4 text-center text-xs">Artist Name</h5>
+            <h5 className="w-2/4 text-center text-xs">Track</h5>
+            <h5 className="w-1/4 text-center text-xs">Vote</h5>
           </div>
           <div className="m-2 h-96 overflow-scroll rounded-sm bg-zinc-900">
             {curBattle ? (
