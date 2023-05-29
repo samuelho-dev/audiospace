@@ -7,7 +7,9 @@ import { api } from "~/utils/api";
 
 function Blog() {
   const session = useSession();
-  const blogPostsQuery = api.blog.getBlogPosts.useQuery();
+  const blogPostsQuery = api.blog.getBlogPosts.useQuery(undefined, {
+    cacheTime: Infinity,
+  });
 
   return (
     <div className="flex w-full max-w-3xl flex-grow justify-center gap-8 py-10 lg:max-w-6xl">
