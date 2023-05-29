@@ -276,4 +276,17 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
+  getUserLikes: protectedProcedure.query(async ({ ctx }) => {
+    const votes = await ctx.prisma.battleVote.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      select: {
+        battleEntryId: true,
+      },
+    });
+
+    const data = votes.map((entry) => entry.battleEntryId);
+    return data;
+  }),
 });
