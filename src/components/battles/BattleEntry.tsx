@@ -1,3 +1,4 @@
+import { TRPCClientError } from "@trpc/client";
 import { useState } from "react";
 import { type BattleEntrySchema } from "~/types/schema";
 import { api } from "~/utils/api";
@@ -6,9 +7,10 @@ import soundCloudUrl from "~/utils/soundcloudUrl";
 interface BattleEntryProps {
   entry: BattleEntrySchema;
   votingPhase: boolean;
+  setErrorState: (string: string) => void;
 }
 
-function BattleEntry({ entry, votingPhase }: BattleEntryProps) {
+function BattleEntry({ entry, votingPhase, setErrorState }: BattleEntryProps) {
   const [voted, setVoted] = useState(false);
   const voteMutation = api.battles.voteEntry.useMutation();
   const userLikedQuery = api.battles.getUserLikedBattleEntry.useQuery();
@@ -17,9 +19,14 @@ function BattleEntry({ entry, votingPhase }: BattleEntryProps) {
       await voteMutation.mutateAsync({
         entryId: entry.id,
       });
+
       setVoted(true);
     } catch (err) {
-      console.error(err);
+      if (err instanceof TRPCClientError) {
+        setErrorState(err.message);
+      } else {
+        setErrorState("Unknown Error Occurred");
+      }
     }
   };
 
