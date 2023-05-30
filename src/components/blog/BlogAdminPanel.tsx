@@ -89,6 +89,7 @@ function BlogAdminPanel() {
           type="file"
           accept="image/png, image/jpeg, image/jpg"
           multiple={false}
+          className="block w-full cursor-pointer rounded-lg border border-zinc-700 p-1 file:rounded-sm file:border-none file:bg-zinc-700 file:text-zinc-200 hover:file:bg-zinc-500"
           onChange={(e) => void blogImageState(e)}
         />
       </div>

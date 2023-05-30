@@ -14,28 +14,38 @@ import soundCloudUrl from "~/utils/soundcloudUrl";
 
 interface SubmitTrackProps {
   submitTrack: (submitUrl: string) => Promise<void>;
+  errorState: string | null;
 }
 
-function SubmitTrackForm({ submitTrack }: SubmitTrackProps) {
+function SubmitTrackForm({ submitTrack, errorState }: SubmitTrackProps) {
   const [submitUrl, setSubmitUrl] = useState("");
   const [submitInputActive, setSubmitInputActive] = useState(false);
 
   if (submitInputActive) {
     return (
-      <div className="flex gap-2">
+      <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submitTrack(submitUrl);
+        }}
+      >
         <input
           type="text"
           onChange={(e) => setSubmitUrl(e.target.value)}
+          required
           placeholder="Enter your soundcloud url"
-          className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
+          className={`h-6 rounded-md px-2  outline outline-1 outline-zinc-400 ${
+            errorState ? "border border-pink-400 text-pink-500" : "text-black"
+          }`}
         />
         <button
-          onClick={() => void submitTrack(submitUrl)}
+          type="submit"
           className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
         >
           Submit
         </button>
-      </div>
+      </form>
     );
   }
 
@@ -56,6 +66,7 @@ interface CommunityProps {
 
 function Community({ curBattle, pastEntries }: CommunityProps) {
   const session = useSession();
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   // const battleQuery = api.battles.fetchCurrentBattle.useQuery();
   const samplePresignUrl = curBattle?.sample
@@ -104,6 +115,9 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
       const soundcloudUrlValidation =
         /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
       if (!soundcloudUrlValidation.test(submitUrl)) {
+        setErrorState(
+          "Invalid Url. Please make sure you are submitting a soundcloud url."
+        );
         throw new Error("Invalid Url");
       }
 
@@ -113,6 +127,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
           battleId: curBattle.id,
         });
         setSubmitted(true);
+        setErrorState(null);
       }
     } catch (err) {
       console.error("Error occured during submission. Please try again", err);
@@ -121,6 +136,14 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
 
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-6xl">
+      <dialog
+        open={!!errorState}
+        className="sticky top-0 w-full rounded-sm bg-zinc-800 opacity-90"
+      >
+        <h1>Oops!</h1>
+        <p className="text-red-400">{errorState}</p>
+      </dialog>
+
       <h1>{`Love that you're here...`}</h1>
       <div>
         <h3>Live Events</h3>
@@ -221,7 +244,10 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   Submitted
                 </h5>
               ) : (
-                <SubmitTrackForm submitTrack={submitTrack} />
+                <SubmitTrackForm
+                  errorState={errorState}
+                  submitTrack={submitTrack}
+                />
               )}
             </div>
           </div>
@@ -238,6 +264,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   <BattleEntry
                     key={entry.id}
                     entry={entry}
+                    setErrorState={setErrorState}
                     votingPhase={curBattle.isActive === "ACTIVE"}
                   />
                 ))
