@@ -146,69 +146,40 @@ function NewItem() {
         onSubmit={(e) => void handleAddProduct(e)}
         className="w-full max-w-3xl"
       >
-        <h3>Add Product</h3>
-        <div className="flex w-full flex-col gap-4">
-          <div className="flex flex-row justify-between ">
+        <h1 className="border-b border-zinc-700 py-4">Add Product</h1>
+        <div className="flex w-full flex-col gap-8 py-4">
+          {/* PRODUCT NAME */}
+          <div className="flex flex-col ">
             <label>Name</label>
             <input
               type="text"
               id="name"
               name="name"
               onChange={handleChange}
-              className="rounded-sm p-2 text-center text-black"
+              className="w-2/5 rounded-sm p-1 text-center text-black"
             />
           </div>
-          <div className="flex flex-col justify-between gap-2">
+          {/* PRODUCT DESCRIPTION */}
+          <div className="flex flex-col">
             <label>Description</label>
             {editor && <RichTextEditor editor={editor} />}
           </div>
-          <div className="flex flex-row justify-between ">
+          {/* PRICE */}
+          <div className="flex flex-col">
             <label>Price</label>
             <input
               type="number"
               id="price"
               name="price"
               onChange={handlePriceChange}
-              className="rounded-sm p-1 text-black"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="">Images Upload</label>
-            <input
-              id="images"
-              type="file"
-              name="images"
-              accept="image/png, image/jpeg, image/jpg"
-              multiple
-              onChange={(e) => void handleImageChange(e)}
-              className="block w-full cursor-pointer rounded-lg border"
-            />
-          </div>
-          <div>
-            <label>Preview Track</label>
-            <StandardB2Dropzone
-              bucket={"AudiospaceProducts"}
-              field={"previewTrack"}
-              handleFileChange={handleFileChange}
-              setPresignedUrl={setPreviewTrackPresignUrl}
-              setProductDownloadFile={setPreviewTrackFile}
-            />
-          </div>
-          <div>
-            <label>Product</label>
-            <StandardB2Dropzone
-              bucket={"AudiospaceProducts"}
-              field={"product"}
-              handleFileChange={handleFileChange}
-              setPresignedUrl={setProductDownload}
-              setProductDownloadFile={setProductFile}
+              className="w-1/5 rounded-sm p-1 text-black"
             />
           </div>
           {/* CATEGORY */}
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-col">
             <label>Category</label>
             <select
-              className="bg-zinc-700 px-2"
+              className="w-fit bg-zinc-700 p-1"
               onChange={(e) => setCategoryId(parseInt(e.target.value))}
             >
               {categories.data &&
@@ -219,7 +190,8 @@ function NewItem() {
                 ))}
             </select>
           </div>
-          <div className="flex flex-col justify-between gap-2">
+          {/* SUBCATEGORY */}
+          <div className="flex flex-col">
             <label>{`Subcategories - Select up to 2`}</label>
             <div className="grid grid-cols-4 gap-4 rounded-lg p-2 outline outline-1 outline-zinc-700">
               {subcategories.data &&
@@ -250,6 +222,42 @@ function NewItem() {
                 ))}
             </div>
           </div>
+          {/* IMAGES */}
+          <div className="flex flex-col">
+            <label>Images Upload</label>
+            <input
+              id="images"
+              type="file"
+              name="images"
+              accept="image/png, image/jpeg, image/jpg"
+              multiple
+              onChange={(e) => void handleImageChange(e)}
+              className="block w-full cursor-pointer rounded-lg border border-zinc-700 p-1 file:rounded-sm file:border-none file:bg-zinc-700 file:text-zinc-200 hover:file:bg-zinc-500"
+            />
+          </div>
+          {/* PREVIEW TRACK UPLOAD */}
+          <div>
+            <label>Preview Track</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"previewTrack"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setPreviewTrackPresignUrl}
+              setProductDownloadFile={setPreviewTrackFile}
+            />
+          </div>
+          {/* PRODUCT UPLOAD */}
+          <div>
+            <label>Product</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"product"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setProductDownload}
+              setProductDownloadFile={setProductFile}
+            />
+          </div>
+
           <button className="w-40 justify-end bg-red-400">Submit</button>
         </div>
       </form>
