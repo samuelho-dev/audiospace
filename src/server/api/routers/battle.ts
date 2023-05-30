@@ -276,7 +276,7 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
-  getUserLikes: protectedProcedure.query(async ({ ctx }) => {
+  getUserLikedBattleEntry: protectedProcedure.query(async ({ ctx }) => {
     const votes = await ctx.prisma.battleVote.findMany({
       where: {
         userId: ctx.session.user.id,

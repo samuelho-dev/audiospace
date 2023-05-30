@@ -11,7 +11,7 @@ interface BattleEntryProps {
 function BattleEntry({ entry, votingPhase }: BattleEntryProps) {
   const [voted, setVoted] = useState(false);
   const voteMutation = api.battles.voteEntry.useMutation();
-  const userLikedQuery = api.battles.getUserLikes.useQuery();
+  const userLikedQuery = api.battles.getUserLikedBattleEntry.useQuery();
   const handleVote = async () => {
     try {
       await voteMutation.mutateAsync({
