@@ -25,7 +25,7 @@ export const StandardB2Dropzone = ({
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } =
     useDropzone({
       maxFiles: 1,
-      maxSize: 5 * 2 ** 30, // ~ 5GB
+      maxSize: 2 * 2 ** 30, // ~ 2GB
       multiple: false,
       onDropAccepted: () => {
         const key = uuidv4();
@@ -54,7 +54,7 @@ export const StandardB2Dropzone = ({
       return acceptedFiles.map((file) => {
         return (
           <li key={file.name}>
-            {file.name} - {file.size} bytes
+            •{file.name} - {file.size} bytes
           </li>
         );
       });
