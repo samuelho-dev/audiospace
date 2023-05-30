@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -143,7 +144,10 @@ export const battleRouter = createTRPCRouter({
       const { success } = await ratelimit.limit(identifier);
 
       if (!success) {
-        throw new Error("Please try again in a a few moment");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "You are requesting too quickly, please try again later.",
+        });
       }
 
       const voteExists = await ctx.prisma.battleVote.findFirst({
@@ -154,7 +158,10 @@ export const battleRouter = createTRPCRouter({
       });
 
       if (voteExists) {
-        throw new Error("You have already voted");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "You have already voted for this track",
+        });
       }
 
       await ctx.prisma.battleVote.create({
