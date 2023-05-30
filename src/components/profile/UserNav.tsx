@@ -63,7 +63,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "basic-info" },
             }}
           >
-            <li className=" px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+            <li className=" px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
               PROFILE
             </li>
           </Link>
@@ -73,7 +73,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "submissions" },
             }}
           >
-            <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+            <li className="px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
               SUBMISSIONS
             </li>
           </Link>
@@ -83,23 +83,24 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               query: { section: "wishlist" },
             }}
           >
-            <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+            <li className="px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
               WISHLIST
             </li>
           </Link>
-          {session?.user.role === "SELLER" && (
+          {(session?.user.role === "SELLER" ||
+            session?.user.role === "ADMIN") && (
             <Link
               href={{
                 pathname: `/seller/${session?.user.name}`,
               }}
             >
-              <li className="px-4 text-sm font-bold text-zinc-900 hover:bg-zinc-200">
+              <li className="whitespace-nowrap px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
                 SELLER DASHBOARD
               </li>
             </Link>
           )}
           <li
-            className="w-full cursor-pointer px-4 text-sm font-bold text-zinc-800 hover:bg-zinc-200"
+            className="w-full cursor-pointer px-3 text-sm font-semibold tracking-tighter text-zinc-800 hover:bg-zinc-200 hover:font-light"
             onClick={() => void signOut()}
           >
             LOG OUT
