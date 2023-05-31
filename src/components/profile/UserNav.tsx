@@ -70,16 +70,6 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
           <Link
             href={{
               pathname: "/profile",
-              query: { section: "submissions" },
-            }}
-          >
-            <li className="px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
-              SUBMISSIONS
-            </li>
-          </Link>
-          <Link
-            href={{
-              pathname: "/profile",
               query: { section: "wishlist" },
             }}
           >
@@ -87,6 +77,17 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
               WISHLIST
             </li>
           </Link>
+          <Link
+            href={{
+              pathname: "/profile",
+              query: { section: "submissions" },
+            }}
+          >
+            <li className="px-3 text-sm font-semibold tracking-tighter text-zinc-900 hover:bg-zinc-200 hover:font-light">
+              SUBMISSIONS
+            </li>
+          </Link>
+
           {(session?.user.role === "SELLER" ||
             session?.user.role === "ADMIN") && (
             <Link
@@ -100,7 +101,7 @@ function UserNav({ handleDropdown, activeDropdown }: UserNavProps) {
             </Link>
           )}
           <li
-            className="w-full cursor-pointer px-3 text-sm font-semibold tracking-tighter text-zinc-800 hover:bg-zinc-200 hover:font-light"
+            className="w-full cursor-pointer px-3 text-sm font-semibold tracking-tighter text-zinc-800 hover:bg-zinc-200 hover:font-light hover:text-red-400"
             onClick={() => void signOut()}
           >
             LOG OUT
