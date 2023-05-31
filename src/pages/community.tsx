@@ -213,7 +213,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                 <a
                   href={samplePresignUrl?.data}
                   target="_blank"
-                  className="w-fit rounded-md bg-emerald-400 px-2 text-xs font-semibold text-black"
+                  className="w-fit rounded-md bg-emerald-500 px-2 text-xs font-semibold text-black hover:text-zinc-900"
                 >
                   DOWNLOAD THE SAMPLE
                 </a>
