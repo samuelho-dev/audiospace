@@ -15,6 +15,7 @@ import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
 
 type CreateContextOptions = {
+  ip: string | undefined;
   session: Session | null;
 };
 
@@ -30,6 +31,7 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
+    ip: opts.ip,
     session: opts.session,
     prisma,
     b2,
@@ -43,13 +45,26 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
+
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
+
+  const getClientIp = () => {
+    const forwarded = req.headers["x-forwarded-for"];
+    if (typeof forwarded === "string") {
+      return forwarded.split(",")[0];
+    } else if (Array.isArray(forwarded) && forwarded.length > 0) {
+      return forwarded[0];
+    }
+
+    return req.socket.remoteAddress;
+  };
 
   // Get the session from the server using the getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
   return createInnerTRPCContext({
+    ip: getClientIp(),
     session,
   });
 };
