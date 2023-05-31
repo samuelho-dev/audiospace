@@ -145,7 +145,7 @@ export const battleRouter = createTRPCRouter({
 
       if (!success) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "TOO_MANY_REQUESTS",
           message: "You are requesting too quickly, please try again later.",
         });
       }
@@ -159,7 +159,7 @@ export const battleRouter = createTRPCRouter({
 
       if (voteExists) {
         throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
+          code: "BAD_REQUEST",
           message: "You have already voted for this track",
         });
       }
