@@ -4,15 +4,18 @@ import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
-import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
+import { StandardB2Dropzone } from "~/components/inputs/StandardB2Dropzone";
 import RichTextEditor from "~/components/text-editor/RichTextEditor";
 import useCustomEditor from "~/components/text-editor/useCustomEditor";
 import DOMPurify from "isomorphic-dompurify";
+import { TRPCClientError } from "@trpc/client";
+import InputImages from "~/components/inputs/inputImages";
 
 function NewItem() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const editor = useCustomEditor();
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState<number>(1);
   const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
     string | null
@@ -36,8 +39,7 @@ function NewItem() {
     categoryId,
   });
   const productMutation = api.seller.uploadProduct.useMutation();
-  const createBlobMutation =
-    api.blob.createProductDescriptionBlob.useMutation();
+
   if (!session) {
     return null;
   }
@@ -109,7 +111,11 @@ function NewItem() {
           headers: {
             "Content-Type": previewTrackFile.type,
           },
-        });
+        }).catch(() =>
+          setErrorState(
+            "Error occured uploading the preview track. Please try again."
+          )
+        );
 
         // UPLOAD PRODUCT FILE
         await axios({
@@ -119,29 +125,41 @@ function NewItem() {
           headers: {
             "Content-Type": productFile.type,
           },
-        });
-        // UPLOAD BLOB FOR DESCRIPTION
-        const blob = await createBlobMutation.mutateAsync({
-          content: DOMPurify.sanitize(editor.getHTML()),
-        });
+        }).catch(() =>
+          setErrorState(
+            "Error occured uploading the product. Please try again."
+          )
+        );
+
         const sanitizedForm = { ...form };
 
         sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
-        console.log({ sanitizedForm, form });
+
         await productMutation.mutateAsync({
           ...sanitizedForm,
           images,
-          description: blob.id,
+          description: DOMPurify.sanitize(editor.getHTML()),
         });
         void router.push(`/seller/${session.user.name}`);
       }
     } catch (err) {
-      console.error("Error adding product:", err);
+      if (err instanceof TRPCClientError) {
+        setErrorState(err.message);
+      } else {
+        setErrorState("Unknown Error Occurred");
+      }
     }
   };
 
   return (
     <div className="flex w-full max-w-3xl flex-col items-center gap-8 lg:max-w-6xl">
+      <dialog
+        open={!!errorState}
+        className="sticky top-0 w-full rounded-sm bg-zinc-800 opacity-90"
+      >
+        <h1>Oops!</h1>
+        <p className="text-red-400">{errorState}</p>
+      </dialog>
       <form
         onSubmit={(e) => void handleAddProduct(e)}
         className="w-full max-w-3xl"
@@ -193,7 +211,7 @@ function NewItem() {
           {/* SUBCATEGORY */}
           <div className="flex flex-col">
             <label>{`Subcategories - Select up to 2`}</label>
-            <div className="grid grid-cols-4 gap-4 rounded-lg p-2 outline outline-1 outline-zinc-700">
+            <div className="grid grid-cols-4 gap-4 rounded-sm p-2 outline outline-1 outline-zinc-700">
               {subcategories.data &&
                 subcategories.data.map((subcategory) => (
                   <div key={subcategory.id} className="flex gap-1">
@@ -223,9 +241,10 @@ function NewItem() {
             </div>
           </div>
           {/* IMAGES */}
-          <div className="flex flex-col">
-            <label>Images Upload</label>
-            <input
+          <div className="flex h-full flex-col">
+            <h5>Image Upload</h5>
+            <InputImages setErrorState={setErrorState} multiple={true} />
+            {/* <input
               id="images"
               type="file"
               name="images"
@@ -233,7 +252,7 @@ function NewItem() {
               multiple
               onChange={(e) => void handleImageChange(e)}
               className="block w-full cursor-pointer rounded-lg border border-zinc-700 p-1 file:rounded-sm file:border-none file:bg-zinc-700 file:text-zinc-200 hover:file:bg-zinc-500"
-            />
+            /> */}
           </div>
           {/* PREVIEW TRACK UPLOAD */}
           <div>
@@ -257,7 +276,6 @@ function NewItem() {
               setProductDownloadFile={setProductFile}
             />
           </div>
-
           <button className="w-40 justify-end bg-red-400">Submit</button>
         </div>
       </form>
