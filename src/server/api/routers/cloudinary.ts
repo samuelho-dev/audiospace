@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -17,7 +18,10 @@ export const cloudinaryRouter = createTRPCRouter({
       const { success } = await ratelimit.limit(identifier);
 
       if (!success) {
-        throw new Error("Please try again in a a few moment");
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Please try again in a a few moments",
+        });
       }
 
       const options = {
@@ -30,7 +34,12 @@ export const cloudinaryRouter = createTRPCRouter({
         input.images.map((image) =>
           ctx.cloudinary.uploader.upload(image, options)
         )
-      );
+      ).catch(() => {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error occured uploading images, please try again",
+        });
+      });
       return data.map((img) => img.secure_url);
     }),
 });
