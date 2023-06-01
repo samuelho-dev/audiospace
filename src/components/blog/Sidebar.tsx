@@ -9,7 +9,9 @@ interface SidebarProps {
 }
 function Sidebar({ adminPanelActive, setAdminPanelActive }: SidebarProps) {
   const { data: session } = useSession();
-  const blogTagsQuery = api.blog.getBlogTags.useQuery();
+  const blogTagsQuery = api.blog.getBlogTags.useQuery(undefined, {
+    cacheTime: Infinity,
+  });
   const router = useRouter();
   const selectedTagNavigation = (tag: string) => {
     router
