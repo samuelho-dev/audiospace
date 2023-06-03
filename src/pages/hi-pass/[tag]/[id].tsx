@@ -29,28 +29,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     where: {
       id: encodedId,
     },
-    include: {
-      content: {
-        select: {
-          data: true,
-        },
-      },
-    },
   });
-
-  type Content = {
-    data: Buffer;
-  };
-  const content: Content = data.content;
-  const contentData = content.data.toString("utf-8");
-
-  const createdAt = JSON.stringify(data.createdAt);
 
   await prisma.$disconnect();
 
   return {
     props: {
-      postData: { ...data, createdAt, content: contentData },
+      postData: { ...data },
     },
   };
 };

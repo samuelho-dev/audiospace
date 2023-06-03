@@ -169,16 +169,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       wishlistUsers: true,
     },
   });
-  type Content = {
-    data: Buffer;
-  };
-  const content: Content = data.description;
-  const contentData = content.data.toString("utf-8");
+
   await prisma.$disconnect();
 
   return {
     props: {
-      product: { ...data, description: contentData },
+      product: { ...data },
     },
   };
 };
