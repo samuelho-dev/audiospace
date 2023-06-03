@@ -1,4 +1,3 @@
-import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import BlogAdminPanel from "~/components/blog/BlogAdminPanel";
 import PostPreview from "~/components/blog/PostPreview";
@@ -6,7 +5,6 @@ import Sidebar from "~/components/blog/Sidebar";
 import { api } from "~/utils/api";
 
 function Blog() {
-  const session = useSession();
   const blogPostsQuery = api.blog.getBlogPosts.useQuery(undefined, {
     cacheTime: Infinity,
   });
