@@ -1,20 +1,19 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { readFileasBase64 } from "~/utils/readFileAsBase64";
-import RichTextEditor from "../text-editor/RichTextEditor";
-import useCustomEditor from "../text-editor/useCustomEditor";
-import DOMPurify from "dompurify";
 import InputImages from "../inputs/InputImages";
-import { useSession } from "next-auth/react";
 import ErrorDialog from "../error/ErrorDialog";
+import dynamic from "next/dynamic";
+
+const TextEditor = dynamic(() => import("../text-editor/RichTextEditor"), {
+  ssr: false,
+});
 
 function BlogAdminPanel() {
-  const editor = useCustomEditor();
-  const { data: session } = useSession();
   const [errorState, setErrorState] = useState<string | null>(null);
   const [newPost, setNewPost] = useState({
     title: "",
     description: "",
+    content: null as string | null,
     blogTag: 1,
     image: null as string[] | null,
   });
@@ -22,18 +21,20 @@ function BlogAdminPanel() {
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
+
+  const handleEditorUpdate = (content: string) => {
+    setNewPost({ ...newPost, content });
+  };
+
   const handleNewBlogPost = async () => {
-    if (session?.user.role !== "ADMIN") {
-      return setErrorState("Unauthorized Use");
-    }
     if (newPost.title.length <= 0) {
       return setErrorState("Missing Title");
     }
+    if (!newPost.content) {
+      return setErrorState("Content does not exist");
+    }
     if (!newPost.image || !newPost.image[0]) {
       return setErrorState("Image not found");
-    }
-    if (!editor) {
-      return setErrorState("Editor does not exist");
     }
 
     try {
@@ -52,7 +53,7 @@ function BlogAdminPanel() {
 
       await blogPostMutation.mutateAsync({
         ...post,
-        content: DOMPurify.sanitize(editor.getHTML()),
+        content: newPost.content,
         image: images[0],
       });
     } catch (err) {
@@ -73,7 +74,7 @@ function BlogAdminPanel() {
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg bg-zinc-900 p-4">
+    <div className="flex flex-col gap-4 rounded-lg bg-zinc-900 p-4">
       <ErrorDialog errorState={errorState} />
       {/* TITLE */}
       <div className="flex w-full flex-col">
@@ -105,7 +106,7 @@ function BlogAdminPanel() {
         />
       </div>
       {/* CONTENT */}
-      {editor && <RichTextEditor editor={editor} />}
+      <TextEditor editable={true} handleUpdate={handleEditorUpdate} />
       {/* BLOG TYPE */}
       <div className="flex flex-col">
         <label>Blog Type</label>
@@ -123,7 +124,7 @@ function BlogAdminPanel() {
         </select>
       </div>
       <button
-        className="my-2 border border-zinc-300 bg-zinc-600 px-2"
+        className="my-2 w-fit border border-zinc-300 bg-zinc-600 px-2"
         onClick={() => void handleNewBlogPost()}
       >
         SUBMIT

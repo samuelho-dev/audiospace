@@ -1,20 +1,25 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import { StandardB2Dropzone } from "~/components/inputs/StandardB2Dropzone";
-import RichTextEditor from "~/components/text-editor/RichTextEditor";
-import useCustomEditor from "~/components/text-editor/useCustomEditor";
 import DOMPurify from "isomorphic-dompurify";
 import { TRPCClientError } from "@trpc/client";
 import InputImages from "~/components/inputs/InputImages";
+import dynamic from "next/dynamic";
+
+const TextEditor = dynamic(
+  () => import("~/components/text-editor/RichTextEditor"),
+  {
+    ssr: false,
+  }
+);
 
 function NewItem() {
   const router = useRouter();
   const { data: session } = useSession();
-  const editor = useCustomEditor();
+
   const [errorState, setErrorState] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState<number>(1);
   const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
@@ -26,6 +31,7 @@ function NewItem() {
   const [form, setForm] = useState({
     name: "",
     price: 0,
+    description: null as null | string,
     images: [] as null | string[],
     previewTrack: null as null | string,
     product: null as null | string,
@@ -80,6 +86,10 @@ function NewItem() {
     setForm({ ...form, [field]: value });
   };
 
+  const handleEditorUpdate = (content: string) => {
+    setForm({ ...form, description: content });
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (form.name.length < 3) {
@@ -91,6 +101,9 @@ function NewItem() {
     if (!form.images || form.images.length < 1) {
       return setErrorState(`You must upload an image`);
     }
+    if (!form.description) {
+      return setErrorState(`The description is missing`);
+    }
     if (form.subcategories.length < 1) {
       return setErrorState(`Please tag your product`);
     }
@@ -99,11 +112,6 @@ function NewItem() {
     }
     if (!productPresignUrl || !productFile || !form.product) {
       return setErrorState(`Please upload a product. Please try again.`);
-    }
-    if (!editor) {
-      return setErrorState(
-        `An error occured uploading the description. Please try again.`
-      );
     }
 
     try {
@@ -139,16 +147,15 @@ function NewItem() {
         setErrorState("Error occured uploading the product. Please try again.")
       );
 
-      const sanitizedForm = { ...form };
-      sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
-
       await productMutation.mutateAsync({
-        ...sanitizedForm,
+        ...form,
+        name: DOMPurify.sanitize(form.name),
         product: form.product,
         previewTrack: form.previewTrack,
+        description: form.description,
         images,
-        description: DOMPurify.sanitize(editor.getHTML()),
       });
+
       void router.push(`/seller/${session.user.name}`);
     } catch (err) {
       if (err instanceof TRPCClientError) {
@@ -175,7 +182,7 @@ function NewItem() {
         <h1 className="border-b border-zinc-700 py-4">Add Product</h1>
         <div className="flex w-full flex-col gap-8 py-4">
           {/* PRODUCT NAME */}
-          <div className="flex flex-col ">
+          <div className="flex flex-col">
             <label>Name</label>
             <input
               type="text"
@@ -188,7 +195,7 @@ function NewItem() {
           {/* PRODUCT DESCRIPTION */}
           <div className="flex flex-col">
             <label>Description</label>
-            {editor && <RichTextEditor editor={editor} />}
+            <TextEditor editable={true} handleUpdate={handleEditorUpdate} />
           </div>
           {/* PRICE */}
           <div className="flex flex-col">
