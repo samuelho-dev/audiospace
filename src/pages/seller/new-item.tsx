@@ -9,7 +9,7 @@ import RichTextEditor from "~/components/text-editor/RichTextEditor";
 import useCustomEditor from "~/components/text-editor/useCustomEditor";
 import DOMPurify from "isomorphic-dompurify";
 import { TRPCClientError } from "@trpc/client";
-import InputImages from "~/components/inputs/inputImages";
+import InputImages from "~/components/inputs/InputImages";
 
 function NewItem() {
   const router = useRouter();
@@ -26,9 +26,9 @@ function NewItem() {
   const [form, setForm] = useState({
     name: "",
     price: 0,
-    images: [] as string[],
-    previewTrack: "",
-    product: "",
+    images: [] as null | string[],
+    previewTrack: null as null | string,
+    product: null as null | string,
     categoryId: categoryId,
     subcategories: [] as number[],
   });
@@ -47,19 +47,12 @@ function NewItem() {
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
-      price: parseInt(e.target.value) * 100,
+      price: parseFloat(e.target.value) * 100,
     });
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const filesArray = Array.from(files);
-      const filesBase64 = await Promise.all(
-        filesArray.map((file) => readFileasBase64(file))
-      );
-      setForm({ ...form, images: filesBase64 });
-    }
+  const handleImageChange = (images: string[] | null) => {
+    setForm({ ...form, images });
   };
 
   const handleChange = (
@@ -89,59 +82,74 @@ function NewItem() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.name.length < 3) {
+      return setErrorState(`Product names must be longer than 3 characters`);
+    }
+    if (form.price <= 0) {
+      return setErrorState(`Price cannot be below 0`);
+    }
+    if (!form.images || form.images.length < 1) {
+      return setErrorState(`You must upload an image`);
+    }
+    if (form.subcategories.length < 1) {
+      return setErrorState(`Please tag your product`);
+    }
+    if (!previewTrackFile || !previewTrackPresignUrl || !form.previewTrack) {
+      return setErrorState(`Please upload a preview track. Please try again.`);
+    }
+    if (!productPresignUrl || !productFile || !form.product) {
+      return setErrorState(`Please upload a product. Please try again.`);
+    }
+    if (!editor) {
+      return setErrorState(
+        `An error occured uploading the description. Please try again.`
+      );
+    }
+
     try {
-      if (
-        previewTrackFile &&
-        previewTrackPresignUrl &&
-        productPresignUrl &&
-        productFile &&
-        editor
-      ) {
-        // UPLOAD IMAGES
-        const images = await uploadImagesMutation.mutateAsync({
-          images: form.images,
-          folder: "products",
-        });
+      // UPLOAD IMAGES
+      const images = await uploadImagesMutation.mutateAsync({
+        images: form.images,
+        folder: "products",
+      });
 
-        // UPLOAD PREVIEW TRACK
-        await axios({
-          method: "put",
-          url: previewTrackPresignUrl,
-          data: previewTrackFile,
-          headers: {
-            "Content-Type": previewTrackFile.type,
-          },
-        }).catch(() =>
-          setErrorState(
-            "Error occured uploading the preview track. Please try again."
-          )
-        );
+      // UPLOAD PREVIEW TRACK
+      await axios({
+        method: "put",
+        url: previewTrackPresignUrl,
+        data: previewTrackFile,
+        headers: {
+          "Content-Type": previewTrackFile.type,
+        },
+      }).catch(() =>
+        setErrorState(
+          "Error occured uploading the preview track. Please try again."
+        )
+      );
 
-        // UPLOAD PRODUCT FILE
-        await axios({
-          method: "put",
-          url: productPresignUrl,
-          data: productFile,
-          headers: {
-            "Content-Type": productFile.type,
-          },
-        }).catch(() =>
-          setErrorState(
-            "Error occured uploading the product. Please try again."
-          )
-        );
+      // UPLOAD PRODUCT FILE
+      await axios({
+        method: "put",
+        url: productPresignUrl,
+        data: productFile,
+        headers: {
+          "Content-Type": productFile.type,
+        },
+      }).catch(() =>
+        setErrorState("Error occured uploading the product. Please try again.")
+      );
 
-        const sanitizedForm = { ...form };
+      const sanitizedForm = { ...form };
+      sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
 
-        sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
-
-        await productMutation.mutateAsync({
-          ...sanitizedForm,
-          images,
-          description: DOMPurify.sanitize(editor.getHTML()),
-        });
-        void router.push(`/seller/${session.user.name}`);
-      }
+      await productMutation.mutateAsync({
+        ...sanitizedForm,
+        product: form.product,
+        previewTrack: form.previewTrack,
+        images,
+        description: DOMPurify.sanitize(editor.getHTML()),
+      });
+      void router.push(`/seller/${session.user.name}`);
     } catch (err) {
       if (err instanceof TRPCClientError) {
         setErrorState(err.message);
@@ -189,6 +197,8 @@ function NewItem() {
               type="number"
               id="price"
               name="price"
+              min={0}
+              step={0.01}
               onChange={handlePriceChange}
               className="w-1/5 rounded-sm p-1 text-black"
             />
@@ -211,7 +221,9 @@ function NewItem() {
           {/* SUBCATEGORY */}
           <div className="flex flex-col">
             <label>{`Subcategories - Select up to 2`}</label>
-            <div className="grid grid-cols-4 gap-4 rounded-sm p-2 outline outline-1 outline-zinc-700">
+            <div
+              className={`grid grid-cols-4 gap-4 rounded-sm p-2 outline outline-1 outline-zinc-700`}
+            >
               {subcategories.data &&
                 subcategories.data.map((subcategory) => (
                   <div key={subcategory.id} className="flex gap-1">
@@ -219,7 +231,7 @@ function NewItem() {
                       id="subcategories"
                       type="checkbox"
                       disabled={
-                        form.subcategories.length > 1 &&
+                        form.subcategories.length === 2 &&
                         !form.subcategories.includes(subcategory.id)
                       }
                       onChange={handleCheckboxChange}
@@ -243,16 +255,11 @@ function NewItem() {
           {/* IMAGES */}
           <div className="flex h-full flex-col">
             <h5>Image Upload</h5>
-            <InputImages setErrorState={setErrorState} multiple={true} />
-            {/* <input
-              id="images"
-              type="file"
-              name="images"
-              accept="image/png, image/jpeg, image/jpg"
-              multiple
-              onChange={(e) => void handleImageChange(e)}
-              className="block w-full cursor-pointer rounded-lg border border-zinc-700 p-1 file:rounded-sm file:border-none file:bg-zinc-700 file:text-zinc-200 hover:file:bg-zinc-500"
-            /> */}
+            <InputImages
+              setImages={handleImageChange}
+              setErrorState={setErrorState}
+              multiple={true}
+            />
           </div>
           {/* PREVIEW TRACK UPLOAD */}
           <div>
