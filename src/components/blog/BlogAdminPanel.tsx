@@ -75,6 +75,7 @@ function BlogAdminPanel() {
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-zinc-900 p-4">
       <ErrorDialog errorState={errorState} />
+      {/* TITLE */}
       <div className="flex w-full flex-col">
         <label>Title</label>
         <input
@@ -84,6 +85,7 @@ function BlogAdminPanel() {
           onChange={handleChange}
         />
       </div>
+      {/* DESCRIPTION */}
       <div className="flex w-full flex-col">
         <label>Description</label>
         <input
@@ -93,7 +95,7 @@ function BlogAdminPanel() {
           onChange={handleChange}
         />
       </div>
-
+      {/* IMAGE */}
       <div className="flex flex-col">
         <label>Image</label>
         <InputImages
@@ -102,9 +104,9 @@ function BlogAdminPanel() {
           setImages={handleImageChange}
         />
       </div>
-
+      {/* CONTENT */}
       {editor && <RichTextEditor editor={editor} />}
-
+      {/* BLOG TYPE */}
       <div className="flex flex-col">
         <label>Blog Type</label>
         <select
