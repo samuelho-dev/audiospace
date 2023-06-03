@@ -4,56 +4,65 @@ import { readFileasBase64 } from "~/utils/readFileAsBase64";
 import RichTextEditor from "../text-editor/RichTextEditor";
 import useCustomEditor from "../text-editor/useCustomEditor";
 import DOMPurify from "dompurify";
+import InputImages from "../inputs/InputImages";
+import { useSession } from "next-auth/react";
+import ErrorDialog from "../error/ErrorDialog";
 
 function BlogAdminPanel() {
   const editor = useCustomEditor();
+  const { data: session } = useSession();
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [newPost, setNewPost] = useState({
     title: "",
     description: "",
     blogTag: 1,
-    image: "",
+    image: null as string[] | null,
   });
 
   const blogPostMutation = api.blog.uploadBlogPosts.useMutation();
   const blogTagsQuery = api.blog.getBlogTags.useQuery();
-  const createBlobMutation = api.blob.createBlogPostBlob.useMutation();
   const uploadImagesMutation = api.cloudinary.uploadImages.useMutation();
   const handleNewBlogPost = async () => {
+    if (session?.user.role !== "ADMIN") {
+      return setErrorState("Unauthorized Use");
+    }
+    if (newPost.title.length <= 0) {
+      return setErrorState("Missing Title");
+    }
+    if (!newPost.image || !newPost.image[0]) {
+      return setErrorState("Image not found");
+    }
+    if (!editor) {
+      return setErrorState("Editor does not exist");
+    }
+
     try {
-      if (editor) {
-        const post = { ...newPost };
+      const post = { ...newPost };
 
-        const images = await uploadImagesMutation.mutateAsync({
-          images: [newPost.image],
-          folder: "products",
-        });
-        if (!images[0]) {
-          throw new Error("Error uploading images");
-        }
-        const blob = await createBlobMutation.mutateAsync({
-          content: DOMPurify.sanitize(editor.getHTML()),
-        });
-        post.blogTag = Number(post.blogTag);
+      const images = await uploadImagesMutation.mutateAsync({
+        images: newPost.image,
+        folder: "products",
+      });
 
-        console.log(post);
-        await blogPostMutation.mutateAsync({
-          ...post,
-          contentId: blob.id,
-          image: images[0],
-        });
+      if (!images[0]) {
+        throw new Error("Error uploading images");
       }
+
+      post.blogTag = Number(post.blogTag);
+
+      await blogPostMutation.mutateAsync({
+        ...post,
+        content: DOMPurify.sanitize(editor.getHTML()),
+        image: images[0],
+      });
     } catch (err) {
-      console.error("An error occured", err);
+      console.error(err);
+      setErrorState(`An error occured during upload`);
     }
   };
 
-  const blogImageState = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (files) {
-      const file = files[0] as File;
-      const data = await readFileasBase64(file);
-      setNewPost({ ...newPost, image: data });
-    }
+  const handleImageChange = (image: string[] | null) => {
+    setNewPost({ ...newPost, image });
   };
 
   const handleChange = (
@@ -65,6 +74,7 @@ function BlogAdminPanel() {
 
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-zinc-900 p-4">
+      <ErrorDialog errorState={errorState} />
       <div className="flex w-full flex-col">
         <label>Title</label>
         <input
@@ -83,14 +93,13 @@ function BlogAdminPanel() {
           onChange={handleChange}
         />
       </div>
+
       <div className="flex flex-col">
         <label>Image</label>
-        <input
-          type="file"
-          accept="image/png, image/jpeg, image/jpg"
+        <InputImages
           multiple={false}
-          className="block w-full cursor-pointer rounded-lg border border-zinc-700 p-1 file:rounded-sm file:border-none file:bg-zinc-700 file:text-zinc-200 hover:file:bg-zinc-500"
-          onChange={(e) => void blogImageState(e)}
+          setErrorState={setErrorState}
+          setImages={handleImageChange}
         />
       </div>
 
