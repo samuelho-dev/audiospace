@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
 import { api } from "~/utils/api";
@@ -9,6 +8,7 @@ import {
   RiFileLine,
   RiUploadCloud2Line,
 } from "react-icons/ri";
+import formatBytes from "~/utils/formatBytes";
 
 interface StandardB2DropzoneProps {
   bucket: string;
@@ -105,7 +105,7 @@ export const StandardB2Dropzone = ({
               <li key={file.name} className="flex items-center gap-2">
                 <RiFileLine />
                 <h5>
-                  {file.name} - {file.size} bytes
+                  {file.name} - {formatBytes(file.size)}
                 </h5>
               </li>
             ))}
