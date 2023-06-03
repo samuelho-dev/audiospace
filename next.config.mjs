@@ -8,6 +8,7 @@ import { env } from "./src/env.mjs";
 
 const bundleAnalyzerConfig = {
   enabled: env.ANALYZE === "TRUE",
+  openAnalyzer: false,
 };
 
 /** @type {import("next").NextConfig} */
