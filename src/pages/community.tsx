@@ -114,10 +114,9 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
     const soundcloudUrlValidation =
       /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
     if (!soundcloudUrlValidation.test(submitUrl)) {
-      setErrorState(
+      return setErrorState(
         "Invalid Url. Please make sure you are submitting a soundcloud url."
       );
-      throw new Error("Invalid Url");
     }
 
     try {
