@@ -17,6 +17,7 @@ import {
   RiDeleteBin6Line,
   RiEraserLine,
 } from "react-icons/ri";
+import useCustomEditor from "./useCustomEditor";
 
 interface MenubarProps {
   editor: Editor;
@@ -135,10 +136,17 @@ const MenuBar = ({ editor }: MenubarProps) => {
 };
 
 interface RichTextEditorProps {
-  editor: Editor;
+  editable: boolean;
+  content?: string;
+  handleUpdate?: (content: string) => void;
 }
 
-const RichTextEditor = ({ editor }: RichTextEditorProps) => {
+const RichTextEditor = ({
+  editable,
+  handleUpdate,
+  content,
+}: RichTextEditorProps) => {
+  const editor = useCustomEditor({ editable, handleUpdate });
   if (!editor) {
     return null;
   }
@@ -147,7 +155,7 @@ const RichTextEditor = ({ editor }: RichTextEditorProps) => {
     <div className="flex flex-col gap-1">
       <MenuBar editor={editor} />
       <div className="rounded-md border border-zinc-200">
-        <EditorContent editor={editor} />
+        <EditorContent editor={editor} content={content} />
       </div>
     </div>
   );
