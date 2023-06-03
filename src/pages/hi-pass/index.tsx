@@ -1,13 +1,20 @@
+import { PrismaClient } from "@prisma/client";
+import { type GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 import React, { useState } from "react";
-import BlogAdminPanel from "~/components/blog/BlogAdminPanel";
 import PostPreview from "~/components/blog/PostPreview";
 import Sidebar from "~/components/blog/Sidebar";
-import { api } from "~/utils/api";
+import { type PostSchema } from "~/types/schema";
 
-function Blog() {
-  const blogPostsQuery = api.blog.getBlogPosts.useQuery(undefined, {
-    cacheTime: Infinity,
-  });
+const AdminPanel = dynamic(() => import("~/components/blog/BlogAdminPanel"), {
+  ssr: false,
+});
+
+interface BlogProps {
+  blogPosts: PostSchema[];
+}
+
+function Blog({ blogPosts }: BlogProps) {
   const [adminPanelActive, setAdminPanelActive] = useState(false);
 
   return (
@@ -17,14 +24,13 @@ function Blog() {
         setAdminPanelActive={setAdminPanelActive}
       />
       <div className="w-full">
-        {adminPanelActive && <BlogAdminPanel />}
+        {adminPanelActive && <AdminPanel />}
         <div>
           <h1>Blog Posts</h1>
           <div className="flex flex-col gap-2">
-            {blogPostsQuery.data &&
-              blogPostsQuery.data.map((post) => (
-                <PostPreview post={post} key={post.id} />
-              ))}
+            {blogPosts.map((post) => (
+              <PostPreview post={post} key={post.id} />
+            ))}
           </div>
         </div>
       </div>
@@ -33,3 +39,25 @@ function Blog() {
 }
 
 export default Blog;
+
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+  const prisma = new PrismaClient();
+  const data = await prisma.post.findMany({
+    where: {},
+    select: {
+      id: true,
+      author: true,
+      image: true,
+      description: true,
+      tag: true,
+      createdAt: true,
+    },
+    take: 20,
+  });
+
+  return {
+    props: {
+      blogPosts: data,
+    },
+  };
+};
