@@ -8,7 +8,7 @@ import { sellerRouter } from "./routers/seller";
 import { blogRouter } from "./routers/blog";
 import { b2Router } from "./routers/s3";
 import { cloudinaryRouter } from "./routers/cloudinary";
-import { paypalRouter } from "./routers/paypal";
+import { stripeRouter } from "./routers/stripe";
 
 export const appRouter = createTRPCRouter({
   user: userRouter,
@@ -20,7 +20,7 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   b2: b2Router,
   cloudinary: cloudinaryRouter,
-  paypal: paypalRouter,
+  stripe: stripeRouter,
 });
 
 export type AppRouter = typeof appRouter;

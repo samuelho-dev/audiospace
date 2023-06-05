@@ -13,6 +13,7 @@ import { type Session } from "next-auth";
 
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { stripe } from "~/server/stripe/stripe";
 
 type CreateContextOptions = {
   ip: string | undefined;
@@ -36,10 +37,11 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
     prisma,
     b2,
     cloudinary,
+    stripe,
   };
 };
 
-/**
+/**.
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.
  *
