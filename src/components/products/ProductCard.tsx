@@ -68,7 +68,7 @@ function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
         <Image
-          src="https://res.cloudinary.com/ddhal4lbv/image/upload/v1680578842/audiospace/RC-20-Retro-Color-UI-Alpha_ue0qpp.png"
+          src={product.images[0]?.imageUrl as string}
           className="rounded-lg object-scale-down"
           alt="productimg"
           width={300}
