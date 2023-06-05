@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { type GetServerSideProps } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import PostPreview from "~/components/blog/PostPreview";
@@ -15,7 +16,7 @@ function BlogFilteredByTag({ blogPosts }: BlogFilteredByTagProps) {
 
   return (
     <div className="flex w-full max-w-3xl flex-grow justify-center gap-8 lg:max-w-6xl">
-      <button>Back</button>
+      <Link href={"/hi-pass"}>Back</Link>
       <div className="w-full">
         <h3>{tag?.toString().toUpperCase()}</h3>
         <div>
