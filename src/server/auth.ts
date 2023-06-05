@@ -17,6 +17,7 @@ import {
 } from "next-auth";
 import { prisma } from "./db";
 import { env } from "~/env.mjs";
+import sgMail from "./sendgrid/sendgrid";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -128,15 +129,21 @@ export const authOptions: NextAuthOptions = {
       allowDangerousEmailAccountLinking: true,
     }),
     EmailProvider({
-      server: {
-        host: "smtp.sendgrid.net",
-        port: 587,
-        auth: {
-          user: "apikey",
-          pass: env.SENDGRID_API_KEY,
-        },
-      },
       from: "welcome@audiospace.app",
+      sendVerificationRequest({ identifier: email, url }) {
+        const templateId = "d-4f0a825b6f2841ca900af5be6efe602f";
+
+        void sgMail
+          .send({
+            from: "welcome@audiospace.app",
+            to: email,
+            templateId,
+            dynamicTemplateData: {
+              url,
+            },
+          })
+          .catch(() => new Error("Verification email could not be sent."));
+      },
     }),
   ],
 };
