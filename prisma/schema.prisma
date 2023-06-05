@@ -77,24 +77,13 @@ enum Role {
   SELLER
 }
 
-// model ProductDescriptionBlob {
-//   id      String   @id @default(cuid())
-//   data    Bytes
-//   product Product?
-// }
-
-// model PostContentBlob {
-//   id   String @id @default(cuid())
-//   data Bytes
-//   post Post?
-// }
-
 model Seller {
   id          Int       @id @default(autoincrement())
   user        User      @relation(fields: [userId], references: [id])
   userId      String    @unique
   description String?
   products    Product[]
+  createdAt DateTime @default(now())
 }
 
 model VerificationToken {
@@ -132,9 +121,7 @@ model Product {
   categoryId       Int
   subcategory      ProductSubcategory[]
   shortDescription String?
-  // description      ProductDescriptionBlob @relation(fields: [descriptionId], references: [id])
   description      String               @db.LongText
-  // descriptionId    String               @unique
   price            Int
   previewUrl       String?
   downloadUrl      String
@@ -263,9 +250,7 @@ model Post {
   title       String
   image       String
   description String
-  // content     PostContentBlob @relation(fields: [contentId], references: [id])
   content     String   @db.LongText
-  // contentId   String   @unique
   author      String   @default("Audiospace Team")
   tag         Tag      @relation(fields: [tagId], references: [id])
   tagId       Int
