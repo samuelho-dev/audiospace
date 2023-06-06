@@ -52,6 +52,12 @@ function Profile() {
             </li>
             <li
               className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
+              onClick={() => profileNavigation("seller-signup")}
+            >
+              Seller Signup
+            </li>
+            <li
+              className="text-md cursor-pointer whitespace-nowrap px-2 font-bold text-zinc-100  hover:bg-zinc-800"
               onClick={() => profileNavigation("settings")}
             >
               Settings
