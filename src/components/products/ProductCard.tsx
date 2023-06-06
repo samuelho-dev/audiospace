@@ -55,10 +55,9 @@ function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="cardShadow my-4 flex h-60 w-40 flex-col justify-between rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
-      {" "}
+    <div className="cardShadow my-4 flex h-64 w-40 flex-col justify-between rounded-b-lg rounded-r-lg bg-zinc-900 p-4 hover:bg-zinc-800">
       <div
-        className="relative h-28 w-32 justify-center"
+        className="relative justify-center"
         onMouseOver={() => setPreviewHover(true)}
         onMouseOut={() => setPreviewHover(false)}
       >
@@ -67,21 +66,23 @@ function ProductCard({ product }: ProductCardProps) {
             <RiPlayMiniLine size={30} className="fill-zinc-300" />
           </div>
         )}
-        <Image
-          src={product.images[0]?.imageUrl as string}
-          className="rounded-lg object-scale-down"
-          alt="productimg"
-          width={300}
-          height={300}
-          loading="lazy"
-        />
+        <div>
+          <Image
+            src={product.images[0]?.imageUrl as string}
+            className="rounded-lg object-scale-down"
+            alt="productimg"
+            width={300}
+            height={300}
+            loading="lazy"
+          />
+        </div>
       </div>
       <Link
         href={{
           pathname: `/product/${product.id}`,
         }}
       >
-        <h5 className="scrollbar-hide overflow-x-scroll whitespace-nowrap py-2 hover:cursor-pointer hover:underline hover:underline-offset-4">
+        <h5 className="scrollbar-hide overflow-x-scroll whitespace-nowrap hover:cursor-pointer hover:underline hover:underline-offset-4">
           {product?.name}
         </h5>
       </Link>
@@ -105,7 +106,7 @@ function ProductCard({ product }: ProductCardProps) {
           </p>
         ))}
       </div>
-      <div className="flex justify-between pt-2">
+      <div className="flex justify-between pt-1">
         <h5 className="text-gray-200">${Number(product?.price) / 100}</h5>
         <div className="flex items-center gap-2">
           {(userWishlistQuery.data &&
