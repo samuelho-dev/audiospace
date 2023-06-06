@@ -5,6 +5,7 @@ import PurchaseHistory from "./purchase-history";
 import Submissions from "./submissions";
 import Settings from "./settings";
 import Payments from "./payments";
+import SellerSignUp from "./seller-signup";
 
 interface ProfileRouteProps {
   route?: string;
@@ -27,10 +28,12 @@ function ProfileRoute({ route, user }: ProfileRouteProps) {
       return <PurchaseHistory />;
     case "submissions":
       return <Submissions />;
-    case "settings":
-      return <Settings />;
     case "payments":
       return <Payments />;
+    case "seller-signup":
+      return <SellerSignUp />;
+    case "settings":
+      return <Settings />;
 
     default:
       return <BasicInfo user={user} />;
