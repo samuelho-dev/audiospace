@@ -1,18 +1,26 @@
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { readFileasBase64 } from "~/utils/readFileAsBase64";
-import { StandardB2Dropzone } from "~/components/dropzone/StandardB2Dropzone";
-import RichTextEditor from "~/components/text-editor/RichTextEditor";
-import useCustomEditor from "~/components/text-editor/useCustomEditor";
+import { StandardB2Dropzone } from "~/components/inputs/StandardB2Dropzone";
 import DOMPurify from "isomorphic-dompurify";
+import { TRPCClientError } from "@trpc/client";
+import InputImages from "~/components/inputs/InputImages";
+import dynamic from "next/dynamic";
+
+const TextEditor = dynamic(
+  () => import("~/components/text-editor/RichTextEditor"),
+  {
+    ssr: false,
+  }
+);
 
 function NewItem() {
   const router = useRouter();
-  const { data: session, status } = useSession();
-  const editor = useCustomEditor();
+  const { data: session } = useSession();
+
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [categoryId, setCategoryId] = useState<number>(1);
   const [previewTrackPresignUrl, setPreviewTrackPresignUrl] = useState<
     string | null
@@ -23,9 +31,10 @@ function NewItem() {
   const [form, setForm] = useState({
     name: "",
     price: 0,
-    images: [] as string[],
-    previewTrack: "",
-    product: "",
+    description: null as null | string,
+    images: [] as null | string[],
+    previewTrack: null as null | string,
+    product: null as null | string,
     categoryId: categoryId,
     subcategories: [] as number[],
   });
@@ -36,8 +45,7 @@ function NewItem() {
     categoryId,
   });
   const productMutation = api.seller.uploadProduct.useMutation();
-  const createBlobMutation =
-    api.blob.createProductDescriptionBlob.useMutation();
+
   if (!session) {
     return null;
   }
@@ -45,19 +53,12 @@ function NewItem() {
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({
       ...form,
-      price: parseInt(e.target.value) * 100,
+      price: parseFloat(e.target.value) * 100,
     });
   };
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files) {
-      const filesArray = Array.from(files);
-      const filesBase64 = await Promise.all(
-        filesArray.map((file) => readFileasBase64(file))
-      );
-      setForm({ ...form, images: filesBase64 });
-    }
+  const handleImageChange = (images: string[] | null) => {
+    setForm({ ...form, images });
   };
 
   const handleChange = (
@@ -85,130 +86,135 @@ function NewItem() {
     setForm({ ...form, [field]: value });
   };
 
+  const handleEditorUpdate = (content: string) => {
+    setForm({ ...form, description: content });
+  };
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (form.name.length < 3) {
+      return setErrorState(`Product names must be longer than 3 characters`);
+    }
+    if (form.price <= 0) {
+      return setErrorState(`Price cannot be below 0`);
+    }
+    if (!form.images || form.images.length < 1) {
+      return setErrorState(`You must upload an image`);
+    }
+    if (!form.description) {
+      return setErrorState(`The description is missing`);
+    }
+    if (form.subcategories.length < 1) {
+      return setErrorState(`Please tag your product`);
+    }
+    if (!previewTrackFile || !previewTrackPresignUrl || !form.previewTrack) {
+      return setErrorState(`Please upload a preview track. Please try again.`);
+    }
+    if (!productPresignUrl || !productFile || !form.product) {
+      return setErrorState(`Please upload a product. Please try again.`);
+    }
+
     try {
-      if (
-        previewTrackFile &&
-        previewTrackPresignUrl &&
-        productPresignUrl &&
-        productFile &&
-        editor
-      ) {
-        // UPLOAD IMAGES
-        const images = await uploadImagesMutation.mutateAsync({
-          images: form.images,
-          folder: "products",
-        });
+      // UPLOAD IMAGES
+      const images = await uploadImagesMutation.mutateAsync({
+        images: form.images,
+        folder: "products",
+      });
 
-        // UPLOAD PREVIEW TRACK
-        await axios({
-          method: "put",
-          url: previewTrackPresignUrl,
-          data: previewTrackFile,
-          headers: {
-            "Content-Type": previewTrackFile.type,
-          },
-        });
+      // UPLOAD PREVIEW TRACK
+      await axios({
+        method: "put",
+        url: previewTrackPresignUrl,
+        data: previewTrackFile,
+        headers: {
+          "Content-Type": previewTrackFile.type,
+        },
+      }).catch(() =>
+        setErrorState(
+          "Error occured uploading the preview track. Please try again."
+        )
+      );
 
-        // UPLOAD PRODUCT FILE
-        await axios({
-          method: "put",
-          url: productPresignUrl,
-          data: productFile,
-          headers: {
-            "Content-Type": productFile.type,
-          },
-        });
-        // UPLOAD BLOB FOR DESCRIPTION
-        const blob = await createBlobMutation.mutateAsync({
-          content: DOMPurify.sanitize(editor.getHTML()),
-        });
-        const sanitizedForm = { ...form };
+      // UPLOAD PRODUCT FILE
+      await axios({
+        method: "put",
+        url: productPresignUrl,
+        data: productFile,
+        headers: {
+          "Content-Type": productFile.type,
+        },
+      }).catch(() =>
+        setErrorState("Error occured uploading the product. Please try again.")
+      );
 
-        sanitizedForm.name = DOMPurify.sanitize(sanitizedForm.name);
-        console.log({ sanitizedForm, form });
-        await productMutation.mutateAsync({
-          ...sanitizedForm,
-          images,
-          description: blob.id,
-        });
-        void router.push(`/seller/${session.user.name}`);
-      }
+      await productMutation.mutateAsync({
+        ...form,
+        name: DOMPurify.sanitize(form.name),
+        product: form.product,
+        previewTrack: form.previewTrack,
+        description: form.description,
+        images,
+      });
+
+      void router.push(`/seller/${session.user.name}`);
     } catch (err) {
-      console.error("Error adding product:", err);
+      if (err instanceof TRPCClientError) {
+        setErrorState(err.message);
+      } else {
+        setErrorState("Unknown Error Occurred");
+      }
     }
   };
 
   return (
     <div className="flex w-full max-w-3xl flex-col items-center gap-8 lg:max-w-6xl">
+      <dialog
+        open={!!errorState}
+        className="sticky top-0 w-full rounded-sm bg-zinc-800 opacity-90"
+      >
+        <h1>Oops!</h1>
+        <p className="text-red-400">{errorState}</p>
+      </dialog>
       <form
         onSubmit={(e) => void handleAddProduct(e)}
         className="w-full max-w-3xl"
       >
-        <h3>Add Product</h3>
-        <div className="flex w-full flex-col gap-4">
-          <div className="flex flex-row justify-between ">
+        <h1 className="border-b border-zinc-700 py-4">Add Product</h1>
+        <div className="flex w-full flex-col gap-8 py-4">
+          {/* PRODUCT NAME */}
+          <div className="flex flex-col">
             <label>Name</label>
             <input
               type="text"
               id="name"
               name="name"
               onChange={handleChange}
-              className="rounded-sm p-2 text-center text-black"
+              className="w-2/5 rounded-sm p-1 text-center text-black"
             />
           </div>
-          <div className="flex flex-col justify-between gap-2">
+          {/* PRODUCT DESCRIPTION */}
+          <div className="flex flex-col">
             <label>Description</label>
-            {editor && <RichTextEditor editor={editor} />}
+            <TextEditor editable={true} handleUpdate={handleEditorUpdate} />
           </div>
-          <div className="flex flex-row justify-between ">
+          {/* PRICE */}
+          <div className="flex flex-col">
             <label>Price</label>
             <input
               type="number"
               id="price"
               name="price"
+              min={0}
+              step={0.01}
               onChange={handlePriceChange}
-              className="rounded-sm p-1 text-black"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="">Images Upload</label>
-            <input
-              id="images"
-              type="file"
-              name="images"
-              accept="image/png, image/jpeg, image/jpg"
-              multiple
-              onChange={(e) => void handleImageChange(e)}
-              className="block w-full cursor-pointer rounded-lg border"
-            />
-          </div>
-          <div>
-            <label>Preview Track</label>
-            <StandardB2Dropzone
-              bucket={"AudiospaceProducts"}
-              field={"previewTrack"}
-              handleFileChange={handleFileChange}
-              setPresignedUrl={setPreviewTrackPresignUrl}
-              setProductDownloadFile={setPreviewTrackFile}
-            />
-          </div>
-          <div>
-            <label>Product</label>
-            <StandardB2Dropzone
-              bucket={"AudiospaceProducts"}
-              field={"product"}
-              handleFileChange={handleFileChange}
-              setPresignedUrl={setProductDownload}
-              setProductDownloadFile={setProductFile}
+              className="w-1/5 rounded-sm p-1 text-black"
             />
           </div>
           {/* CATEGORY */}
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-col">
             <label>Category</label>
             <select
-              className="bg-zinc-700 px-2"
+              className="w-fit bg-zinc-700 p-1"
               onChange={(e) => setCategoryId(parseInt(e.target.value))}
             >
               {categories.data &&
@@ -219,9 +225,12 @@ function NewItem() {
                 ))}
             </select>
           </div>
-          <div className="flex flex-col justify-between gap-2">
+          {/* SUBCATEGORY */}
+          <div className="flex flex-col">
             <label>{`Subcategories - Select up to 2`}</label>
-            <div className="grid grid-cols-4 gap-4 rounded-lg p-2 outline outline-1 outline-zinc-700">
+            <div
+              className={`grid grid-cols-4 gap-4 rounded-sm p-2 outline outline-1 outline-zinc-700`}
+            >
               {subcategories.data &&
                 subcategories.data.map((subcategory) => (
                   <div key={subcategory.id} className="flex gap-1">
@@ -229,7 +238,7 @@ function NewItem() {
                       id="subcategories"
                       type="checkbox"
                       disabled={
-                        form.subcategories.length > 1 &&
+                        form.subcategories.length === 2 &&
                         !form.subcategories.includes(subcategory.id)
                       }
                       onChange={handleCheckboxChange}
@@ -249,6 +258,37 @@ function NewItem() {
                   </div>
                 ))}
             </div>
+          </div>
+          {/* IMAGES */}
+          <div className="flex h-full flex-col">
+            <h5>Image Upload</h5>
+            <InputImages
+              setImages={handleImageChange}
+              setErrorState={setErrorState}
+              multiple={true}
+            />
+          </div>
+          {/* PREVIEW TRACK UPLOAD */}
+          <div>
+            <label>Preview Track</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"previewTrack"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setPreviewTrackPresignUrl}
+              setProductDownloadFile={setPreviewTrackFile}
+            />
+          </div>
+          {/* PRODUCT UPLOAD */}
+          <div>
+            <label>Product</label>
+            <StandardB2Dropzone
+              bucket={"AudiospaceProducts"}
+              field={"product"}
+              handleFileChange={handleFileChange}
+              setPresignedUrl={setProductDownload}
+              setProductDownloadFile={setProductFile}
+            />
           </div>
           <button className="w-40 justify-end bg-red-400">Submit</button>
         </div>

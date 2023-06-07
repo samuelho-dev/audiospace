@@ -51,23 +51,22 @@ model VerificationRequest {
   @@unique([identifier, token])
 }
 
-
 model User {
-  id            String             @id @default(cuid())
-  role          Role               @default(USER)
-  username      String             @unique
-  email         String             @unique
+  id            String        @id @default(cuid())
+  role          Role          @default(USER)
+  username      String        @unique
+  email         String        @unique
   emailVerified DateTime?
   image         String?
-  wishlist      Product[]          @relation("Wishlist")
-  cart          Product[]          @relation("Cart")
+  wishlist      Product[]     @relation("Wishlist")
+  cart          Product[]     @relation("Cart")
   accounts      Account[]
   sessions      Session[]
   transactions  Transaction[]
   verifiedAt    DateTime?
   seller        Seller?
-  createdAt     DateTime           @default(now())
-  entries       BattleEntry[]      @relation("Entries")
+  createdAt     DateTime      @default(now())
+  entries       BattleEntry[] @relation("Entries")
   likedEntries  BattleVote[]
   ratings       Rating[]
 }
@@ -78,24 +77,14 @@ enum Role {
   SELLER
 }
 
-model ProductDescriptionBlob {
-  id      String   @id @default(cuid())
-  data    Bytes
-  product Product?
-}
-
-model PostContentBlob {
-  id   String @id @default(cuid())
-  data Bytes
-  post Post?
-}
-
 model Seller {
-  id          Int       @id @default(autoincrement())
-  user        User      @relation(fields: [userId], references: [id])
-  userId      String    @unique
-  description String?
-  products    Product[]
+  id              Int       @id @default(autoincrement())
+  user            User      @relation(fields: [userId], references: [id])
+  userId          String    @unique
+  stripeAccountId String
+  description     String?
+  products        Product[]
+  createdAt       DateTime  @default(now())
 }
 
 model VerificationToken {
@@ -124,33 +113,31 @@ model ProductSubcategory {
 }
 
 model Product {
-  id               String                 @id @default(cuid())
-  seller           Seller                 @relation(fields: [sellerId], references: [id])
+  id               String               @id @default(cuid())
+  seller           Seller               @relation(fields: [sellerId], references: [id])
   sellerId         Int
   name             String
   images           ProductImage[]
-  category         ProductCategory        @relation(fields: [categoryId], references: [id])
+  category         ProductCategory      @relation(fields: [categoryId], references: [id])
   categoryId       Int
   subcategory      ProductSubcategory[]
   shortDescription String?
-  description      ProductDescriptionBlob @relation(fields: [descriptionId], references: [id])
-  descriptionId    String                 @unique
+  description      String               @db.LongText
   price            Int
   previewUrl       String?
   downloadUrl      String
-  isPromoted       ProductPromoteStatus   @default(NONE)
-  isOnSale         Boolean                @default(false)
-  discountRate     Int
-  wishlistUsers    User[]                 @relation("Wishlist")
-  cartUsers        User[]                 @relation("Cart")
-  createdAt        DateTime               @default(now())
+  isPromoted       ProductPromoteStatus @default(NONE)
+  isOnSale         Boolean              @default(false)
+  discountRate     Int                  @default(0)
+  wishlistUsers    User[]               @relation("Wishlist")
+  cartUsers        User[]               @relation("Cart")
+  createdAt        DateTime             @default(now())
   transactionItem  TransactionItem[]
   ratings          Rating[]
   popularity       Int?
 
   @@index([sellerId])
   @@index([categoryId])
-  @@index([descriptionId])
 }
 
 enum ProductPromoteStatus {
@@ -195,16 +182,16 @@ model Battle {
 }
 
 model BattleEntry {
-  id          String   @id @default(cuid())
-  user        User     @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
+  id          String       @id @default(cuid())
+  user        User         @relation("Entries", fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   trackUrl    String
-  rating      Int      @default(0)
-  battle      Battle   @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
+  rating      Int          @default(0)
+  battle      Battle       @relation("BattleEntry", fields: [battleId], references: [id], onDelete: Cascade)
   battleId    Int
-  submittedAt DateTime @default(now())
-  winner Battle?      @relation("Winner")
-  votes  BattleVote[]
+  submittedAt DateTime     @default(now())
+  winner      Battle?      @relation("Winner")
+  votes       BattleVote[]
 
   @@unique([battleId, userId])
   @@index([battleId])
@@ -231,8 +218,6 @@ model BattleVote {
 
 model Transaction {
   id               String            @id @default(cuid())
-  paypalChargeId   String?           @unique
-  paypalReceiptUrl String?
   paymentId        String?
   payerId          String?
   paymentStatus    String
@@ -242,8 +227,23 @@ model Transaction {
   products         TransactionItem[]
   total            Int
   createdAt        DateTime          @default(now())
+  payment          Payment?
 
   @@index([userId])
+}
+
+model Payment {
+  id                    String      @id @default(cuid())
+  transaction           Transaction @relation(fields: [transactionId], references: [id])
+  transactionId         String      @unique
+  stripePaymentIntentId String?
+  stripeChargeId        String?
+  status                String
+  amount                Int
+  currency              String
+  createdAt             DateTime    @default(now())
+
+  @@index([transactionId])
 }
 
 model TransactionItem {
@@ -260,19 +260,17 @@ model TransactionItem {
 }
 
 model Post {
-  id          String          @unique
+  id          String   @unique
   title       String
   image       String
   description String
-  content     PostContentBlob @relation(fields: [contentId], references: [id])
-  contentId   String          @unique
-  author      String          @default("Audiospace Team")
-  tag         Tag             @relation(fields: [tagId], references: [id])
+  content     String   @db.LongText
+  author      String   @default("Audiospace Team")
+  tag         Tag      @relation(fields: [tagId], references: [id])
   tagId       Int
-  createdAt   DateTime        @default(now())
+  createdAt   DateTime @default(now())
 
   @@index([tagId])
-  @@index([contentId])
 }
 
 model Tag {

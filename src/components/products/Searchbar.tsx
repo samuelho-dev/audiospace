@@ -1,5 +1,6 @@
 import React from "react";
-import { BiSearchAlt } from "react-icons/bi";
+import { BiSearchAlt } from "react-icons/Bi";
+
 function Searchbar() {
   return (
     <div className="flex w-full justify-center gap-2 pt-10">

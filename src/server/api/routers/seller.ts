@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import DOMPurify from "isomorphic-dompurify";
 import { z } from "zod";
 
@@ -6,6 +7,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 import { ProductSchema } from "~/types/schema";
 import uploadB2 from "~/utils/uploadB2";
 
@@ -24,6 +26,17 @@ export const sellerRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Please try again in a a few moments",
+        });
+      }
+
       const productName = DOMPurify.sanitize(input.name);
       const sellerId = await ctx.prisma.seller.findFirstOrThrow({
         where: {
@@ -35,7 +48,10 @@ export const sellerRouter = createTRPCRouter({
       });
 
       if (!sellerId.id) {
-        throw new Error("User is not a seller");
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "User is not a seller.",
+        });
       }
       const uploadPreviewTrack = await uploadB2(
         input.previewTrack,
@@ -43,12 +59,18 @@ export const sellerRouter = createTRPCRouter({
       );
 
       if (!uploadPreviewTrack) {
-        throw new Error("Error uploading preview track");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error uploading preview track",
+        });
       }
       const uploadProduct = await uploadB2(input.product, "AudiospaceProducts");
 
       if (!uploadProduct) {
-        throw new Error("Error uploading product");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error uploading product",
+        });
       }
 
       const uploadedProduct = await ctx.prisma.product.create({
@@ -66,16 +88,18 @@ export const sellerRouter = createTRPCRouter({
               id: subcategoryId,
             })),
           },
-          descriptionId: input.description,
+          description: input.description,
           price: input.price,
-          discountRate: 0,
           previewUrl: uploadPreviewTrack,
           downloadUrl: uploadProduct,
         },
       });
 
       if (!uploadedProduct) {
-        throw new Error("Error uploading product to DB");
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Error uploading product to DB",
+        });
       }
 
       return uploadedProduct;
@@ -158,7 +182,7 @@ export const sellerRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         name: z.string().min(1),
-        descriptionId: z.string(),
+        description: z.string(),
         price: z.number(),
       })
     )
@@ -176,7 +200,7 @@ export const sellerRouter = createTRPCRouter({
         },
         data: {
           name: input.name,
-          descriptionId: input.descriptionId,
+          description: input.description,
           price: input.price,
         },
       });

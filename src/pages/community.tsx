@@ -14,28 +14,38 @@ import soundCloudUrl from "~/utils/soundcloudUrl";
 
 interface SubmitTrackProps {
   submitTrack: (submitUrl: string) => Promise<void>;
+  errorState: string | null;
 }
 
-function SubmitTrackForm({ submitTrack }: SubmitTrackProps) {
+function SubmitTrackForm({ submitTrack, errorState }: SubmitTrackProps) {
   const [submitUrl, setSubmitUrl] = useState("");
   const [submitInputActive, setSubmitInputActive] = useState(false);
 
   if (submitInputActive) {
     return (
-      <div className="flex gap-2">
+      <form
+        className="flex gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submitTrack(submitUrl);
+        }}
+      >
         <input
           type="text"
           onChange={(e) => setSubmitUrl(e.target.value)}
+          required
           placeholder="Enter your soundcloud url"
-          className="h-6 rounded-md px-2 text-black outline outline-1 outline-zinc-400"
+          className={`h-6 rounded-md px-2  outline outline-1 outline-zinc-400 ${
+            errorState ? "border border-pink-400 text-pink-500" : "text-black"
+          }`}
         />
         <button
-          onClick={() => void submitTrack(submitUrl)}
+          type="submit"
           className="rounded-lg px-2 outline outline-1 outline-zinc-400 hover:bg-zinc-600"
         >
           Submit
         </button>
-      </div>
+      </form>
     );
   }
 
@@ -56,6 +66,7 @@ interface CommunityProps {
 
 function Community({ curBattle, pastEntries }: CommunityProps) {
   const session = useSession();
+  const [errorState, setErrorState] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   // const battleQuery = api.battles.fetchCurrentBattle.useQuery();
   const samplePresignUrl = curBattle?.sample
@@ -100,27 +111,38 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
   };
 
   const submitTrack = async (submitUrl: string) => {
-    try {
-      const soundcloudUrlValidation =
-        /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
-      if (!soundcloudUrlValidation.test(submitUrl)) {
-        throw new Error("Invalid Url");
-      }
+    const soundcloudUrlValidation =
+      /^https?:\/\/(soundcloud\.com|snd\.sc)\/(.*)$/;
+    if (!soundcloudUrlValidation.test(submitUrl)) {
+      return setErrorState(
+        "Invalid Url. Please make sure you are submitting a soundcloud url."
+      );
+    }
 
+    try {
       if (curBattle) {
         await submitEntryMutation.mutateAsync({
           trackUrl: submitUrl,
           battleId: curBattle.id,
         });
         setSubmitted(true);
+        setErrorState(null);
       }
     } catch (err) {
       console.error("Error occured during submission. Please try again", err);
     }
   };
-  console.log(typeof pastEntries[0]?.winner.submittedAt);
+
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8 lg:max-w-6xl">
+      <dialog
+        open={!!errorState}
+        className="sticky top-0 w-full rounded-sm bg-zinc-800 opacity-90"
+      >
+        <h1>Oops!</h1>
+        <p className="text-red-400">{errorState}</p>
+      </dialog>
+
       <h1>{`Love that you're here...`}</h1>
       <div>
         <h3>Live Events</h3>
@@ -141,10 +163,10 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
         <div className="flex w-full flex-col justify-between p-2">
           <h4>Past Winners</h4>
           <div className="flex w-full justify-between border-b border-zinc-400 px-4 py-2">
-            <p className="w-1/4 text-center text-xs ">Submitted</p>
-            <p className="w-1/4 text-center text-xs ">Artist Name</p>
-            <p className="w-1/4 text-center text-xs ">Track</p>
-            <p className="w-1/4 text-center text-xs ">Rating</p>
+            <p className="w-1/6 text-center text-xs ">Submitted</p>
+            <p className="w-2/6 text-center text-xs ">Artist Name</p>
+            <p className="w-2/6 text-center text-xs ">Track</p>
+            <p className="w-1/6 text-center text-xs ">Rating</p>
           </div>
           <div className="m-2 h-40 overflow-scroll rounded-sm bg-zinc-900">
             {pastEntries.length === 0 ? (
@@ -155,19 +177,19 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   key={entry.id}
                   className="flex w-full justify-between border-zinc-400 px-4 py-4"
                 >
-                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
+                  <h5 className="flex w-1/6 justify-center  overflow-hidden text-sm">
                     {entry.winner.submittedAt.toLocaleDateString()}
                   </h5>
-                  <h5 className="flex w-1/4 justify-center  overflow-hidden text-sm">
+                  <h5 className="flex w-2/6 justify-center  overflow-hidden text-sm">
                     {entry.winner.user.username}
                   </h5>
                   <iframe
                     allow="autoplay"
-                    className="flex w-1/4 justify-center  overflow-x-hidden"
+                    className="flex w-2/6 justify-center  overflow-x-hidden"
                     src={soundCloudUrl(entry.winner.trackUrl)}
                     height="20"
                   ></iframe>
-                  <h5 className="flex w-1/4 justify-center">
+                  <h5 className="flex w-1/6 justify-center">
                     {entry.winner.rating}
                   </h5>
                 </div>
@@ -190,7 +212,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                 <a
                   href={samplePresignUrl?.data}
                   target="_blank"
-                  className="w-fit rounded-md bg-green-400 px-2 text-xs font-semibold text-black"
+                  className="w-fit rounded-md bg-emerald-500 px-2 text-xs font-semibold text-black hover:text-zinc-900"
                 >
                   DOWNLOAD THE SAMPLE
                 </a>
@@ -221,15 +243,18 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   Submitted
                 </h5>
               ) : (
-                <SubmitTrackForm submitTrack={submitTrack} />
+                <SubmitTrackForm
+                  errorState={errorState}
+                  submitTrack={submitTrack}
+                />
               )}
             </div>
           </div>
 
-          <div className="flex justify-between border-b border-zinc-400 px-4 py-2">
-            <h5 className="text-xs">Artist Name</h5>
-            <h5 className="text-xs">Track</h5>
-            <h5 className="text-xs">Vote</h5>
+          <div className="flex w-full justify-between border-b border-zinc-400 px-4 py-2">
+            <h5 className="w-1/4 text-center text-xs">Artist Name</h5>
+            <h5 className="w-2/4 text-center text-xs">Track</h5>
+            <h5 className="w-1/4 text-center text-xs">Vote</h5>
           </div>
           <div className="m-2 h-96 overflow-scroll rounded-sm bg-zinc-900">
             {curBattle ? (
@@ -238,6 +263,7 @@ function Community({ curBattle, pastEntries }: CommunityProps) {
                   <BattleEntry
                     key={entry.id}
                     entry={entry}
+                    setErrorState={setErrorState}
                     votingPhase={curBattle.isActive === "ACTIVE"}
                   />
                 ))

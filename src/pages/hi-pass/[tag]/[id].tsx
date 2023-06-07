@@ -3,17 +3,23 @@ import { PrismaClient } from "@prisma/client";
 import { encode } from "~/utils/quickHash";
 import { type GetStaticProps } from "next";
 import { type PostSchema } from "~/types/schema";
-import RenderEditor from "~/components/text-editor/RenderEditor";
+import dynamic from "next/dynamic";
 
 interface PostProps {
   postData: PostSchema;
 }
 
+const TextEditor = dynamic(
+  () => import("~/components/text-editor/RichTextEditor")
+);
+
 function Post({ postData }: PostProps) {
   return (
     <div className="flex w-full max-w-3xl flex-grow flex-col gap-8">
       <h2>{postData.title}</h2>
-      {postData.content && <RenderEditor content={postData.content} />}
+      {postData.content && (
+        <TextEditor editable={false} content={postData.content} />
+      )}
     </div>
   );
 }
@@ -29,28 +35,13 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     where: {
       id: encodedId,
     },
-    include: {
-      content: {
-        select: {
-          data: true,
-        },
-      },
-    },
   });
-
-  type Content = {
-    data: Buffer;
-  };
-  const content: Content = data.content;
-  const contentData = content.data.toString("utf-8");
-
-  const createdAt = JSON.stringify(data.createdAt);
 
   await prisma.$disconnect();
 
   return {
     props: {
-      postData: { ...data, createdAt, content: contentData },
+      postData: { ...data },
     },
   };
 };

@@ -8,11 +8,23 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
+import { ratelimit } from "~/server/redis/rateLimit";
 
 export const b2Router = createTRPCRouter({
   getObjects: publicProcedure
     .input(z.object({ bucket: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(
+        (ctx.session && ctx.session.user.id) || ctx.ip || input.bucket
+      );
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { b2 } = ctx;
 
       const listObjectsOutput = await b2.listObjectsV2({
@@ -25,6 +37,17 @@ export const b2Router = createTRPCRouter({
   getStandardUploadPresignedUrl: publicProcedure
     .input(z.object({ bucket: z.string(), key: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(
+        (ctx.session && ctx.session.user.id) || ctx.ip || input.bucket
+      );
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { key } = input;
       const { b2 } = ctx;
 
@@ -39,10 +62,22 @@ export const b2Router = createTRPCRouter({
   getStandardDownloadPresignedUrl: publicProcedure
     .input(z.object({ bucket: z.string(), key: z.string().nullable() }))
     .query(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(ctx.ip || input.bucket);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { key } = input;
       const { b2 } = ctx;
       if (!key) {
-        throw new Error("Sample does not exist.");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Sample does not exist.",
+        });
       }
       const putObjectCommand = new GetObjectCommand({
         Bucket: input.bucket,

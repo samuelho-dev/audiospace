@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { api } from "~/utils/api";
-import { StandardB2Dropzone } from "../dropzone/StandardB2Dropzone";
+import { StandardB2Dropzone } from "../inputs/StandardB2Dropzone";
 import axios from "axios";
 
 function BattleAdminPanel() {

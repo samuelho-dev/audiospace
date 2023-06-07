@@ -98,11 +98,6 @@ export const BattleSchema = z.object({
   isActive: z.enum(["ACTIVE", "ENDED", "VOTING"]),
 });
 
-export const Blob = z.object({
-  id: z.number().optional(),
-  data: z.string(),
-});
-
 export const PostSchema = z.object({
   id: z.string(),
   title: z.string(),
