@@ -17,7 +17,7 @@ export const stripeRouter = createTRPCRouter({
 
     if (!account) {
       throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
+        code: "BAD_REQUEST",
         message: "Error creating stripe account",
       });
     }
@@ -28,6 +28,13 @@ export const stripeRouter = createTRPCRouter({
       return_url: `${env.NEXTAUTH_URL}/seller/onboaring/finish`,
       type: "account_onboarding",
     });
+
+    if (!accountLink.url) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Error creating stripe account link",
+      });
+    }
 
     return accountLink.url;
   }),
