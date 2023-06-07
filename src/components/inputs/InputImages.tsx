@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React, { useState } from "react";
-import { BiWindowClose } from "react-icons/Bi";
+import { BiWindowClose } from "react-icons/bi";
 import { readFileasBase64 } from "~/utils/readFileAsBase64";
 
 interface InputImagesProps {
