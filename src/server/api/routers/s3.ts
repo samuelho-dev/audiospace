@@ -2,7 +2,9 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import {
+  CompleteMultipartUploadCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
@@ -27,9 +29,11 @@ export const b2Router = createTRPCRouter({
 
       const { b2 } = ctx;
 
-      const listObjectsOutput = await b2.listObjectsV2({
+      const listObjectsCommand = new ListObjectsV2Command({
         Bucket: input.bucket,
       });
+
+      const listObjectsOutput = await b2.send(listObjectsCommand);
 
       return listObjectsOutput.Contents ?? [];
     }),
@@ -157,14 +161,20 @@ export const b2Router = createTRPCRouter({
       const { key, uploadId, parts } = input;
       const { b2 } = ctx;
 
-      const completeMultipartUploadOutput = await b2.completeMultipartUpload({
-        Bucket: input.bucket,
-        Key: key,
-        UploadId: uploadId,
-        MultipartUpload: {
-          Parts: parts,
-        },
-      });
+      const completeMultipartUploadCommand = new CompleteMultipartUploadCommand(
+        {
+          Bucket: input.bucket,
+          Key: key,
+          UploadId: uploadId,
+          MultipartUpload: {
+            Parts: parts,
+          },
+        }
+      );
+
+      const completeMultipartUploadOutput = await b2.send(
+        completeMultipartUploadCommand
+      );
 
       return completeMultipartUploadOutput;
     }),
