@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import {
   CompleteMultipartUploadCommand,
+  CreateMultipartUploadCommand,
   GetObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
@@ -90,59 +91,6 @@ export const b2Router = createTRPCRouter({
       const url = await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
       return url;
     }),
-
-  getMultipartUploadPresignedUrl: publicProcedure
-    .input(
-      z.object({
-        bucket: z.string(),
-        key: z.string(),
-        filePartTotal: z.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { key, filePartTotal } = input;
-      const { b2 } = ctx;
-
-      const uploadId = (
-        await b2.createMultipartUpload({
-          Bucket: input.bucket,
-          Key: key,
-        })
-      ).UploadId;
-
-      if (!uploadId) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Could not create multipart upload",
-        });
-      }
-
-      const urls: Promise<{ url: string; partNumber: number }>[] = [];
-
-      for (let i = 1; i <= filePartTotal; i++) {
-        const uploadPartCommand = new UploadPartCommand({
-          Bucket: input.bucket,
-          Key: key,
-          UploadId: uploadId,
-          PartNumber: i,
-        });
-
-        const url = getSignedUrl(b2, uploadPartCommand, {
-          expiresIn: 3600,
-        }).then((url) => ({
-          url,
-          partNumber: i,
-        }));
-
-        urls.push(url);
-      }
-
-      return {
-        uploadId,
-        urls: await Promise.all(urls),
-      };
-    }),
-
   completeMultipartUpload: publicProcedure
     .input(
       z.object({
