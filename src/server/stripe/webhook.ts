@@ -37,11 +37,11 @@ export default async function webhook(
     try {
       event = stripe.webhooks.constructEvent(
         buf,
-        sig,
+        sig || "",
         env.STRIPE_CLIENT_SECRET
       );
     } catch (err) {
-      res.status(400).send(`Webhook Error: ${err.message}`);
+      res.status(400);
       return;
     }
 
