@@ -1,5 +1,5 @@
 import React from "react";
-import { BiSearchAlt } from "react-icons/Bi";
+import { BiSearchAlt } from "react-icons/bi";
 
 function Searchbar() {
   return (
