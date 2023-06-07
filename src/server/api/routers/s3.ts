@@ -2,22 +2,39 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import {
+  CompleteMultipartUploadCommand,
+  CreateMultipartUploadCommand,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   UploadPartCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { TRPCError } from "@trpc/server";
+import { ratelimit } from "~/server/redis/rateLimit";
 
 export const b2Router = createTRPCRouter({
   getObjects: publicProcedure
     .input(z.object({ bucket: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(
+        (ctx.session && ctx.session.user.id) || ctx.ip || input.bucket
+      );
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { b2 } = ctx;
 
-      const listObjectsOutput = await b2.listObjectsV2({
+      const listObjectsCommand = new ListObjectsV2Command({
         Bucket: input.bucket,
       });
+
+      const listObjectsOutput = await b2.send(listObjectsCommand);
 
       return listObjectsOutput.Contents ?? [];
     }),
@@ -25,6 +42,17 @@ export const b2Router = createTRPCRouter({
   getStandardUploadPresignedUrl: publicProcedure
     .input(z.object({ bucket: z.string(), key: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(
+        (ctx.session && ctx.session.user.id) || ctx.ip || input.bucket
+      );
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { key } = input;
       const { b2 } = ctx;
 
@@ -39,10 +67,22 @@ export const b2Router = createTRPCRouter({
   getStandardDownloadPresignedUrl: publicProcedure
     .input(z.object({ bucket: z.string(), key: z.string().nullable() }))
     .query(async ({ ctx, input }) => {
+      const { success } = await ratelimit.limit(ctx.ip || input.bucket);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Too many requests, please try again in a second.",
+        });
+      }
+
       const { key } = input;
       const { b2 } = ctx;
       if (!key) {
-        throw new Error("Sample does not exist.");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Sample does not exist.",
+        });
       }
       const putObjectCommand = new GetObjectCommand({
         Bucket: input.bucket,
@@ -51,59 +91,6 @@ export const b2Router = createTRPCRouter({
       const url = await getSignedUrl(b2, putObjectCommand, { expiresIn: 3600 });
       return url;
     }),
-
-  getMultipartUploadPresignedUrl: publicProcedure
-    .input(
-      z.object({
-        bucket: z.string(),
-        key: z.string(),
-        filePartTotal: z.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { key, filePartTotal } = input;
-      const { b2 } = ctx;
-
-      const uploadId = (
-        await b2.createMultipartUpload({
-          Bucket: input.bucket,
-          Key: key,
-        })
-      ).UploadId;
-
-      if (!uploadId) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Could not create multipart upload",
-        });
-      }
-
-      const urls: Promise<{ url: string; partNumber: number }>[] = [];
-
-      for (let i = 1; i <= filePartTotal; i++) {
-        const uploadPartCommand = new UploadPartCommand({
-          Bucket: input.bucket,
-          Key: key,
-          UploadId: uploadId,
-          PartNumber: i,
-        });
-
-        const url = getSignedUrl(b2, uploadPartCommand, {
-          expiresIn: 3600,
-        }).then((url) => ({
-          url,
-          partNumber: i,
-        }));
-
-        urls.push(url);
-      }
-
-      return {
-        uploadId,
-        urls: await Promise.all(urls),
-      };
-    }),
-
   completeMultipartUpload: publicProcedure
     .input(
       z.object({
@@ -122,14 +109,20 @@ export const b2Router = createTRPCRouter({
       const { key, uploadId, parts } = input;
       const { b2 } = ctx;
 
-      const completeMultipartUploadOutput = await b2.completeMultipartUpload({
-        Bucket: input.bucket,
-        Key: key,
-        UploadId: uploadId,
-        MultipartUpload: {
-          Parts: parts,
-        },
-      });
+      const completeMultipartUploadCommand = new CompleteMultipartUploadCommand(
+        {
+          Bucket: input.bucket,
+          Key: key,
+          UploadId: uploadId,
+          MultipartUpload: {
+            Parts: parts,
+          },
+        }
+      );
+
+      const completeMultipartUploadOutput = await b2.send(
+        completeMultipartUploadCommand
+      );
 
       return completeMultipartUploadOutput;
     }),

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -5,6 +6,7 @@ import {
   publicProcedure,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { ratelimit } from "~/server/redis/rateLimit";
 import { type BattleEntrySchema } from "~/types/schema";
 import { shuffle } from "~/utils/randomArray";
 
@@ -20,6 +22,14 @@ export const battleRouter = createTRPCRouter({
   submitBattleEntry: protectedProcedure
     .input(z.object({ trackUrl: z.string().url(), battleId: z.number() }))
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new Error("Please try again in a a few moment");
+      }
+
       const battleStatus = await ctx.prisma.battle.findFirst({
         where: {
           id: input.battleId,
@@ -129,6 +139,17 @@ export const battleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const identifier = ctx.session.user.id;
+
+      const { success } = await ratelimit.limit(identifier);
+
+      if (!success) {
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "You are requesting too quickly, please try again later.",
+        });
+      }
+
       const voteExists = await ctx.prisma.battleVote.findFirst({
         where: {
           battleEntryId: input.entryId,
@@ -137,7 +158,10 @@ export const battleRouter = createTRPCRouter({
       });
 
       if (voteExists) {
-        throw new Error("You have already voted");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "You have already voted for this track",
+        });
       }
 
       await ctx.prisma.battleVote.create({
@@ -259,4 +283,17 @@ export const battleRouter = createTRPCRouter({
       });
       return data;
     }),
+  getUserLikedBattleEntry: protectedProcedure.query(async ({ ctx }) => {
+    const votes = await ctx.prisma.battleVote.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      select: {
+        battleEntryId: true,
+      },
+    });
+
+    const data = votes.map((entry) => entry.battleEntryId);
+    return data;
+  }),
 });

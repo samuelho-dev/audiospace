@@ -15,13 +15,6 @@ export const blogRouter = createTRPCRouter({
         where: {
           id: input.id,
         },
-        include: {
-          content: {
-            select: {
-              data: true,
-            },
-          },
-        },
       });
       return data;
     }),
@@ -67,7 +60,7 @@ export const blogRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         description: z.string(),
-        contentId: z.string(),
+        content: z.string(),
         image: z.string().url(),
         blogTag: z.number(),
       })
@@ -78,11 +71,7 @@ export const blogRouter = createTRPCRouter({
           id: encode(input.title.replace(" ", "-").toLowerCase()),
           title: input.title,
           description: input.description,
-          content: {
-            connect: {
-              id: input.contentId,
-            },
-          },
+          content: input.content,
           image: input.image,
           tag: {
             connect: {

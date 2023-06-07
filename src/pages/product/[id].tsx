@@ -1,18 +1,18 @@
 import { PrismaClient } from "@prisma/client";
-import { EditorContent } from "@tiptap/react";
 import { type GetServerSideProps } from "next";
 import { useSession } from "next-auth/react";
-
+import dynamic from "next/dynamic";
 import Image from "next/image";
-
-import React, { useEffect, useState } from "react";
-import RenderEditor from "~/components/text-editor/RenderEditor";
-
+import React from "react";
 import { type ProductSchema } from "~/types/schema";
 
 interface ProductPageProps {
   product: ProductSchema;
 }
+
+const TextEditor = dynamic(
+  () => import("~/components/text-editor/RichTextEditor")
+);
 
 function ProductPage({ product }: ProductPageProps) {
   // NEED TO FETCH RATINGS FOR SELLER AND PRODUCT
@@ -68,7 +68,7 @@ function ProductPage({ product }: ProductPageProps) {
             <h4 className="h-full border px-2">Total Rating</h4>
           </div>
           {product.description && (
-            <RenderEditor content={product.description} />
+            <TextEditor editable={false} content={product.description} />
           )}
         </div>
         <div className="w-1/3">
@@ -169,16 +169,12 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       wishlistUsers: true,
     },
   });
-  type Content = {
-    data: Buffer;
-  };
-  const content: Content = data.description;
-  const contentData = content.data.toString("utf-8");
+
   await prisma.$disconnect();
 
   return {
     props: {
-      product: { ...data, description: contentData },
+      product: { ...data },
     },
   };
 };
